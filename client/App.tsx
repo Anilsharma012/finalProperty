@@ -90,6 +90,7 @@ function App() {
               <Route path="/pg" element={<PG />} />
               <Route path="/services" element={<Services />} />
               <Route path="/other-services" element={<OtherServices />} />
+              <Route path="/advertise" element={<Advertise />} />
               {/* Category/Subcategory Listings */}
               <Route path="/buy/:slug" element={<CategoryProperties />} />
               <Route path="/sale/:slug" element={<CategoryProperties />} />
