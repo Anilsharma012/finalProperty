@@ -100,6 +100,7 @@ const App = () => (
               <Route path="/chat" element={<Chat />} />
               <Route path="/chat/:conversationId" element={<ChatPage />} />
               <Route path="/test-chat/:id" element={<TestChat />} />
+              <Route path="/step3-test" element={<Step3Test />} />
               <Route path="/my-account" element={<MyAccount />} />
               <Route path="/agents" element={<Agents />} />
               <Route path="/login" element={<Login />} />
