@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Property } from "@shared/types";
-import { MapPin, Heart, Phone, Calendar } from "lucide-react";
+import { MapPin, Heart, Phone, Calendar, MessageCircle } from "lucide-react";
 import { Button } from "./ui/button";
+import PropertyChatModal from "./PropertyChatModal";
 
 interface PropertyCardProps {
   property: Property;
