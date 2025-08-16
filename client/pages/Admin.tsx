@@ -93,8 +93,8 @@ export default function Admin() {
   // Get initial section from URL
   const getInitialSection = () => {
     const path = window.location.pathname;
-    if (path === '/admin/support') return 'support-inbox';
-    return 'dashboard';
+    if (path === "/admin/support") return "support-inbox";
+    return "dashboard";
   };
 
   const [activeSection, setActiveSection] = useState(getInitialSection());

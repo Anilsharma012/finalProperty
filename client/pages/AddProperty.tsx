@@ -11,13 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import {
-  ArrowLeft,
-  X,
-  Camera,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { ArrowLeft, X, Camera, ChevronLeft, ChevronRight } from "lucide-react";
 import { ROHTAK_AREAS } from "@shared/types";
 
 interface PropertyFormData {
@@ -211,14 +205,15 @@ export default function AddProperty() {
   const validateStep = (step: number) => {
     switch (step) {
       case 1:
-        const hasBasicInfo = formData.title.trim() &&
-                            formData.description.trim() &&
-                            formData.propertyType;
+        const hasBasicInfo =
+          formData.title.trim() &&
+          formData.description.trim() &&
+          formData.propertyType;
 
         if (!hasBasicInfo) return false;
 
         if (formData.propertyType && subCategories[formData.propertyType]) {
-          return formData.subCategory.trim() !== '';
+          return formData.subCategory.trim() !== "";
         }
 
         return true;
@@ -229,7 +224,7 @@ export default function AddProperty() {
           formData.location.address.trim()
         );
       case 3:
-        return formData.specifications.area.trim() !== '';
+        return formData.specifications.area.trim() !== "";
       case 4:
         return formData.images.length > 0;
       case 5:
@@ -253,11 +248,14 @@ export default function AddProperty() {
         if (!formData.title.trim()) missingFields.push("Property Title");
         if (!formData.description.trim()) missingFields.push("Description");
         if (!formData.propertyType) missingFields.push("Property Type");
-        if (formData.propertyType && !formData.subCategory) missingFields.push("Sub Category");
+        if (formData.propertyType && !formData.subCategory)
+          missingFields.push("Sub Category");
       }
 
       if (missingFields.length > 0) {
-        alert(`Please fill the following required fields: ${missingFields.join(", ")}`);
+        alert(
+          `Please fill the following required fields: ${missingFields.join(", ")}`,
+        );
       } else {
         alert("Please fill all required fields");
       }
@@ -273,7 +271,9 @@ export default function AddProperty() {
   };
 
   const handleCancel = () => {
-    if (confirm("Are you sure you want to cancel? All entered data will be lost.")) {
+    if (
+      confirm("Are you sure you want to cancel? All entered data will be lost.")
+    ) {
       navigate("/user-dashboard");
     }
   };
@@ -297,7 +297,10 @@ export default function AddProperty() {
       submitData.append("propertyType", formData.propertyType);
       submitData.append("subCategory", formData.subCategory);
       submitData.append("location", JSON.stringify(formData.location));
-      submitData.append("specifications", JSON.stringify(formData.specifications));
+      submitData.append(
+        "specifications",
+        JSON.stringify(formData.specifications),
+      );
       submitData.append("amenities", JSON.stringify(formData.amenities));
       submitData.append("contactInfo", JSON.stringify(formData.contactInfo));
       submitData.append("premium", "false");
@@ -369,9 +372,11 @@ export default function AddProperty() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>
-          
+
           <div className="flex-1 text-center">
-            <h1 className="text-lg font-semibold text-gray-900">Add Property</h1>
+            <h1 className="text-lg font-semibold text-gray-900">
+              Add Property
+            </h1>
             <p className="text-sm text-gray-500">
               Step {currentStep} of {stepTitles.length}
             </p>
@@ -425,7 +430,9 @@ export default function AddProperty() {
                   required
                 />
                 {!formData.title.trim() && (
-                  <p className="text-red-500 text-xs mt-1">Property title is required</p>
+                  <p className="text-red-500 text-xs mt-1">
+                    Property title is required
+                  </p>
                 )}
               </div>
 
@@ -440,7 +447,9 @@ export default function AddProperty() {
                     handleInputChange("subCategory", "");
                   }}
                 >
-                  <SelectTrigger className={!formData.propertyType ? "border-red-300" : ""}>
+                  <SelectTrigger
+                    className={!formData.propertyType ? "border-red-300" : ""}
+                  >
                     <SelectValue placeholder="Select property type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -464,7 +473,9 @@ export default function AddProperty() {
                       handleInputChange("subCategory", value)
                     }
                   >
-                    <SelectTrigger className={!formData.subCategory ? "border-red-300" : ""}>
+                    <SelectTrigger
+                      className={!formData.subCategory ? "border-red-300" : ""}
+                    >
                       <SelectValue placeholder="Select sub category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -476,7 +487,9 @@ export default function AddProperty() {
                     </SelectContent>
                   </Select>
                   {!formData.subCategory && (
-                    <p className="text-red-500 text-xs mt-1">Please select a sub category</p>
+                    <p className="text-red-500 text-xs mt-1">
+                      Please select a sub category
+                    </p>
                   )}
                 </div>
               )}
@@ -491,12 +504,16 @@ export default function AddProperty() {
                     handleInputChange("description", e.target.value)
                   }
                   placeholder="Describe your property in detail..."
-                  className={!formData.description.trim() ? "border-red-300" : ""}
+                  className={
+                    !formData.description.trim() ? "border-red-300" : ""
+                  }
                   rows={4}
                   required
                 />
                 {!formData.description.trim() && (
-                  <p className="text-red-500 text-xs mt-1">Property description is required</p>
+                  <p className="text-red-500 text-xs mt-1">
+                    Property description is required
+                  </p>
                 )}
               </div>
             </div>
@@ -698,7 +715,9 @@ export default function AddProperty() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="furnished">Furnished</SelectItem>
-                      <SelectItem value="semi-furnished">Semi-Furnished</SelectItem>
+                      <SelectItem value="semi-furnished">
+                        Semi-Furnished
+                      </SelectItem>
                       <SelectItem value="unfurnished">Unfurnished</SelectItem>
                     </SelectContent>
                   </Select>
@@ -725,7 +744,10 @@ export default function AddProperty() {
                   <Input
                     value={formData.specifications.totalFloors}
                     onChange={(e) =>
-                      handleInputChange("specifications.totalFloors", e.target.value)
+                      handleInputChange(
+                        "specifications.totalFloors",
+                        e.target.value,
+                      )
                     }
                     placeholder="e.g., 5"
                   />
@@ -868,7 +890,10 @@ export default function AddProperty() {
                 <Input
                   value={formData.contactInfo.alternativePhone || ""}
                   onChange={(e) =>
-                    handleInputChange("contactInfo.alternativePhone", e.target.value)
+                    handleInputChange(
+                      "contactInfo.alternativePhone",
+                      e.target.value,
+                    )
                   }
                   placeholder="Enter alternative mobile number"
                 />
@@ -881,7 +906,10 @@ export default function AddProperty() {
                 <Input
                   value={formData.contactInfo.whatsappNumber || ""}
                   onChange={(e) =>
-                    handleInputChange("contactInfo.whatsappNumber", e.target.value)
+                    handleInputChange(
+                      "contactInfo.whatsappNumber",
+                      e.target.value,
+                    )
                   }
                   placeholder="Enter WhatsApp number"
                 />
@@ -973,9 +1001,7 @@ export default function AddProperty() {
                 <div
                   key={index}
                   className={`w-2 h-2 rounded-full transition-colors ${
-                    index + 1 <= currentStep
-                      ? 'bg-[#C70000]'
-                      : 'bg-gray-300'
+                    index + 1 <= currentStep ? "bg-[#C70000]" : "bg-gray-300"
                   }`}
                 />
               ))}
@@ -986,8 +1012,8 @@ export default function AddProperty() {
               disabled={!validateStep(currentStep)}
               className={`px-6 py-3 text-base min-w-[100px] flex items-center transition-all ${
                 validateStep(currentStep)
-                  ? 'bg-[#C70000] hover:bg-[#A60000] text-white'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  ? "bg-[#C70000] hover:bg-[#A60000] text-white"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
               }`}
             >
               Next

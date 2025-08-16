@@ -17,8 +17,10 @@ export const getFavorites: RequestHandler = async (req, res) => {
     }
 
     // Get user's favorites list
-    const user = await db.collection("users").findOne({ _id: new ObjectId(userId) });
-    
+    const user = await db
+      .collection("users")
+      .findOne({ _id: new ObjectId(userId) });
+
     if (!user || !user.favorites || user.favorites.length === 0) {
       return res.json({
         success: true,
@@ -32,10 +34,10 @@ export const getFavorites: RequestHandler = async (req, res) => {
     // Get favorite properties details
     const favoriteProperties = await db
       .collection("properties")
-      .find({ 
+      .find({
         _id: { $in: favoriteIds },
         status: "active",
-        approvalStatus: "approved"
+        approvalStatus: "approved",
       })
       .sort({ createdAt: -1 })
       .toArray();
@@ -80,7 +82,7 @@ export const addToFavorites: RequestHandler = async (req, res) => {
     const property = await db.collection("properties").findOne({
       _id: new ObjectId(propertyId),
       status: "active",
-      approvalStatus: "approved"
+      approvalStatus: "approved",
     });
 
     if (!property) {
@@ -93,10 +95,10 @@ export const addToFavorites: RequestHandler = async (req, res) => {
     // Add to user's favorites
     await db.collection("users").updateOne(
       { _id: new ObjectId(userId) },
-      { 
+      {
         $addToSet: { favorites: propertyId },
-        $set: { updatedAt: new Date() }
-      }
+        $set: { updatedAt: new Date() },
+      },
     );
 
     res.json({
@@ -136,10 +138,10 @@ export const removeFromFavorites: RequestHandler = async (req, res) => {
     // Remove from user's favorites
     await db.collection("users").updateOne(
       { _id: new ObjectId(userId) },
-      { 
+      {
         $pull: { favorites: propertyId },
-        $set: { updatedAt: new Date() }
-      }
+        $set: { updatedAt: new Date() },
+      },
     );
 
     res.json({
@@ -179,7 +181,7 @@ export const checkFavorite: RequestHandler = async (req, res) => {
     // Check if property is in user's favorites
     const user = await db.collection("users").findOne({
       _id: new ObjectId(userId),
-      favorites: propertyId
+      favorites: propertyId,
     });
 
     res.json({

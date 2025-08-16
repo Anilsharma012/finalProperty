@@ -75,7 +75,8 @@ interface AdminMessage {
 
 export default function AdminSupportInbox() {
   const [conversations, setConversations] = useState<AdminConversation[]>([]);
-  const [selectedConversation, setSelectedConversation] = useState<AdminConversation | null>(null);
+  const [selectedConversation, setSelectedConversation] =
+    useState<AdminConversation | null>(null);
   const [messages, setMessages] = useState<AdminMessage[]>([]);
   const [replyMessage, setReplyMessage] = useState("");
   const [loading, setLoading] = useState(true);
@@ -93,7 +94,7 @@ export default function AdminSupportInbox() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const token = localStorage.getItem("token");
       const response = await fetch("/api/admin/conversations", {
         headers: {
@@ -114,7 +115,9 @@ export default function AdminSupportInbox() {
       }
     } catch (error) {
       console.error("Error fetching conversations:", error);
-      setError(error instanceof Error ? error.message : "Failed to load conversations");
+      setError(
+        error instanceof Error ? error.message : "Failed to load conversations",
+      );
     } finally {
       setLoading(false);
     }
@@ -123,13 +126,16 @@ export default function AdminSupportInbox() {
   const fetchMessages = async (conversationId: string) => {
     try {
       setMessagesLoading(true);
-      
+
       const token = localStorage.getItem("token");
-      const response = await fetch(`/api/conversations/${conversationId}/messages`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        `/api/conversations/${conversationId}/messages`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -150,7 +156,7 @@ export default function AdminSupportInbox() {
     try {
       setSending(true);
       const token = localStorage.getItem("token");
-      
+
       const response = await fetch(
         `/api/admin/conversations/${selectedConversation._id}/messages`,
         {
@@ -162,7 +168,7 @@ export default function AdminSupportInbox() {
           body: JSON.stringify({
             text: replyMessage.trim(),
           }),
-        }
+        },
       );
 
       if (response.ok) {
@@ -184,10 +190,13 @@ export default function AdminSupportInbox() {
     }
   };
 
-  const updateConversationStatus = async (conversationId: string, status: string) => {
+  const updateConversationStatus = async (
+    conversationId: string,
+    status: string,
+  ) => {
     try {
       const token = localStorage.getItem("token");
-      
+
       const response = await fetch(
         `/api/admin/conversations/${conversationId}/status`,
         {
@@ -197,7 +206,7 @@ export default function AdminSupportInbox() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ status }),
-        }
+        },
       );
 
       if (response.ok) {
@@ -205,7 +214,9 @@ export default function AdminSupportInbox() {
         await fetchConversations();
         // Update selected conversation if it's the one being updated
         if (selectedConversation?._id === conversationId) {
-          setSelectedConversation(prev => prev ? { ...prev, status: status as any } : null);
+          setSelectedConversation((prev) =>
+            prev ? { ...prev, status: status as any } : null,
+          );
         }
       }
     } catch (error) {
@@ -213,13 +224,17 @@ export default function AdminSupportInbox() {
     }
   };
 
-  const filteredConversations = conversations.filter(conv => {
-    const matchesSearch = searchTerm === "" || 
+  const filteredConversations = conversations.filter((conv) => {
+    const matchesSearch =
+      searchTerm === "" ||
       conv.propertyTitle?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      conv.participantDetails.some(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    const matchesStatus = statusFilter === "all" || conv.status === statusFilter;
-    
+      conv.participantDetails.some((p) =>
+        p.name.toLowerCase().includes(searchTerm.toLowerCase()),
+      );
+
+    const matchesStatus =
+      statusFilter === "all" || conv.status === statusFilter;
+
     return matchesSearch && matchesStatus;
   });
 
@@ -247,19 +262,27 @@ export default function AdminSupportInbox() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "active": return "bg-green-100 text-green-800";
-      case "pending": return "bg-yellow-100 text-yellow-800";
-      case "resolved": return "bg-gray-100 text-gray-800";
-      default: return "bg-gray-100 text-gray-800";
+      case "active":
+        return "bg-green-100 text-green-800";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "resolved":
+        return "bg-gray-100 text-gray-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case "high": return "bg-red-100 text-red-800";
-      case "medium": return "bg-orange-100 text-orange-800";
-      case "low": return "bg-blue-100 text-blue-800";
-      default: return "bg-gray-100 text-gray-800";
+      case "high":
+        return "bg-red-100 text-red-800";
+      case "medium":
+        return "bg-orange-100 text-orange-800";
+      case "low":
+        return "bg-blue-100 text-blue-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -278,7 +301,7 @@ export default function AdminSupportInbox() {
               {conversations.length} conversations
             </Badge>
           </div>
-          
+
           {/* Search and Filter */}
           <div className="flex gap-2">
             <div className="flex-1 relative">
@@ -323,7 +346,9 @@ export default function AdminSupportInbox() {
                   fetchMessages(conversation._id);
                 }}
                 className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 ${
-                  selectedConversation?._id === conversation._id ? "bg-blue-50 border-blue-200" : ""
+                  selectedConversation?._id === conversation._id
+                    ? "bg-blue-50 border-blue-200"
+                    : ""
                 }`}
               >
                 <div className="flex items-start justify-between mb-2">
@@ -332,7 +357,9 @@ export default function AdminSupportInbox() {
                       {conversation.propertyTitle || "General Inquiry"}
                     </h3>
                     <p className="text-xs text-gray-500 truncate">
-                      {conversation.participantDetails.map(p => p.name).join(", ")}
+                      {conversation.participantDetails
+                        .map((p) => p.name)
+                        .join(", ")}
                     </p>
                   </div>
                   <div className="flex flex-col items-end space-y-1">
@@ -344,14 +371,16 @@ export default function AdminSupportInbox() {
                     </span>
                   </div>
                 </div>
-                
+
                 {conversation.lastMessage && (
                   <p className="text-sm text-gray-600 truncate mb-2">
-                    <span className="font-medium">{conversation.lastMessage.senderName}:</span>{" "}
+                    <span className="font-medium">
+                      {conversation.lastMessage.senderName}:
+                    </span>{" "}
                     {conversation.lastMessage.message}
                   </p>
                 )}
-                
+
                 <div className="flex items-center justify-between">
                   <Badge variant="outline" className="text-xs">
                     {conversation.messageCount} messages
@@ -363,13 +392,25 @@ export default function AdminSupportInbox() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                      <DropdownMenuItem onClick={() => updateConversationStatus(conversation._id, "active")}>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          updateConversationStatus(conversation._id, "active")
+                        }
+                      >
                         Mark Active
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => updateConversationStatus(conversation._id, "resolved")}>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          updateConversationStatus(conversation._id, "resolved")
+                        }
+                      >
                         Mark Resolved
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => updateConversationStatus(conversation._id, "pending")}>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          updateConversationStatus(conversation._id, "pending")
+                        }
+                      >
                         Mark Pending
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -393,21 +434,27 @@ export default function AdminSupportInbox() {
                     {selectedConversation.propertyTitle || "General Inquiry"}
                   </h3>
                   <p className="text-sm text-gray-500">
-                    {selectedConversation.participantDetails.map(p => p.name).join(", ")}
+                    {selectedConversation.participantDetails
+                      .map((p) => p.name)
+                      .join(", ")}
                   </p>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Badge className={getStatusColor(selectedConversation.status)}>
+                  <Badge
+                    className={getStatusColor(selectedConversation.status)}
+                  >
                     {selectedConversation.status}
                   </Badge>
-                  {selectedConversation.participantDetails.find(p => p.phone) && (
+                  {selectedConversation.participantDetails.find(
+                    (p) => p.phone,
+                  ) && (
                     <Button variant="outline" size="sm">
                       <Phone className="h-4 w-4" />
                     </Button>
                   )}
                 </div>
               </div>
-              
+
               {selectedConversation.propertyPrice && (
                 <div className="mt-2 text-sm text-[#C70000] font-semibold">
                   ₹{selectedConversation.propertyPrice.toLocaleString()}
@@ -431,7 +478,9 @@ export default function AdminSupportInbox() {
                   <div
                     key={message._id}
                     className={`flex ${
-                      message.senderType === "admin" ? "justify-end" : "justify-start"
+                      message.senderType === "admin"
+                        ? "justify-end"
+                        : "justify-start"
                     }`}
                   >
                     <div
@@ -508,9 +557,7 @@ export default function AdminSupportInbox() {
       {error && (
         <Alert className="absolute bottom-4 right-4 w-80 border-red-200 bg-red-50">
           <AlertCircle className="h-4 w-4 text-red-600" />
-          <AlertDescription className="text-red-700">
-            {error}
-          </AlertDescription>
+          <AlertDescription className="text-red-700">{error}</AlertDescription>
         </Alert>
       )}
     </div>

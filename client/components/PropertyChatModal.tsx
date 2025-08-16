@@ -51,7 +51,9 @@ export default function PropertyChatModal({
   onClose,
 }: PropertyChatModalProps) {
   const { user, isAuthenticated } = useAuth();
-  const [conversation, setConversation] = useState<ChatConversation | null>(null);
+  const [conversation, setConversation] = useState<ChatConversation | null>(
+    null,
+  );
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -64,7 +66,7 @@ export default function PropertyChatModal({
     if (isOpen && isAuthenticated && property._id) {
       initializeChat();
     }
-    
+
     return () => {
       if (pollingRef.current) {
         clearInterval(pollingRef.current);
@@ -84,7 +86,7 @@ export default function PropertyChatModal({
     try {
       setLoading(true);
       setError(null);
-      
+
       const token = localStorage.getItem("token");
       if (!token) {
         setError("Please login to start a conversation");
@@ -100,7 +102,7 @@ export default function PropertyChatModal({
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       if (!response.ok) {
@@ -132,7 +134,7 @@ export default function PropertyChatModal({
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (response.ok) {
@@ -159,7 +161,7 @@ export default function PropertyChatModal({
     try {
       setSending(true);
       const token = localStorage.getItem("token");
-      
+
       const response = await fetch(
         `/api/conversations/${conversation._id}/messages`,
         {
@@ -171,7 +173,7 @@ export default function PropertyChatModal({
           body: JSON.stringify({
             text: newMessage.trim(),
           }),
-        }
+        },
       );
 
       if (response.ok) {
@@ -237,7 +239,7 @@ export default function PropertyChatModal({
             <Button variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button onClick={() => window.location.href = "/auth"}>
+            <Button onClick={() => (window.location.href = "/auth")}>
               Login
             </Button>
           </div>
@@ -255,7 +257,9 @@ export default function PropertyChatModal({
             <div className="flex items-center space-x-3">
               <MessageCircle className="h-5 w-5 text-[#C70000]" />
               <div>
-                <DialogTitle className="text-base">Property Inquiry</DialogTitle>
+                <DialogTitle className="text-base">
+                  Property Inquiry
+                </DialogTitle>
                 <DialogDescription className="text-sm">
                   {property.title}
                 </DialogDescription>
@@ -310,7 +314,9 @@ export default function PropertyChatModal({
             <div className="text-center py-8 text-gray-500">
               <MessageCircle className="h-8 w-8 mx-auto mb-2 text-gray-300" />
               <p className="text-sm">Start the conversation!</p>
-              <p className="text-xs">Send a message to inquire about this property.</p>
+              <p className="text-xs">
+                Send a message to inquire about this property.
+              </p>
             </div>
           ) : (
             messages.map((message, index) => (
@@ -331,18 +337,14 @@ export default function PropertyChatModal({
                   <div className="flex items-center justify-between mt-1">
                     <span
                       className={`text-xs ${
-                        isMyMessage(message)
-                          ? "text-red-100"
-                          : "text-gray-500"
+                        isMyMessage(message) ? "text-red-100" : "text-gray-500"
                       }`}
                     >
                       {message.senderName}
                     </span>
                     <span
                       className={`text-xs ${
-                        isMyMessage(message)
-                          ? "text-red-100"
-                          : "text-gray-400"
+                        isMyMessage(message) ? "text-red-100" : "text-gray-400"
                       }`}
                     >
                       {formatTime(message.createdAt)}
@@ -380,7 +382,7 @@ export default function PropertyChatModal({
               )}
             </Button>
           </div>
-          
+
           {/* Contact Info */}
           {property.contactVisible && property.contactInfo && (
             <div className="mt-3 pt-3 border-t bg-gray-50 -mx-4 px-4 py-2">
@@ -388,7 +390,9 @@ export default function PropertyChatModal({
                 <span className="text-gray-600">Owner Contact:</span>
                 <div className="flex items-center space-x-2">
                   <Phone className="h-4 w-4 text-green-600" />
-                  <span className="font-medium">{property.contactInfo.phone}</span>
+                  <span className="font-medium">
+                    {property.contactInfo.phone}
+                  </span>
                 </div>
               </div>
             </div>

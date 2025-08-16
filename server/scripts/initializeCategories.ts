@@ -168,24 +168,23 @@ const categories = [
 export async function initializeCategories() {
   try {
     console.log("🔄 Initializing categories and subcategories...");
-    
+
     const { db } = await connectToDatabase();
     const categoriesCollection = db.collection("categories");
 
     // Clear existing categories
     await categoriesCollection.deleteMany({});
-    
+
     // Insert new categories
     await categoriesCollection.insertMany(categories);
-    
+
     console.log("✅ Categories and subcategories initialized successfully");
     console.log(`📊 Inserted ${categories.length} categories`);
-    
+
     // Show subcategory counts
-    categories.forEach(cat => {
+    categories.forEach((cat) => {
       console.log(`  - ${cat.name}: ${cat.subcategories.length} subcategories`);
     });
-    
   } catch (error) {
     console.error("❌ Error initializing categories:", error);
     throw error;

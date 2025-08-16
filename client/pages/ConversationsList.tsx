@@ -60,7 +60,7 @@ export default function ConversationsList() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const token = localStorage.getItem("token");
       if (!token) {
         throw new Error("Authentication required");
@@ -81,7 +81,9 @@ export default function ConversationsList() {
           navigate("/auth");
           return;
         }
-        throw new Error(`HTTP ${response.status}: Failed to fetch conversations`);
+        throw new Error(
+          `HTTP ${response.status}: Failed to fetch conversations`,
+        );
       }
 
       const data = await response.json();
@@ -92,7 +94,9 @@ export default function ConversationsList() {
       }
     } catch (error) {
       console.error("Error fetching conversations:", error);
-      setError(error instanceof Error ? error.message : "Failed to load conversations");
+      setError(
+        error instanceof Error ? error.message : "Failed to load conversations",
+      );
     } finally {
       setLoading(false);
     }
@@ -148,23 +152,20 @@ export default function ConversationsList() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>
-          
+
           <div className="flex-1 text-center">
             <h1 className="text-lg font-semibold text-gray-900 flex items-center justify-center">
               <MessageCircle className="h-5 w-5 mr-2 text-[#C70000]" />
               My Conversations
             </h1>
             <p className="text-sm text-gray-500">
-              {conversations.length} {conversations.length === 1 ? 'conversation' : 'conversations'}
+              {conversations.length}{" "}
+              {conversations.length === 1 ? "conversation" : "conversations"}
             </p>
           </div>
 
           <div className="flex items-center space-x-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="p-2"
-            >
+            <Button variant="ghost" size="sm" className="p-2">
               <Search className="h-4 w-4" />
             </Button>
           </div>
@@ -207,7 +208,8 @@ export default function ConversationsList() {
               No conversations yet
             </h3>
             <p className="text-gray-600 mb-6 max-w-md mx-auto">
-              Start browsing properties and use the chat feature to connect with property owners.
+              Start browsing properties and use the chat feature to connect with
+              property owners.
             </p>
             <div className="space-x-4">
               <Button
@@ -217,10 +219,7 @@ export default function ConversationsList() {
                 <Search className="h-4 w-4 mr-2" />
                 Browse Properties
               </Button>
-              <Button
-                onClick={() => navigate("/categories")}
-                variant="outline"
-              >
+              <Button onClick={() => navigate("/categories")} variant="outline">
                 View Categories
               </Button>
             </div>
@@ -299,12 +298,15 @@ export default function ConversationsList() {
                       <Clock className="h-3 w-3 mr-1" />
                       {formatTime(conversation.lastMessageAt)}
                     </div>
-                    
-                    {conversation.unreadCount && conversation.unreadCount > 0 && (
-                      <div className="bg-[#C70000] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                        {conversation.unreadCount > 9 ? "9+" : conversation.unreadCount}
-                      </div>
-                    )}
+
+                    {conversation.unreadCount &&
+                      conversation.unreadCount > 0 && (
+                        <div className="bg-[#C70000] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                          {conversation.unreadCount > 9
+                            ? "9+"
+                            : conversation.unreadCount}
+                        </div>
+                      )}
                   </div>
                 </div>
               </div>

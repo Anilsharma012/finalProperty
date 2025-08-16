@@ -28,7 +28,7 @@ export default function PropertyCard({
       currency: "INR",
       maximumFractionDigits: 0,
     }).format(price);
-    
+
     return priceType === "rent" ? `${formatted}/month` : formatted;
   };
 
@@ -36,7 +36,7 @@ export default function PropertyCard({
     const now = new Date();
     const diff = now.getTime() - new Date(date).getTime();
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    
+
     if (days === 0) return "Today";
     if (days === 1) return "Yesterday";
     if (days < 7) return `${days} days ago`;
@@ -65,7 +65,7 @@ export default function PropertyCard({
             <span className="text-gray-400">No Image</span>
           </div>
         )}
-        
+
         {/* Favorite Button */}
         {showFavoriteButton && (
           <Button
@@ -77,8 +77,8 @@ export default function PropertyCard({
             size="sm"
             className="absolute top-2 right-2 p-2 bg-white/80 hover:bg-white shadow-sm rounded-full"
           >
-            <Heart 
-              className={`h-4 w-4 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-600'}`} 
+            <Heart
+              className={`h-4 w-4 ${isFavorite ? "text-red-500 fill-current" : "text-gray-600"}`}
             />
           </Button>
         )}
@@ -101,13 +101,16 @@ export default function PropertyCard({
       {/* Property Details */}
       <div className="p-4">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="font-semibold text-gray-900 text-lg overflow-hidden" style={{
-          display: '-webkit-box',
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical'
-        }}>
-          {property.title}
-        </h3>
+          <h3
+            className="font-semibold text-gray-900 text-lg overflow-hidden"
+            style={{
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+            }}
+          >
+            {property.title}
+          </h3>
           <span className="text-lg font-bold text-[#C70000] ml-2">
             {formatPrice(property.price, property.priceType)}
           </span>
@@ -141,7 +144,7 @@ export default function PropertyCard({
             <Calendar className="h-4 w-4 mr-1" />
             <span>{formatDate(property.createdAt)}</span>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
               {property.ownerType}
@@ -154,11 +157,14 @@ export default function PropertyCard({
 
         {/* Description Preview */}
         {property.description && (
-          <p className="text-gray-600 text-sm mt-2 overflow-hidden" style={{
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical'
-          }}>
+          <p
+            className="text-gray-600 text-sm mt-2 overflow-hidden"
+            style={{
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+            }}
+          >
             {property.description}
           </p>
         )}

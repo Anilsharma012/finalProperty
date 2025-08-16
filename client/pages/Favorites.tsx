@@ -39,7 +39,7 @@ export default function Favorites() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const token = localStorage.getItem("token");
       if (!token) {
         throw new Error("Authentication required");
@@ -71,7 +71,9 @@ export default function Favorites() {
       }
     } catch (error) {
       console.error("Error fetching favorites:", error);
-      setError(error instanceof Error ? error.message : "Failed to load favorites");
+      setError(
+        error instanceof Error ? error.message : "Failed to load favorites",
+      );
     } finally {
       setLoading(false);
     }
@@ -97,7 +99,9 @@ export default function Favorites() {
       }
 
       // Remove from local state
-      setFavorites(prev => prev.filter(property => property._id !== propertyId));
+      setFavorites((prev) =>
+        prev.filter((property) => property._id !== propertyId),
+      );
     } catch (error) {
       console.error("Error removing from favorites:", error);
       setError("Failed to remove from favorites");
@@ -128,14 +132,15 @@ export default function Favorites() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>
-          
+
           <div className="flex-1 text-center">
             <h1 className="text-lg font-semibold text-gray-900 flex items-center justify-center">
               <Heart className="h-5 w-5 mr-2 text-red-500" />
               My Favorites
             </h1>
             <p className="text-sm text-gray-500">
-              {favorites.length} {favorites.length === 1 ? 'property' : 'properties'}
+              {favorites.length}{" "}
+              {favorites.length === 1 ? "property" : "properties"}
             </p>
           </div>
 
@@ -192,7 +197,8 @@ export default function Favorites() {
               No favorites yet
             </h3>
             <p className="text-gray-600 mb-6 max-w-md mx-auto">
-              Start browsing properties and add them to your favorites by tapping the heart icon.
+              Start browsing properties and add them to your favorites by
+              tapping the heart icon.
             </p>
             <div className="space-x-4">
               <Button
@@ -202,10 +208,7 @@ export default function Favorites() {
                 <Search className="h-4 w-4 mr-2" />
                 Browse Properties
               </Button>
-              <Button
-                onClick={() => navigate("/categories")}
-                variant="outline"
-              >
+              <Button onClick={() => navigate("/categories")} variant="outline">
                 View Categories
               </Button>
             </div>
@@ -214,11 +217,13 @@ export default function Favorites() {
 
         {/* Favorites Grid */}
         {!loading && favorites.length > 0 && (
-          <div className={`${
-            viewMode === "grid" 
-              ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" 
-              : "space-y-4"
-          }`}>
+          <div
+            className={`${
+              viewMode === "grid"
+                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+                : "space-y-4"
+            }`}
+          >
             {favorites.map((property) => (
               <div key={property._id} className="relative">
                 <PropertyCard
@@ -226,7 +231,7 @@ export default function Favorites() {
                   onClick={() => navigate(`/property/${property._id}`)}
                   className={viewMode === "list" ? "flex flex-row" : ""}
                 />
-                
+
                 {/* Remove from Favorites Button */}
                 <Button
                   onClick={(e) => {

@@ -5,7 +5,12 @@ import Header from "../components/Header";
 import BottomNavigation from "../components/BottomNavigation";
 import PropertyChatModal from "../components/PropertyChatModal";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import {
   MessageCircle,
@@ -70,11 +75,11 @@ export default function ChatDemo() {
 
   const fetchMyConversations = async () => {
     if (!isAuthenticated) return;
-    
+
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      
+
       const response = await fetch("/api/conversations/my", {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -141,7 +146,7 @@ export default function ChatDemo() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>
-          
+
           <div className="flex-1 text-center">
             <h1 className="text-lg font-semibold text-gray-900 flex items-center justify-center">
               <MessageCircle className="h-5 w-5 mr-2 text-[#C70000]" />
@@ -173,17 +178,33 @@ export default function ChatDemo() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <h3 className="font-semibold text-gray-900">✅ API Endpoints Implemented:</h3>
+                <h3 className="font-semibold text-gray-900">
+                  ✅ API Endpoints Implemented:
+                </h3>
                 <ul className="text-sm text-gray-600 space-y-1">
-                  <li><code>POST /conversations {`{propertyId, participants}`}</code></li>
-                  <li><code>GET /conversations/my</code></li>
-                  <li><code>GET /conversations/:id/messages</code></li>
-                  <li><code>POST /conversations/:id/messages {`{text,imageUrl}`}</code></li>
+                  <li>
+                    <code>
+                      POST /conversations {`{propertyId, participants}`}
+                    </code>
+                  </li>
+                  <li>
+                    <code>GET /conversations/my</code>
+                  </li>
+                  <li>
+                    <code>GET /conversations/:id/messages</code>
+                  </li>
+                  <li>
+                    <code>
+                      POST /conversations/:id/messages {`{text,imageUrl}`}
+                    </code>
+                  </li>
                 </ul>
               </div>
-              
+
               <div className="space-y-2">
-                <h3 className="font-semibold text-gray-900">✅ Features Implemented:</h3>
+                <h3 className="font-semibold text-gray-900">
+                  ✅ Features Implemented:
+                </h3>
                 <ul className="text-sm text-gray-600 space-y-1">
                   <li>🎫 Ticket+chat per property</li>
                   <li>⏱️ 5-second polling (configurable)</li>
@@ -209,12 +230,16 @@ export default function ChatDemo() {
                 className="w-20 h-20 rounded object-cover"
               />
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900">{demoProperty.title}</h3>
+                <h3 className="font-semibold text-gray-900">
+                  {demoProperty.title}
+                </h3>
                 <p className="text-[#C70000] font-semibold">
                   ₹{demoProperty.price.toLocaleString()}
                 </p>
-                <p className="text-sm text-gray-600">{demoProperty.location.area}</p>
-                
+                <p className="text-sm text-gray-600">
+                  {demoProperty.location.area}
+                </p>
+
                 <div className="mt-3 flex gap-2">
                   <Button
                     onClick={() => setShowChatModal(true)}
@@ -223,7 +248,7 @@ export default function ChatDemo() {
                     <MessageCircle className="h-4 w-4 mr-2" />
                     Start Chat
                   </Button>
-                  
+
                   <Button
                     onClick={() => navigate("/conversations")}
                     variant="outline"
@@ -257,7 +282,9 @@ export default function ChatDemo() {
               <div className="text-center py-8 text-gray-500">
                 <MessageCircle className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                 <p>No conversations yet</p>
-                <p className="text-sm">Start a chat using the demo property above!</p>
+                <p className="text-sm">
+                  Start a chat using the demo property above!
+                </p>
               </div>
             ) : (
               <div className="space-y-2">
@@ -269,7 +296,9 @@ export default function ChatDemo() {
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium">{conv.propertyTitle || "General Chat"}</p>
+                        <p className="font-medium">
+                          {conv.propertyTitle || "General Chat"}
+                        </p>
                         <p className="text-sm text-gray-600">
                           {conv.lastMessage?.message || "No messages yet"}
                         </p>
@@ -280,7 +309,7 @@ export default function ChatDemo() {
                     </div>
                   </div>
                 ))}
-                
+
                 {conversations.length > 3 && (
                   <Button
                     onClick={() => navigate("/conversations")}
@@ -306,7 +335,8 @@ export default function ChatDemo() {
             </CardHeader>
             <CardContent>
               <p className="text-gray-600 mb-4">
-                As an admin, you have access to the Support Inbox to manage all user conversations.
+                As an admin, you have access to the Support Inbox to manage all
+                user conversations.
               </p>
               <Button
                 onClick={() => navigate("/admin")}
@@ -333,7 +363,7 @@ export default function ChatDemo() {
                 <p className="text-sm font-medium text-green-800">Chat API</p>
                 <p className="text-xs text-green-600">Active</p>
               </div>
-              
+
               <div className="p-3 bg-green-50 rounded-lg">
                 <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
                   <MessageCircle className="h-4 w-4 text-green-600" />
@@ -341,20 +371,24 @@ export default function ChatDemo() {
                 <p className="text-sm font-medium text-green-800">Messaging</p>
                 <p className="text-xs text-green-600">Live</p>
               </div>
-              
+
               <div className="p-3 bg-green-50 rounded-lg">
                 <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
                   <Users className="h-4 w-4 text-green-600" />
                 </div>
-                <p className="text-sm font-medium text-green-800">Support Inbox</p>
+                <p className="text-sm font-medium text-green-800">
+                  Support Inbox
+                </p>
                 <p className="text-xs text-green-600">Ready</p>
               </div>
-              
+
               <div className="p-3 bg-green-50 rounded-lg">
                 <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
                   <Home className="h-4 w-4 text-green-600" />
                 </div>
-                <p className="text-sm font-medium text-green-800">Property Chat</p>
+                <p className="text-sm font-medium text-green-800">
+                  Property Chat
+                </p>
                 <p className="text-xs text-green-600">Enabled</p>
               </div>
             </div>
