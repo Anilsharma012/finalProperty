@@ -16,9 +16,25 @@ export const getCategories: RequestHandler = async (req, res) => {
       });
     }
 
+    // Build query filter
+    const filter: any = {};
+
+    // Filter by type if specified
+    if (req.query.type) {
+      filter.type = req.query.type;
+    } else {
+      // Default to property type for backward compatibility
+      filter.type = { $in: ['property', null, undefined] };
+    }
+
+    // Filter by active status
+    if (req.query.active !== undefined) {
+      filter.active = req.query.active === 'true';
+    }
+
     const categories = await db
       .collection("categories")
-      .find({ active: true })
+      .find(filter)
       .sort({ order: 1 })
       .toArray();
 
