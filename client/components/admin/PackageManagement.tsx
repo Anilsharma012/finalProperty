@@ -121,21 +121,13 @@ export default function PackageManagement() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // Read the response body once and handle both success and error cases
-      let data;
-      try {
-        const responseText = await response.text();
-        data = responseText ? JSON.parse(responseText) : {};
-      } catch (parseError) {
-        console.warn("Could not parse response as JSON");
-        data = {};
-      }
+      const { ok, status, data } = await safeReadResponse(response);
 
-      if (response.ok) {
+      if (ok) {
         setPackages(packages.filter(pkg => pkg._id !== packageId));
         alert("Package deleted successfully! Changes will be visible to users immediately.");
       } else {
-        setError(data.error || `Failed to delete package (${response.status})`);
+        setError(getApiErrorMessage(data, status, "delete package"));
       }
     } catch (error) {
       console.error("Error deleting package:", error);
