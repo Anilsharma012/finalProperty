@@ -74,13 +74,7 @@ export const getSubcategories: RequestHandler = async (req, res) => {
 
       res.json({
         success: true,
-        data: allSubcategories, // Return all subcategories for debugging
-        debug: {
-          totalSubcategories: allSubcategories.length,
-          withApprovedProperties: availableSubcategories.length,
-          propertyFilter: propertyFilter,
-          distinctSubcategories: subcategoriesWithApprovedProperties
-        }
+        data: availableSubcategories,
       });
     } else {
       // Get all categories with their subcategories that have approved properties
