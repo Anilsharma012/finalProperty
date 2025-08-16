@@ -27,8 +27,12 @@ export default function Rent() {
     try {
       setLoading(true);
       // STEP 4 requirement: await api('/subcategories?category=rent&approved=true')
-      const apiResponse = await (window as any).api('/subcategories?category=rent&approved=true');
-      const data = apiResponse.ok ? apiResponse.json : { success: false, error: 'Failed to fetch subcategories' };
+      const apiResponse = await (window as any).api(
+        "/subcategories?category=rent&approved=true",
+      );
+      const data = apiResponse.ok
+        ? apiResponse.json
+        : { success: false, error: "Failed to fetch subcategories" };
 
       if (data.success) {
         setSubcategories(data.data);

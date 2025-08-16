@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { toast } from "../components/ui/use-toast";
 
@@ -20,7 +25,7 @@ export default function Step3Test() {
     "Navigate to chat page",
     "Send ping-test message",
     "Verify message with data-testid",
-    "Complete STEP3"
+    "Complete STEP3",
   ];
 
   const addResult = (step, status, details) => {
@@ -28,9 +33,9 @@ export default function Step3Test() {
       step,
       status,
       details,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
-    setTestResults(prev => [...prev, result]);
+    setTestResults((prev) => [...prev, result]);
     return result;
   };
 
@@ -44,7 +49,11 @@ export default function Step3Test() {
       setCurrentStep(1);
       const storedToken = localStorage.getItem("token");
       if (!storedToken) {
-        addResult("Authentication", "FAILED", "No token found. Please login first.");
+        addResult(
+          "Authentication",
+          "FAILED",
+          "No token found. Please login first.",
+        );
         setIsRunning(false);
         return;
       }
@@ -53,83 +62,113 @@ export default function Step3Test() {
 
       // Step 2: Find or create conversation
       setCurrentStep(2);
-      const conversationResponse = await (window as any).api(`/conversations/find-or-create?propertyId=${propertyId}`, {
-        method: "POST"
-      });
+      const conversationResponse = await (window as any).api(
+        `/conversations/find-or-create?propertyId=${propertyId}`,
+        {
+          method: "POST",
+        },
+      );
 
       if (!conversationResponse.success) {
-        addResult("Create Conversation", "FAILED", `Error: ${conversationResponse.error}`);
+        addResult(
+          "Create Conversation",
+          "FAILED",
+          `Error: ${conversationResponse.error}`,
+        );
         console.error("❌ FAIL: STEP3");
         console.error("URL: /api/conversations/find-or-create");
         console.error("Method: POST");
-        console.error("Status:", conversationResponse.status || 'unknown');
+        console.error("Status:", conversationResponse.status || "unknown");
         console.error("Body:", conversationResponse);
         setIsRunning(false);
         return;
       }
 
       const conversationId = conversationResponse.data._id;
-      addResult("Create Conversation", "SUCCESS", `Conversation ID: ${conversationId}`);
+      addResult(
+        "Create Conversation",
+        "SUCCESS",
+        `Conversation ID: ${conversationId}`,
+      );
 
       // Step 3: Navigate to chat page
       setCurrentStep(3);
-      addResult("Navigation", "SUCCESS", `Navigating to /chat/${conversationId}`);
-      
+      addResult(
+        "Navigation",
+        "SUCCESS",
+        `Navigating to /chat/${conversationId}`,
+      );
+
       // Wait a moment for navigation
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Step 4: Send ping-test message
       setCurrentStep(4);
-      const messageResponse = await (window as any).api(`/conversations/${conversationId}/messages`, {
-        method: "POST",
-        body: { text: "ping-test" }
-      });
+      const messageResponse = await (window as any).api(
+        `/conversations/${conversationId}/messages`,
+        {
+          method: "POST",
+          body: { text: "ping-test" },
+        },
+      );
 
       if (!messageResponse.success) {
         addResult("Send Message", "FAILED", `Error: ${messageResponse.error}`);
         console.error("❌ FAIL: STEP3");
         console.error("URL:", `/api/conversations/${conversationId}/messages`);
         console.error("Method: POST");
-        console.error("Status:", messageResponse.status || 'unknown');
+        console.error("Status:", messageResponse.status || "unknown");
         console.error("Body:", messageResponse);
         setIsRunning(false);
         return;
       }
 
-      addResult("Send Message", "SUCCESS", `Message sent with ID: ${messageResponse.data._id}`);
+      addResult(
+        "Send Message",
+        "SUCCESS",
+        `Message sent with ID: ${messageResponse.data._id}`,
+      );
 
       // Step 5: Verify message bubble
       setCurrentStep(5);
-      
+
       // Navigate to test chat page to verify the message bubble
       navigate(`/test-chat/${conversationId}`);
-      
+
       // Wait for navigation and message to appear
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       // Check if message bubble exists with correct data-testid
-      const messageElement = document.querySelector('[data-testid="msg-outgoing"]');
+      const messageElement = document.querySelector(
+        '[data-testid="msg-outgoing"]',
+      );
       if (messageElement) {
-        addResult("Message Bubble", "SUCCESS", "Found message with data-testid='msg-outgoing'");
-        
+        addResult(
+          "Message Bubble",
+          "SUCCESS",
+          "Found message with data-testid='msg-outgoing'",
+        );
+
         // Step 6: Complete test
         setCurrentStep(6);
         addResult("STEP3 Complete", "SUCCESS", "All tests passed!");
-        
+
         console.log("✅ PASS: STEP3");
-        
+
         toast({
           title: "✅ STEP3 PASSED",
           description: "OLX-style chat functionality working correctly!",
         });
-        
       } else {
-        addResult("Message Bubble", "FAILED", "Message bubble with data-testid='msg-outgoing' not found");
-        
+        addResult(
+          "Message Bubble",
+          "FAILED",
+          "Message bubble with data-testid='msg-outgoing' not found",
+        );
+
         console.error("❌ FAIL: STEP3");
         console.error("Message bubble verification failed");
       }
-
     } catch (error) {
       addResult("Test Error", "ERROR", `Unexpected error: ${error.message}`);
       console.error("❌ FAIL: STEP3");
@@ -155,16 +194,16 @@ export default function Step3Test() {
             city: "Test City",
             state: "Test State",
             address: "123 Test Street",
-            area: "Test Area"
+            area: "Test Area",
           },
           contactInfo: {
             name: "Test Owner",
             phone: "1234567890",
-            email: "test@example.com"
+            email: "test@example.com",
           },
           images: ["/placeholder.png"],
-          status: "active"
-        }
+          status: "active",
+        },
       });
 
       if (response.success) {
@@ -196,13 +235,16 @@ export default function Step3Test() {
           <CardHeader>
             <CardTitle>STEP 3: OLX-Style Chat Automated Test</CardTitle>
             <p className="text-sm text-gray-600">
-              Automated test for chat functionality with polling and message verification
+              Automated test for chat functionality with polling and message
+              verification
             </p>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Property ID</label>
+                <label className="block text-sm font-medium mb-2">
+                  Property ID
+                </label>
                 <Input
                   value={propertyId}
                   onChange={(e) => setPropertyId(e.target.value)}
@@ -211,7 +253,9 @@ export default function Step3Test() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">User ID</label>
+                <label className="block text-sm font-medium mb-2">
+                  User ID
+                </label>
                 <Input
                   value={userId}
                   onChange={(e) => setUserId(e.target.value)}
@@ -227,9 +271,11 @@ export default function Step3Test() {
                 disabled={isRunning || !propertyId}
                 className="bg-[#C70000] hover:bg-[#A60000]"
               >
-                {isRunning ? `Running Step ${currentStep}/6...` : "Run STEP3 Test"}
+                {isRunning
+                  ? `Running Step ${currentStep}/6...`
+                  : "Run STEP3 Test"}
               </Button>
-              
+
               <Button
                 onClick={createTestProperty}
                 disabled={isRunning}
@@ -238,10 +284,7 @@ export default function Step3Test() {
                 Create Test Property
               </Button>
 
-              <Button
-                onClick={() => navigate("/")}
-                variant="outline"
-              >
+              <Button onClick={() => navigate("/")} variant="outline">
                 Go to Home
               </Button>
             </div>
@@ -249,7 +292,7 @@ export default function Step3Test() {
             {/* Progress indicator */}
             {isRunning && (
               <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
+                <div
                   className="bg-[#C70000] h-2 rounded-full transition-all duration-300"
                   style={{ width: `${(currentStep / 6) * 100}%` }}
                 ></div>
@@ -259,14 +302,14 @@ export default function Step3Test() {
             {/* Steps */}
             <div className="space-y-2">
               {steps.map((step, index) => (
-                <div 
+                <div
                   key={index}
                   className={`p-2 rounded border ${
-                    index + 1 === currentStep 
-                      ? 'bg-blue-50 border-blue-200' 
-                      : index + 1 < currentStep 
-                        ? 'bg-green-50 border-green-200'
-                        : 'bg-gray-50 border-gray-200'
+                    index + 1 === currentStep
+                      ? "bg-blue-50 border-blue-200"
+                      : index + 1 < currentStep
+                        ? "bg-green-50 border-green-200"
+                        : "bg-gray-50 border-gray-200"
                   }`}
                 >
                   <span className="text-sm">
@@ -290,22 +333,24 @@ export default function Step3Test() {
                   <div
                     key={index}
                     className={`p-3 rounded border ${
-                      result.status === 'SUCCESS' 
-                        ? 'bg-green-50 border-green-200' 
-                        : result.status === 'ERROR'
-                          ? 'bg-red-50 border-red-200'
-                          : 'bg-yellow-50 border-yellow-200'
+                      result.status === "SUCCESS"
+                        ? "bg-green-50 border-green-200"
+                        : result.status === "ERROR"
+                          ? "bg-red-50 border-red-200"
+                          : "bg-yellow-50 border-yellow-200"
                     }`}
                   >
                     <div className="flex justify-between items-start">
                       <div>
-                        <span className={`font-semibold ${
-                          result.status === 'SUCCESS' 
-                            ? 'text-green-700' 
-                            : result.status === 'ERROR'
-                              ? 'text-red-700'
-                              : 'text-yellow-700'
-                        }`}>
+                        <span
+                          className={`font-semibold ${
+                            result.status === "SUCCESS"
+                              ? "text-green-700"
+                              : result.status === "ERROR"
+                                ? "text-red-700"
+                                : "text-yellow-700"
+                          }`}
+                        >
                           {result.step}: {result.status}
                         </span>
                       </div>
@@ -313,7 +358,9 @@ export default function Step3Test() {
                         {new Date(result.timestamp).toLocaleTimeString()}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600 mt-1">{result.details}</p>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {result.details}
+                    </p>
                   </div>
                 ))}
               </div>

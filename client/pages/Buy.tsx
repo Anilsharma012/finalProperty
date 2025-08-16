@@ -27,7 +27,9 @@ export default function Buy() {
     try {
       setLoading(true);
       // STEP 4 requirement: await api(`/subcategories?category=buy&approved=true`)
-      const apiResponse = await (window as any).api('/subcategories?category=buy&approved=true');
+      const apiResponse = await (window as any).api(
+        "/subcategories?category=buy&approved=true",
+      );
 
       if (apiResponse.ok) {
         const data = apiResponse.json;
