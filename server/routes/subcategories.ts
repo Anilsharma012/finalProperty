@@ -153,15 +153,31 @@ export const getSubcategoriesWithCounts: RequestHandler = async (req, res) => {
         });
       }
 
+      // Build match criteria based on category type
+      let matchCriteria: any = {
+        status: "active",
+        approvalStatus: "approved",
+      };
+
+      // Handle different category types
+      if (category === "sale" || category === "buy") {
+        matchCriteria.priceType = "sale";
+      } else if (category === "rent") {
+        matchCriteria.priceType = "rent";
+      } else if (category === "lease") {
+        matchCriteria.priceType = "lease";
+      } else if (category === "pg") {
+        matchCriteria.propertyType = "pg";
+      } else {
+        // For other categories, treat as propertyType
+        matchCriteria.propertyType = category;
+      }
+
       // Get live subcategory data by aggregating actual approved properties
       const subcategoriesWithCounts = await propertiesCollection
         .aggregate([
           {
-            $match: {
-              status: "active",
-              approvalStatus: "approved",
-              propertyType: category,
-            },
+            $match: matchCriteria,
           },
           {
             $group: {
