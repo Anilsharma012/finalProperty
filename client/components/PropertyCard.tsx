@@ -151,9 +151,13 @@ export default function PropertyCard({
 
         {/* Description Preview */}
         {property.description && (
-          <p className="text-gray-600 text-sm mt-2 line-clamp-2">
-            {property.description}
-          </p>
+          <p className="text-gray-600 text-sm mt-2 overflow-hidden" style={{
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical'
+        }}>
+          {property.description}
+        </p>
         )}
       </div>
     </div>
