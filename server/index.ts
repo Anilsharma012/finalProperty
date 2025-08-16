@@ -24,8 +24,20 @@ import {
 import {
   getCategories,
   getCategoryBySlug,
+  getSubcategories,
   initializeCategories,
 } from "./routes/categories";
+
+// Service listings routes
+import {
+  getServiceListings,
+  getAllServiceListings,
+  createServiceListing,
+  updateServiceListing,
+  deleteServiceListing,
+  bulkImportServiceListings,
+  upload as serviceUpload,
+} from "./routes/service-listings";
 
 // Authentication routes
 import {
