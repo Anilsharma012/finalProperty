@@ -26,22 +26,9 @@ export default function Rent() {
   const fetchSubcategories = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        "/api/subcategories/with-counts?category=rent",
-        {
-          headers: {
-            "Cache-Control": "no-cache",
-            Pragma: "no-cache",
-          },
-        },
-      );
-
-      // Check if response is ok before trying to parse JSON
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
+      // STEP 4 requirement: await api('/subcategories?category=rent&approved=true')
+      const apiResponse = await (window as any).api('/subcategories?category=rent&approved=true');
+      const data = apiResponse.ok ? apiResponse.json : { success: false, error: 'Failed to fetch subcategories' };
 
       if (data.success) {
         setSubcategories(data.data);
