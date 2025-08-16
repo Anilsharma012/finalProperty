@@ -307,7 +307,15 @@ const ComprehensiveAuth = () => {
       }
     } catch (error: any) {
       console.error("Google auth error:", error);
-      setError("Google authentication failed");
+
+      let errorMessage = "Google authentication failed";
+      if (error.message.includes('Failed to fetch') || error.message.includes('Network')) {
+        errorMessage = "Network error. Please check your connection and try again.";
+      } else if (error.message.includes('body stream already read')) {
+        errorMessage = "Authentication processing error. Please try again.";
+      }
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
