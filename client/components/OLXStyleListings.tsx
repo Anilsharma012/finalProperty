@@ -33,256 +33,112 @@ export default function OLXStyleListings() {
 
   const fetchProperties = async () => {
     try {
-      // Fetch "Fresh" properties as per requirements: GET /properties?status=active&limit=10
-      const response = await fetch("/api/properties?status=active&limit=10");
-      const data = await response.json();
+      console.log("🏠 Fetching properties...");
 
-      if (
-        data.success &&
-        data.data.properties &&
-        data.data.properties.length > 0
-      ) {
-        setProperties(data.data.properties);
-      } else {
-        // Mock data with real property images
-        const mockProperties: Property[] = [
-          {
-            _id: "1",
-            title: "3 BHK Flat for Sale in Rohtak",
-            price: 4500000,
-            location: {
-              city: "Rohtak",
-              state: "Haryana",
-              address: "Model Town",
-            },
-            images: [
-              "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400",
-            ],
-            propertyType: "apartment",
-            premium: true,
-            createdAt: new Date().toISOString(),
-            contactInfo: { name: "Rajesh Kumar" },
-          },
-          {
-            _id: "2",
-            title: "2 BHK Independent House",
-            price: 3200000,
-            location: {
-              city: "Rohtak",
-              state: "Haryana",
-              address: "Sector 14",
-            },
-            images: [
-              "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=400",
-            ],
-            propertyType: "house",
-            createdAt: new Date(Date.now() - 86400000).toISOString(),
-            contactInfo: { name: "Priya Sharma" },
-          },
-          {
-            _id: "3",
-            title: "Commercial Shop for Rent",
-            price: 25000,
-            location: {
-              city: "Rohtak",
-              state: "Haryana",
-              address: "Railway Road",
-            },
-            images: [
-              "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400",
-            ],
-            propertyType: "commercial",
-            createdAt: new Date(Date.now() - 172800000).toISOString(),
-            contactInfo: { name: "Amit Singh" },
-          },
-          {
-            _id: "4",
-            title: "1 BHK Apartment Near College",
-            price: 1800000,
-            location: { city: "Rohtak", state: "Haryana", address: "Near MDU" },
-            images: [
-              "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400",
-            ],
-            propertyType: "apartment",
-            createdAt: new Date(Date.now() - 259200000).toISOString(),
-            contactInfo: { name: "Sunita Devi" },
-          },
-          {
-            _id: "5",
-            title: "4 BHK Villa with Garden",
-            price: 8500000,
-            location: {
-              city: "Rohtak",
-              state: "Haryana",
-              address: "Civil Lines",
-            },
-            images: [
-              "https://images.unsplash.com/photo-1593696140826-c58b021acf8b?w=400",
-            ],
-            propertyType: "villa",
-            premium: true,
-            createdAt: new Date(Date.now() - 345600000).toISOString(),
-            contactInfo: { name: "Vikash Yadav" },
-          },
-          {
-            _id: "6",
-            title: "Plot for Sale 200 Sq Yard",
-            price: 2800000,
-            location: {
-              city: "Rohtak",
-              state: "Haryana",
-              address: "Bohar Road",
-            },
-            images: [
-              "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400",
-            ],
-            propertyType: "plot",
-            createdAt: new Date(Date.now() - 432000000).toISOString(),
-            contactInfo: { name: "Mohan Lal" },
-          },
-          {
-            _id: "7",
-            title: "3 BHK Builder Floor",
-            price: 5200000,
-            location: {
-              city: "Rohtak",
-              state: "Haryana",
-              address: "Subhash Nagar",
-            },
-            images: [
-              "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400",
-            ],
-            propertyType: "house",
-            createdAt: new Date(Date.now() - 518400000).toISOString(),
-            contactInfo: { name: "Deepak Kumar" },
-          },
-          {
-            _id: "8",
-            title: "Office Space for Rent",
-            price: 35000,
-            location: {
-              city: "Rohtak",
-              state: "Haryana",
-              address: "Delhi Road",
-            },
-            images: [
-              "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400",
-            ],
-            propertyType: "commercial",
-            createdAt: new Date(Date.now() - 604800000).toISOString(),
-            contactInfo: { name: "Ravi Gupta" },
-          },
-          {
-            _id: "9",
-            title: "2 BHK Flat in Gated Society",
-            price: 3800000,
-            location: { city: "Rohtak", state: "Haryana", address: "Sector 3" },
-            images: [
-              "https://images.unsplash.com/photo-1560185007-cde436f6a4d0?w=400",
-            ],
-            propertyType: "apartment",
-            createdAt: new Date(Date.now() - 691200000).toISOString(),
-            contactInfo: { name: "Neha Sharma" },
-          },
-          {
-            _id: "10",
-            title: "5 BHK Luxury Villa",
-            price: 12000000,
-            location: {
-              city: "Rohtak",
-              state: "Haryana",
-              address: "Mansarovar Park",
-            },
-            images: [
-              "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400",
-            ],
-            propertyType: "villa",
-            premium: true,
-            createdAt: new Date(Date.now() - 777600000).toISOString(),
-            contactInfo: { name: "Sanjay Jindal" },
-          },
-          {
-            _id: "11",
-            title: "1 BHK Studio Apartment",
-            price: 1500000,
-            location: {
-              city: "Rohtak",
-              state: "Haryana",
-              address: "Krishan Nagar",
-            },
-            images: [
-              "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400",
-            ],
-            propertyType: "apartment",
-            createdAt: new Date(Date.now() - 864000000).toISOString(),
-            contactInfo: { name: "Pooja Singh" },
-          },
-          {
-            _id: "12",
-            title: "Commercial Building for Sale",
-            price: 25000000,
-            location: {
-              city: "Rohtak",
-              state: "Haryana",
-              address: "Main Market",
-            },
-            images: [
-              "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400",
-            ],
-            propertyType: "commercial",
-            createdAt: new Date(Date.now() - 950400000).toISOString(),
-            contactInfo: { name: "Ramesh Bansal" },
-          },
-          {
-            _id: "13",
-            title: "3 BHK Penthouse with Terrace",
-            price: 7500000,
-            location: { city: "Rohtak", state: "Haryana", address: "Sector 1" },
-            images: [
-              "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400",
-            ],
-            propertyType: "apartment",
-            createdAt: new Date(Date.now() - 1036800000).toISOString(),
-            contactInfo: { name: "Kavita Devi" },
-          },
-          {
-            _id: "14",
-            title: "Independent House with Parking",
-            price: 4200000,
-            location: { city: "Rohtak", state: "Haryana", address: "Old City" },
-            images: [
-              "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=400",
-            ],
-            propertyType: "house",
-            createdAt: new Date(Date.now() - 1123200000).toISOString(),
-            contactInfo: { name: "Ashok Kumar" },
-          },
-          {
-            _id: "15",
-            title: "Warehouse for Rent",
-            price: 45000,
-            location: {
-              city: "Rohtak",
-              state: "Haryana",
-              address: "Industrial Area",
-            },
-            images: [
-              "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400",
-            ],
-            propertyType: "commercial",
-            createdAt: new Date(Date.now() - 1209600000).toISOString(),
-            contactInfo: { name: "Suresh Chand" },
-          },
-        ];
-        setProperties(mockProperties);
+      // Add timeout and error handling
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        console.log("⏰ Properties request timeout");
+        controller.abort();
+      }, 10000);
+
+      const response = await fetch("/api/properties?status=active&limit=10", {
+        signal: controller.signal,
+        cache: "no-cache",
+      });
+
+      clearTimeout(timeoutId);
+
+      console.log("📡 Properties response:", {
+        status: response.status,
+        ok: response.ok,
+        url: response.url
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("📊 Properties data:", data);
+
+        if (
+          data.success &&
+          data.data.properties &&
+          data.data.properties.length > 0
+        ) {
+          setProperties(data.data.properties);
+          return; // Successfully loaded data, exit early
+        }
       }
-    } catch (error) {
-      console.error("Error fetching properties:", error);
-      // Use mock data as fallback
-      setProperties([]);
+
+      // If we get here, either response wasn't ok or no properties found
+      console.log("🔄 Using mock properties data");
+
+      // Load mock data as fallback
+      loadMockProperties();
+    } catch (error: any) {
+      console.error("Error fetching properties:", {
+        error: error.message || error,
+        name: error.name,
+        stack: error.stack
+      });
+
+      // Provide appropriate fallback based on error type
+      if (error.name === 'AbortError') {
+        console.log("🔄 Request timed out, using mock data");
+      } else if (error.message?.includes('Failed to fetch')) {
+        console.log("🌐 Network connectivity issue, using mock data");
+      }
+
+      // Load mock data as fallback
+      loadMockProperties();
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadMockProperties = () => {
+    const mockProperties: Property[] = [
+      {
+        _id: "mock-1",
+        title: "3 BHK Flat for Sale in Rohtak",
+        price: 4500000,
+        location: { city: "Rohtak", state: "Haryana", address: "Model Town" },
+        images: ["https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400"],
+        propertyType: "apartment",
+        createdAt: new Date().toISOString(),
+        contactInfo: { name: "Rajesh Kumar" },
+      },
+      {
+        _id: "mock-2",
+        title: "2 BHK Independent House",
+        price: 3200000,
+        location: { city: "Rohtak", state: "Haryana", address: "Sector 14" },
+        images: ["https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=400"],
+        propertyType: "house",
+        createdAt: new Date(Date.now() - 86400000).toISOString(),
+        contactInfo: { name: "Priya Sharma" },
+      },
+      {
+        _id: "mock-3",
+        title: "Commercial Shop for Rent",
+        price: 25000,
+        location: { city: "Rohtak", state: "Haryana", address: "Railway Road" },
+        images: ["https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400"],
+        propertyType: "commercial",
+        createdAt: new Date(Date.now() - 172800000).toISOString(),
+        contactInfo: { name: "Amit Singh" },
+      },
+      {
+        _id: "mock-4",
+        title: "4 BHK Villa with Garden",
+        price: 8500000,
+        location: { city: "Rohtak", state: "Haryana", address: "Civil Lines" },
+        images: ["https://images.unsplash.com/photo-1593696140826-c58b021acf8b?w=400"],
+        propertyType: "villa",
+        createdAt: new Date(Date.now() - 345600000).toISOString(),
+        contactInfo: { name: "Vikash Yadav" },
+      }
+    ];
+    setProperties(mockProperties);
   };
 
   const loadFavorites = () => {
