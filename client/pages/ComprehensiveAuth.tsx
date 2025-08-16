@@ -159,8 +159,7 @@ const ComprehensiveAuth = () => {
         body: JSON.stringify({ phone: formData.phone }),
       });
 
-      const responseText = await response.text();
-      const data = JSON.parse(responseText);
+      const data = await response.json();
 
       if (response.ok && data.success) {
         setOtpSent(true);
