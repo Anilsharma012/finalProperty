@@ -33,6 +33,7 @@ import ComprehensiveAuth from "./pages/ComprehensiveAuth";
 import UserDashboard from "./pages/UserDashboard";
 import PostProperty from "./pages/PostProperty";
 import AddProperty from "./pages/AddProperty";
+import Favorites from "./pages/Favorites";
 import SellerDashboard from "./pages/SellerDashboard";
 import BuyerDashboard from "./pages/BuyerDashboard";
 import AgentDashboard from "./pages/AgentDashboard";
