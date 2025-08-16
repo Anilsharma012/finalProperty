@@ -83,13 +83,20 @@ export default function PropertyDetail() {
     }
   }, [id]);
 
-  const fetchProperty = async () => {
+  const fetchProperty = async (retryCount = 0) => {
     try {
       setLoading(true);
+      setError(""); // Clear previous errors
 
       // Validate ObjectId format
-      if (!id || id.length !== 24) {
-        setError("Invalid property ID");
+      if (!id) {
+        setError("Property ID is required");
+        setLoading(false);
+        return;
+      }
+
+      if (id.length !== 24) {
+        setError("Invalid property ID format");
         setLoading(false);
         return;
       }
