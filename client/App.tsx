@@ -101,6 +101,7 @@ const App = () => (
               <Route path="/properties/:id" element={<PropertyDetail />} />
               <Route path="/chat" element={<Chat />} />
               <Route path="/conversations" element={<ConversationsList />} />
+              <Route path="/chat-demo" element={<ChatDemo />} />
               <Route path="/chat/:conversationId" element={<ChatPage />} />
               <Route path="/my-account" element={<MyAccount />} />
               <Route path="/agents" element={<Agents />} />
