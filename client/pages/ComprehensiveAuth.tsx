@@ -246,14 +246,13 @@ const ComprehensiveAuth = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
-          googleUser: mockGoogleUser, 
-          userType: formData.userType 
+        body: JSON.stringify({
+          googleUser: mockGoogleUser,
+          userType: formData.userType
         }),
       });
 
-      const responseText = await response.text();
-      const data = JSON.parse(responseText);
+      const data = await response.json();
 
       if (response.ok && data.success) {
         const { token, user } = data.data;
