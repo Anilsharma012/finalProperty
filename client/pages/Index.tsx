@@ -4,7 +4,7 @@ import CategoryBar from "../components/CategoryBar";
 import OLXStyleListings from "../components/OLXStyleListings";
 import PackagesShowcase from "../components/PackagesShowcase";
 import PWAInstallPrompt from "../components/PWAInstallPrompt";
-import PWAInstallButton from "../components/PWAInstallButton";
+// import PWAInstallButton from "../components/PWAInstallButton"; // Removed as requested
 import BottomNavigation from "../components/BottomNavigation";
 import HomepageBanner from "../components/HomepageBanner";
 import StaticFooter from "../components/StaticFooter";
@@ -37,7 +37,7 @@ export default function Index() {
 
       <BottomNavigation />
       <PWAInstallPrompt />
-      <PWAInstallButton />
+      {/* <PWAInstallButton /> */} {/* Removed red Install App button as requested */}
       <StaticFooter />
     </div>
   );
