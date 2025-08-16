@@ -45,23 +45,41 @@ export default function SupportInbox() {
     try {
       setLoading(true);
       setError("");
-      
+
+      console.log("Fetching conversations...");
+
       // Use the global api helper
       const result = await (window as any).api('/admin/conversations?limit=20');
-      
+
+      console.log("API result:", result);
+
       if (result.ok) {
         const data = result.json;
-        if (data.success) {
+        console.log("Response data:", data);
+
+        if (data && data.success) {
           setConversations(data.data.conversations || []);
+        } else if (data && data.error) {
+          setError(data.error);
         } else {
-          setError(data.error || "Failed to fetch conversations");
+          setError("Invalid response format");
         }
       } else {
-        setError(`Failed to fetch: ${result.status}`);
+        // Handle different error status codes
+        const errorData = result.json;
+        if (result.status === 401) {
+          setError("Authentication required. Please login as admin.");
+        } else if (result.status === 403) {
+          setError("Access denied. Admin permissions required.");
+        } else if (result.status === 404) {
+          setError("API endpoint not found.");
+        } else {
+          setError(errorData?.error || `Server error: ${result.status}`);
+        }
       }
     } catch (error) {
       console.error("Error fetching conversations:", error);
-      setError("Failed to connect to server");
+      setError(`Network error: ${error.message}`);
     } finally {
       setLoading(false);
     }
