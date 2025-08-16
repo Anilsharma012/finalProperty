@@ -109,6 +109,7 @@ const App = () => (
               <Route path="/user-dashboard" element={<UserDashboard />} />
               <Route path="/post-property" element={<PostProperty />} />
               <Route path="/add-property" element={<AddProperty />} />
+              <Route path="/favorites" element={<Favorites />} />
               <Route path="/seller" element={<Seller />} />
               <Route path="/seller-dashboard" element={<SellerDashboard />} />
               <Route path="/support/:action" element={<Support />} />
