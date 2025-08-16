@@ -145,11 +145,20 @@ export default function CategoryManagement() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      // Read response body once to avoid stream already read error
+      let data;
+      try {
+        const responseText = await response.text();
+        data = responseText ? JSON.parse(responseText) : {};
+      } catch (parseError) {
+        console.warn("Could not parse response as JSON");
+        data = {};
+      }
+
       if (response.ok) {
         setCategories(categories.filter(cat => cat._id !== categoryId));
       } else {
-        const data = await response.json();
-        setError(data.error || "Failed to delete category");
+        setError(data.error || `Failed to delete category (${response.status})`);
       }
     } catch (error) {
       console.error("Error deleting category:", error);
