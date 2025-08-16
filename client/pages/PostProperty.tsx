@@ -175,6 +175,23 @@ export default function PostProperty() {
     }
   }, [isAuthenticated, user]);
 
+  useEffect(() => {
+    // JS wiring for wizard actions
+    const prev = () => document.querySelector('[data-action="prev"],[data-testid="prev-step"]')?.click() || window.app?.goToPrevStep?.();
+    const next = () => document.querySelector('[data-action="next"],[data-testid="next-step"]')?.click() || window.app?.goToNextStep?.();
+    
+    const prevBtn = document.getElementById('btn-prev');
+    const nextBtn = document.getElementById('btn-next');
+    
+    if (prevBtn) prevBtn.addEventListener('click', prev);
+    if (nextBtn) nextBtn.addEventListener('click', next);
+    
+    return () => {
+      if (prevBtn) prevBtn.removeEventListener('click', prev);
+      if (nextBtn) nextBtn.removeEventListener('click', next);
+    };
+  }, []);
+
   const handleInputChange = (field: string, value: string) => {
     if (field.includes(".")) {
       const [parent, child] = field.split(".");
@@ -450,93 +467,38 @@ export default function PostProperty() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 post-property-page">
       <Header />
+      
+      <style>{`
+        .post-property-page { padding-bottom: 160px!important; }
+        .wizard-actions {
+          position: sticky;
+          bottom: 0;
+          background: #fff;
+          box-shadow: 0 -2px 12px rgba(0,0,0,.08);
+          padding: .75rem 1rem;
+          display: flex;
+          gap: .5rem;
+          justify-content: space-between;
+          z-index: 9999;
+        }
+        @media (max-width: 1023px) {
+          .wizard-actions {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: calc(var(--app-bottom-nav-height, 64px));
+          }
+        }
+        @supports (-webkit-touch-callout: none) {
+          .wizard-actions {
+            bottom: calc(var(--app-bottom-nav-height, 64px) + env(safe-area-inset-bottom, 0px));
+          }
+        }
+      `}</style>
 
-      {/* Desktop: Sticky top controls */}
-      <div className="hidden lg:block sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-3">
-          <div className="flex justify-between items-center">
-            <button
-              data-testid="btn-back"
-              onClick={() => window.history.back()}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors flex items-center"
-            >
-              <ChevronLeft className="h-4 w-4 mr-1" />
-              Back
-            </button>
-
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
-                Step {currentStep} of {stepTitles.length}
-              </span>
-              <div className="flex space-x-1">
-                {stepTitles.map((_, index) => (
-                  <div
-                    key={index}
-                    className={`w-2 h-2 rounded-full ${
-                      index + 1 <= currentStep ? "bg-[#C70000]" : "bg-gray-200"
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <button
-                data-testid="btn-next"
-                onClick={() => document.querySelector('[data-section="next"]')?.scrollIntoView({behavior:'smooth'})}
-                className="px-4 py-2 bg-[#C70000] text-white hover:bg-[#A60000] rounded-lg transition-colors flex items-center"
-              >
-                Next
-                <ChevronRight className="h-4 w-4 ml-1" />
-              </button>
-              <button
-                data-testid="btn-cancel"
-                onClick={() => window.location.href = '/'}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile: Fixed bottom controls */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg">
-        <div className="px-4 py-3">
-          <div className="flex justify-between items-center">
-            <button
-              data-testid="btn-back"
-              onClick={() => window.history.back()}
-              className="flex-1 px-3 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors flex items-center justify-center mr-2"
-            >
-              <ChevronLeft className="h-4 w-4 mr-1" />
-              Back
-            </button>
-
-            <button
-              data-testid="btn-next"
-              onClick={() => document.querySelector('[data-section="next"]')?.scrollIntoView({behavior:'smooth'})}
-              className="flex-1 px-3 py-2 bg-[#C70000] text-white hover:bg-[#A60000] rounded-lg transition-colors flex items-center justify-center mx-1"
-            >
-              Next
-              <ChevronRight className="h-4 w-4 ml-1" />
-            </button>
-
-            <button
-              data-testid="btn-cancel"
-              onClick={() => window.location.href = '/'}
-              className="flex-1 px-3 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors flex items-center justify-center ml-2"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="p-4 pb-20 lg:pb-4">
+      <div className="p-4">
         {/* Progress Bar */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
@@ -1137,57 +1099,45 @@ export default function PostProperty() {
           )}
         </div>
 
-        {/* Navigation Buttons - Enhanced for better visibility */}
-        {currentStep < 6 && (
-          <div data-section="next" className="sticky bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 mt-6 z-50 shadow-lg">
-            <div className="max-w-7xl mx-auto">
-              <div className="flex justify-between items-center w-full">
-                <Button
-                  onClick={handlePrevStep}
-                  disabled={currentStep === 1}
-                  variant="outline"
-                  className="px-6 py-3 text-base min-w-[100px] border-2 hover:bg-gray-50 flex items-center"
-                >
-                  <ChevronLeft className="h-4 w-4 mr-2" />
-                  Previous
-                </Button>
-
-                {/* Enhanced Step indicator - visible on all screens */}
-                <div className="flex flex-col items-center">
-                  <div className="text-sm text-gray-600 font-medium mb-1">
-                    Step {currentStep} of {stepTitles.length}
-                  </div>
-                  <div className="flex space-x-1">
-                    {stepTitles.map((_, index) => (
-                      <div
-                        key={index}
-                        className={`w-2 h-2 rounded-full transition-colors ${
-                          index + 1 <= currentStep
-                            ? 'bg-[#C70000]'
-                            : 'bg-gray-300'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                <Button
-                  onClick={handleNextStep}
-                  disabled={!validateStep(currentStep)}
-                  className={`px-6 py-3 text-base min-w-[100px] flex items-center transition-all ${
-                    validateStep(currentStep)
-                      ? 'bg-[#C70000] hover:bg-[#A60000] text-white'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  }`}
-                  title={!validateStep(currentStep) ? 'Please fill all required fields' : ''}
-                >
-                  Next
-                  <ChevronRight className="h-4 w-4 ml-2" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Wizard Actions */}
+        <div id="wizard-actions" className="wizard-actions">
+          <button 
+            id="btn-prev" 
+            aria-label="Previous"
+            data-action="prev"
+            data-testid="prev-step"
+            onClick={handlePrevStep}
+            disabled={currentStep === 1}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: currentStep === 1 ? '#f3f4f6' : '#ffffff',
+              color: currentStep === 1 ? '#9ca3af' : '#374151',
+              border: '1px solid #d1d5db',
+              borderRadius: '6px',
+              cursor: currentStep === 1 ? 'not-allowed' : 'pointer'
+            }}
+          >
+            Previous
+          </button>
+          <button 
+            id="btn-next" 
+            aria-label="Next"
+            data-action="next"
+            data-testid="next-step"
+            onClick={handleNextStep}
+            disabled={!validateStep(currentStep)}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: validateStep(currentStep) ? '#C70000' : '#f3f4f6',
+              color: validateStep(currentStep) ? '#ffffff' : '#9ca3af',
+              border: '1px solid #d1d5db',
+              borderRadius: '6px',
+              cursor: validateStep(currentStep) ? 'pointer' : 'not-allowed'
+            }}
+          >
+            Next
+          </button>
+        </div>
       </div>
 
       <BottomNavigation />
