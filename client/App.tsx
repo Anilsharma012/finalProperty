@@ -17,6 +17,7 @@ import Rent from "./pages/Rent";
 import Lease from "./pages/Lease";
 import PG from "./pages/PG";
 import Services from "./pages/Services";
+import Advertise from "./pages/Advertise";
 import Chat from "./pages/Chat";
 import ChatPage from "./pages/ChatPage";
 import MyAccount from "./pages/MyAccount";
