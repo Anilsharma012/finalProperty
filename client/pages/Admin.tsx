@@ -321,11 +321,24 @@ export default function Admin() {
       token.substring(0, 20) + "...",
     );
 
-    // Fetch stats with individual error handling
+    // Fetch stats with enhanced error handling
     try {
       console.log("Fetching admin stats...");
-      const statsResponse = await fetch(createApiUrl("admin/stats"), {
-        headers: { Authorization: `Bearer ${token}` },
+      const statsUrl = createApiUrl("admin/stats");
+      console.log("📊 Stats URL:", statsUrl);
+
+      const statsResponse = await fetch(statsUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        cache: "no-cache",
+      });
+
+      console.log("📊 Stats response:", {
+        status: statsResponse.status,
+        statusText: statsResponse.statusText,
+        ok: statsResponse.ok
       });
 
       if (statsResponse.ok) {
@@ -349,8 +362,17 @@ export default function Admin() {
         errors.push(`Stats API error: ${statsResponse.status}`);
       }
     } catch (error) {
-      console.error("Error fetching stats:", error);
-      errors.push("Stats API unreachable");
+      console.error("Error fetching stats:", {
+        error: error.message || error,
+        name: error.name,
+        stack: error.stack
+      });
+
+      if (error.name === 'TypeError' && error.message?.includes('Failed to fetch')) {
+        errors.push("Network connectivity issue");
+      } else {
+        errors.push("Stats API unreachable");
+      }
     }
 
     // Fetch users with individual error handling
