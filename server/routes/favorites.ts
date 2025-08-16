@@ -156,7 +156,7 @@ export const removeFromFavorites: RequestHandler = async (req, res) => {
 };
 
 // Check if property is in user's favorites
-export const checkFavoriteStatus: RequestHandler = async (req, res) => {
+export const checkFavorite: RequestHandler = async (req, res) => {
   try {
     const db = getDatabase();
     const userId = (req as any).userId;
