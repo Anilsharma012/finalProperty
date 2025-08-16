@@ -51,6 +51,7 @@ import FooterTest from "./pages/FooterTest";
 import FooterDebugPage from "./pages/FooterDebugPage";
 import OtherServices from "./pages/OtherServices";
 import TestChat from "./pages/TestChat";
+import Step3Test from "./pages/Step3Test";
 import NetworkStatus from "./components/NetworkStatus";
 
 const queryClient = new QueryClient();
