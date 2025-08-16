@@ -169,14 +169,29 @@ export const getSubcategoriesWithCounts: RequestHandler = async (req, res) => {
       }
 
       // Get live subcategory data by aggregating actual approved properties
+      // For buy/sale categories, filter by priceType, for others use propertyType
+      const propertyFilter: any = {
+        status: "active",
+        approvalStatus: "approved",
+      };
+
+      // Map category to appropriate property field filter
+      if (category === "buy" || category === "sale") {
+        propertyFilter.priceType = "sale";
+      } else if (category === "rent") {
+        propertyFilter.priceType = "rent";
+      } else if (category === "lease") {
+        propertyFilter.priceType = "lease";
+      } else if (category === "pg") {
+        propertyFilter.propertyType = "pg";
+      } else {
+        propertyFilter.propertyType = category;
+      }
+
       const subcategoriesWithCounts = await propertiesCollection
         .aggregate([
           {
-            $match: {
-              status: "active",
-              approvalStatus: "approved",
-              propertyType: category,
-            },
+            $match: propertyFilter,
           },
           {
             $group: {
