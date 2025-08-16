@@ -89,7 +89,9 @@ import {
 
 export default function Admin() {
   const { user, token, isAuthenticated, loading: authLoading } = useAuth();
-  const [activeSection, setActiveSection] = useState("dashboard");
+  // Check if we're on the support route and set initial section accordingly
+  const initialSection = window.location.pathname === '/admin/support' ? 'support-inbox' : 'dashboard';
+  const [activeSection, setActiveSection] = useState(initialSection);
   const [stats, setStats] = useState<any>({
     totalUsers: 0,
     totalProperties: 0,
