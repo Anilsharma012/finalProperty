@@ -98,9 +98,13 @@ export default function PropertyCard({
       {/* Property Details */}
       <div className="p-4">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="font-semibold text-gray-900 text-lg line-clamp-2">
-            {property.title}
-          </h3>
+          <h3 className="font-semibold text-gray-900 text-lg overflow-hidden" style={{
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical'
+        }}>
+          {property.title}
+        </h3>
           <span className="text-lg font-bold text-[#C70000] ml-2">
             {formatPrice(property.price, property.priceType)}
           </span>
