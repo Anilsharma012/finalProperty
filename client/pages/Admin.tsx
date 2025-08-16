@@ -651,17 +651,40 @@ export default function Admin() {
               <li key={index}>• {err}</li>
             ))}
           </ul>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              setApiErrors([]);
-              fetchAdminData();
-            }}
-            className="mt-2"
-          >
-            Retry
-          </Button>
+          {networkDiagnostics.length > 0 && (
+            <details className="mt-3">
+              <summary className="text-sm text-yellow-700 cursor-pointer hover:text-yellow-800">
+                Show Network Diagnostics
+              </summary>
+              <ul className="text-xs text-yellow-600 ml-4 mt-2">
+                {networkDiagnostics.map((diagnostic, index) => (
+                  <li key={index}>• {diagnostic}</li>
+                ))}
+              </ul>
+            </details>
+          )}
+          <div className="flex space-x-2 mt-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setApiErrors([]);
+                fetchAdminData();
+              }}
+            >
+              Retry
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={async () => {
+                const diagnostics = await runNetworkDiagnostics();
+                console.log("Network diagnostics:", diagnostics);
+              }}
+            >
+              Run Diagnostics
+            </Button>
+          </div>
         </div>
       )}
       {loading ? (
