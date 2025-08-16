@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./hooks/useAuth";
 import ErrorBoundary from "./components/ErrorBoundary";
 import "./lib/global-api"; // Make API helper globally available
+import "./lib/api-helper"; // Make api helper globally available
 import Index from "./pages/Index";
 import Categories from "./pages/Categories";
 import Properties from "./pages/Properties";
