@@ -144,7 +144,18 @@ const ComprehensiveAuth = () => {
       }
     } catch (error: any) {
       console.error(`${activeTab === 'login' ? 'Login' : 'Registration'} error:`, error);
-      setError(error.message || `${activeTab === 'login' ? 'Login' : 'Registration'} failed. Please try again.`);
+
+      // Handle specific error types
+      let errorMessage = error.message;
+      if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+        errorMessage = 'Network error. Please check your internet connection and try again.';
+      } else if (error.message.includes('body stream already read')) {
+        errorMessage = 'Request processing error. Please try again.';
+      } else if (!errorMessage) {
+        errorMessage = `${activeTab === 'login' ? 'Login' : 'Registration'} failed. Please try again.`;
+      }
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
