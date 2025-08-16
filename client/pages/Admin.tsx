@@ -205,20 +205,41 @@ export default function Admin() {
       return;
     }
 
-    // Quick connectivity test
+    // Enhanced connectivity test with better error handling
     const testConnectivity = async () => {
       try {
+        console.log("🔍 Starting connectivity test...");
+        console.log("📍 Current environment:", window.location.href);
+
+        // Log API configuration for debugging
+        const testUrl = createApiUrl("admin/stats");
+        console.log("🎯 Testing API endpoint:", testUrl);
+
         // Try a simple fetch with a reasonable timeout
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        const timeoutId = setTimeout(() => {
+          console.log("⏰ Request timeout after 10 seconds");
+          controller.abort();
+        }, 10000);
 
-        const response = await fetch(createApiUrl("admin/stats"), {
-          headers: { Authorization: `Bearer ${token}` },
+        const response = await fetch(testUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          },
           signal: controller.signal,
           cache: "no-cache",
         });
 
         clearTimeout(timeoutId);
+
+        console.log("📡 Response received:", {
+          status: response.status,
+          statusText: response.statusText,
+          ok: response.ok,
+          url: response.url
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -227,26 +248,49 @@ export default function Admin() {
         // If we get here, connectivity is working
         console.log("✅ Connectivity test passed, loading admin data");
         if (!skipDataLoading) {
-          fetchAdminData();
+          await fetchAdminData();
         } else {
           setLoading(false);
           setOfflineMode(true);
         }
       } catch (error) {
-        console.warn("⚠️ Connectivity test failed:", error.message || error);
+        console.error("⚠️ Connectivity test failed:", {
+          error: error.message || error,
+          name: error.name,
+          stack: error.stack,
+          cause: error.cause
+        });
+
+        // Determine the type of error and respond accordingly
+        if (error.name === 'AbortError') {
+          console.log("🔄 Request timed out, enabling offline mode");
+        } else if (error.message?.includes('Failed to fetch')) {
+          console.log("🌐 Network connectivity issue detected");
+        } else {
+          console.log("❌ Unknown connectivity error");
+        }
+
         console.log("🔄 Enabling graceful offline mode with retry capability");
         setOfflineMode(true);
 
-        // Try to load real data anyway, fallback to mock if it fails
-        if (!skipDataLoading) {
-          try {
-            await fetchAdminData();
-          } catch (dataError) {
-            console.log("📡 Data fetch also failed, using mock data");
-            loadMockData();
-          }
+        // For production environments, go straight to mock data on network errors
+        if (window.location.hostname.includes('.fly.dev') ||
+            window.location.hostname.includes('.netlify.app') ||
+            window.location.hostname !== 'localhost') {
+          console.log("🏭 Production environment detected, using mock data");
+          loadMockData();
         } else {
-          setLoading(false);
+          // Try to load real data anyway for development
+          if (!skipDataLoading) {
+            try {
+              await fetchAdminData();
+            } catch (dataError) {
+              console.log("📡 Data fetch also failed, using mock data");
+              loadMockData();
+            }
+          } else {
+            setLoading(false);
+          }
         }
       }
     };
