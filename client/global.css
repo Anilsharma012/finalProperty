@@ -132,3 +132,21 @@
     transform: scale(0.98);
   }
 }
+
+/* STEP 4 Desktop-only size tune for property grids */
+@media (min-width: 1024px) {
+  .prop-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+
+  .prop-card {
+    max-width: 320px;
+  }
+
+  .prop-card img {
+    height: 200px;
+    object-fit: cover;
+    aspect-ratio: 4/3;
+  }
+}
