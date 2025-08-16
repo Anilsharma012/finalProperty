@@ -27,14 +27,56 @@ export default function HomepageBanner({ position, className = "" }: HomepageBan
 
   const fetchBanners = async () => {
     try {
-      const response = await fetch(`/api/banners/${position}`);
-      const data = await response.json();
+      console.log(`🏷️ Fetching banners for position: ${position}`);
 
-      if (data.success) {
-        setBanners(data.data);
+      // Add timeout and error handling
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        console.log("⏰ Banners request timeout");
+        controller.abort();
+      }, 8000);
+
+      const response = await fetch(`/api/banners/${position}`, {
+        signal: controller.signal,
+        cache: "no-cache",
+      });
+
+      clearTimeout(timeoutId);
+
+      console.log("📡 Banners response:", {
+        status: response.status,
+        ok: response.ok,
+        url: response.url
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("📊 Banners data:", data);
+
+        if (data.success && Array.isArray(data.data)) {
+          setBanners(data.data);
+        } else {
+          console.log("⚠️ No banner data or invalid format");
+        }
+      } else {
+        console.log(`⚠️ Banners request failed: ${response.status}`);
       }
-    } catch (error) {
-      console.error("Error fetching banners:", error);
+    } catch (error: any) {
+      console.error("Error fetching banners:", {
+        error: error.message || error,
+        name: error.name,
+        position: position
+      });
+
+      // Provide appropriate logging based on error type
+      if (error.name === 'AbortError') {
+        console.log("🔄 Banners request timed out");
+      } else if (error.message?.includes('Failed to fetch')) {
+        console.log("🌐 Network connectivity issue for banners");
+      }
+
+      // Set empty banners array - component will handle no banners gracefully
+      setBanners([]);
     } finally {
       setLoading(false);
     }
