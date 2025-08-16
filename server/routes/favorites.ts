@@ -4,7 +4,7 @@ import { Property, ApiResponse } from "@shared/types";
 import { ObjectId } from "mongodb";
 
 // Get user's favorite properties
-export const getUserFavorites: RequestHandler = async (req, res) => {
+export const getFavorites: RequestHandler = async (req, res) => {
   try {
     const db = getDatabase();
     const userId = (req as any).userId;
