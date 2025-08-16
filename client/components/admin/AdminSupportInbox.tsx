@@ -1,546 +1,518 @@
-import React, { useState, useEffect } from "react";
-import {
-  MessageSquare,
-  Send,
-  User,
-  Calendar,
-  MapPin,
-  Eye,
-  CheckCircle,
-  XCircle,
-  Clock,
-  Search,
-  Filter,
-  MoreVertical,
-  Reply,
-  Image as ImageIcon,
-} from "lucide-react";
+import { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { Badge } from "../ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Textarea } from "../ui/textarea";
-import { useAuth } from "../../hooks/useAuth";
-import { createApiUrl } from "../../lib/api";
+import { Badge } from "../ui/badge";
+import { Alert, AlertDescription } from "../ui/alert";
+import {
+  MessageCircle,
+  Search,
+  Filter,
+  User,
+  Clock,
+  Send,
+  AlertCircle,
+  Loader2,
+  Phone,
+  Eye,
+  MoreVertical,
+  Archive,
+  Star,
+  Reply,
+  Image,
+} from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
-interface ConversationMessage {
+interface AdminConversation {
+  _id: string;
+  propertyId?: string;
+  propertyTitle?: string;
+  propertyPrice?: number;
+  participants: string[];
+  participantDetails: Array<{
+    _id: string;
+    name: string;
+    userType: string;
+    phone?: string;
+  }>;
+  lastMessage?: {
+    message: string;
+    senderId: string;
+    senderName: string;
+    createdAt: Date;
+  };
+  messageCount: number;
+  status: "active" | "resolved" | "pending";
+  priority: "low" | "medium" | "high";
+  assignedTo?: string;
+  createdAt: Date;
+  lastMessageAt: Date;
+}
+
+interface AdminMessage {
   _id: string;
   senderId: string;
   senderName: string;
   senderType: "buyer" | "seller" | "agent" | "admin";
   message: string;
-  imageUrl?: string;
-  messageType: "text" | "image";
-  createdAt: string;
-  readBy: Array<{
-    userId: string;
-    readAt: string;
-  }>;
-}
-
-interface Conversation {
-  _id: string;
-  propertyId: string;
-  participants: string[];
-  createdAt: string;
-  lastMessageAt: string;
-  property: {
-    _id: string;
-    title: string;
-    price: number;
-    location: { address: string };
-  };
-  participantDetails: Array<{
-    _id: string;
-    name: string;
-    userType: string;
-  }>;
-  lastMessage: ConversationMessage;
-  messageCount: number;
-  hasUnreadAdminMessages: boolean;
-  status?: "open" | "closed" | "pending";
-}
-
-interface ConversationStats {
-  totalConversations: number;
-  conversationsToday: number;
-  conversationsThisWeek: number;
-  activeConversations: number;
+  messageType: "text" | "image" | "property_card";
+  isAdminReply?: boolean;
+  createdAt: Date;
 }
 
 export default function AdminSupportInbox() {
-  const { token } = useAuth();
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [selectedConversation, setSelectedConversation] =
-    useState<Conversation | null>(null);
-  const [messages, setMessages] = useState<ConversationMessage[]>([]);
-  const [newMessage, setNewMessage] = useState("");
+  const [conversations, setConversations] = useState<AdminConversation[]>([]);
+  const [selectedConversation, setSelectedConversation] = useState<AdminConversation | null>(null);
+  const [messages, setMessages] = useState<AdminMessage[]>([]);
+  const [replyMessage, setReplyMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [messagesLoading, setMessagesLoading] = useState(false);
   const [sending, setSending] = useState(false);
-  const [stats, setStats] = useState<ConversationStats | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   useEffect(() => {
     fetchConversations();
-    fetchStats();
-  }, [statusFilter]);
-
-  useEffect(() => {
-    if (selectedConversation) {
-      fetchMessages(selectedConversation._id);
-    }
-  }, [selectedConversation]);
+  }, []);
 
   const fetchConversations = async () => {
     try {
       setLoading(true);
-      const queryParams = new URLSearchParams();
-      if (statusFilter !== "all") {
-        queryParams.append("status", statusFilter);
+      setError(null);
+      
+      const token = localStorage.getItem("token");
+      const response = await fetch("/api/admin/conversations", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch conversations");
       }
 
-      const response = await fetch(
-        createApiUrl(`admin/conversations?${queryParams.toString()}`),
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setConversations(data.data.conversations);
-        }
+      const data = await response.json();
+      if (data.success) {
+        setConversations(data.data || []);
+      } else {
+        throw new Error(data.error || "Failed to fetch conversations");
       }
     } catch (error) {
       console.error("Error fetching conversations:", error);
+      setError(error instanceof Error ? error.message : "Failed to load conversations");
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchStats = async () => {
+  const fetchMessages = async (conversationId: string) => {
     try {
-      const response = await fetch(createApiUrl("admin/conversations/stats"), {
-        headers: { Authorization: `Bearer ${token}` },
+      setMessagesLoading(true);
+      
+      const token = localStorage.getItem("token");
+      const response = await fetch(`/api/conversations/${conversationId}/messages`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          setStats(data.data);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching stats:", error);
-    }
-  };
-
-  const fetchMessages = async (conversationId: string) => {
-    try {
-      const response = await fetch(
-        createApiUrl(`conversations/${conversationId}/messages`),
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setMessages(data.data);
+          setMessages(data.data || []);
         }
       }
     } catch (error) {
       console.error("Error fetching messages:", error);
+    } finally {
+      setMessagesLoading(false);
     }
   };
 
-  const sendAdminMessage = async () => {
-    if (!newMessage.trim() || !selectedConversation || sending) return;
+  const sendReply = async () => {
+    if (!replyMessage.trim() || !selectedConversation || sending) return;
 
     try {
       setSending(true);
+      const token = localStorage.getItem("token");
+      
       const response = await fetch(
-        createApiUrl(
-          `admin/conversations/${selectedConversation._id}/messages`,
-        ),
+        `/api/admin/conversations/${selectedConversation._id}/messages`,
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify({ text: newMessage }),
-        },
+          body: JSON.stringify({
+            text: replyMessage.trim(),
+          }),
+        }
       );
 
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          setMessages((prev) => [...prev, data.data]);
-          setNewMessage("");
-          fetchConversations(); // Refresh to update last message
+          setReplyMessage("");
+          // Reload messages and conversations
+          await fetchMessages(selectedConversation._id);
+          await fetchConversations();
         }
+      } else {
+        throw new Error("Failed to send reply");
       }
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error("Error sending reply:", error);
+      setError("Failed to send reply");
     } finally {
       setSending(false);
     }
   };
 
-  const updateConversationStatus = async (
-    conversationId: string,
-    status: string,
-  ) => {
+  const updateConversationStatus = async (conversationId: string, status: string) => {
     try {
+      const token = localStorage.getItem("token");
+      
       const response = await fetch(
-        createApiUrl(`admin/conversations/${conversationId}/status`),
+        `/api/admin/conversations/${conversationId}/status`,
         {
           method: "PUT",
           headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({ status }),
-        },
+        }
       );
 
       if (response.ok) {
-        fetchConversations();
+        // Refresh conversations
+        await fetchConversations();
+        // Update selected conversation if it's the one being updated
         if (selectedConversation?._id === conversationId) {
-          setSelectedConversation({
-            ...selectedConversation,
-            status: status as any,
-          });
+          setSelectedConversation(prev => prev ? { ...prev, status: status as any } : null);
         }
       }
     } catch (error) {
-      console.error("Error updating status:", error);
+      console.error("Error updating conversation status:", error);
     }
   };
 
-  const filteredConversations = conversations.filter((conv) => {
-    const matchesSearch =
-      conv.property?.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      conv.participantDetails.some((p) =>
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()),
-      );
-
-    return matchesSearch;
+  const filteredConversations = conversations.filter(conv => {
+    const matchesSearch = searchTerm === "" || 
+      conv.propertyTitle?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      conv.participantDetails.some(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    const matchesStatus = statusFilter === "all" || conv.status === statusFilter;
+    
+    return matchesSearch && matchesStatus;
   });
 
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
+  const formatTime = (date: Date | string) => {
+    const messageDate = new Date(date);
     const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const diffHours = Math.abs(now.getTime() - messageDate.getTime()) / 36e5;
 
-    if (diffHours < 1) return "Just now";
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays === 1) return "Yesterday";
-    if (diffDays < 7) return `${diffDays}d ago`;
-    return date.toLocaleDateString();
-  };
-
-  const getStatusColor = (status?: string) => {
-    switch (status) {
-      case "open":
-        return "bg-green-100 text-green-800";
-      case "closed":
-        return "bg-gray-100 text-gray-800";
-      case "pending":
-        return "bg-yellow-100 text-yellow-800";
-      default:
-        return "bg-blue-100 text-blue-800";
+    if (diffHours < 1) {
+      return "Just now";
+    } else if (diffHours < 24) {
+      return messageDate.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } else {
+      return messageDate.toLocaleDateString([], {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin w-8 h-8 border-2 border-[#C70000] border-t-transparent rounded-full"></div>
-      </div>
-    );
-  }
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "active": return "bg-green-100 text-green-800";
+      case "pending": return "bg-yellow-100 text-yellow-800";
+      case "resolved": return "bg-gray-100 text-gray-800";
+      default: return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case "high": return "bg-red-100 text-red-800";
+      case "medium": return "bg-orange-100 text-orange-800";
+      case "low": return "bg-blue-100 text-blue-800";
+      default: return "bg-gray-100 text-gray-800";
+    }
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Stats Cards */}
-      {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <MessageSquare className="h-5 w-5 text-blue-600" />
-                <div>
-                  <p className="text-sm text-gray-600">Total Conversations</p>
-                  <p className="text-2xl font-bold">
-                    {stats.totalConversations}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <Calendar className="h-5 w-5 text-green-600" />
-                <div>
-                  <p className="text-sm text-gray-600">Today</p>
-                  <p className="text-2xl font-bold">
-                    {stats.conversationsToday}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <Clock className="h-5 w-5 text-orange-600" />
-                <div>
-                  <p className="text-sm text-gray-600">This Week</p>
-                  <p className="text-2xl font-bold">
-                    {stats.conversationsThisWeek}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="h-5 w-5 text-purple-600" />
-                <div>
-                  <p className="text-sm text-gray-600">Active (24h)</p>
-                  <p className="text-2xl font-bold">
-                    {stats.activeConversations}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+    <div className="flex h-[600px] bg-white rounded-lg shadow">
+      {/* Conversations List */}
+      <div className="w-1/2 border-r border-gray-200 flex flex-col">
+        {/* Header */}
+        <div className="p-4 border-b border-gray-200">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold flex items-center">
+              <MessageCircle className="h-5 w-5 mr-2 text-[#C70000]" />
+              Support Inbox
+            </h2>
+            <Badge variant="secondary">
+              {conversations.length} conversations
+            </Badge>
+          </div>
+          
+          {/* Search and Filter */}
+          <div className="flex gap-2">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Search conversations..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+            >
+              <option value="all">All Status</option>
+              <option value="active">Active</option>
+              <option value="pending">Pending</option>
+              <option value="resolved">Resolved</option>
+            </select>
+          </div>
         </div>
-      )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Conversations List */}
-        <Card className="lg:col-span-1">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>Support Inbox</span>
-              <Badge variant="secondary">{filteredConversations.length}</Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            {/* Search and Filter */}
-            <div className="p-4 border-b space-y-3">
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Search conversations..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full p-2 border rounded-md"
+        <div className="flex-1 overflow-y-auto">
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin text-[#C70000]" />
+            </div>
+          ) : filteredConversations.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              <MessageCircle className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+              <p className="text-sm">No conversations found</p>
+            </div>
+          ) : (
+            filteredConversations.map((conversation) => (
+              <div
+                key={conversation._id}
+                onClick={() => {
+                  setSelectedConversation(conversation);
+                  fetchMessages(conversation._id);
+                }}
+                className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 ${
+                  selectedConversation?._id === conversation._id ? "bg-blue-50 border-blue-200" : ""
+                }`}
               >
-                <option value="all">All Conversations</option>
-                <option value="open">Open</option>
-                <option value="pending">Pending</option>
-                <option value="closed">Closed</option>
-              </select>
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-medium text-gray-900 truncate">
+                      {conversation.propertyTitle || "General Inquiry"}
+                    </h3>
+                    <p className="text-xs text-gray-500 truncate">
+                      {conversation.participantDetails.map(p => p.name).join(", ")}
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-end space-y-1">
+                    <Badge className={getStatusColor(conversation.status)}>
+                      {conversation.status}
+                    </Badge>
+                    <span className="text-xs text-gray-400">
+                      {formatTime(conversation.lastMessageAt)}
+                    </span>
+                  </div>
+                </div>
+                
+                {conversation.lastMessage && (
+                  <p className="text-sm text-gray-600 truncate mb-2">
+                    <span className="font-medium">{conversation.lastMessage.senderName}:</span>{" "}
+                    {conversation.lastMessage.message}
+                  </p>
+                )}
+                
+                <div className="flex items-center justify-between">
+                  <Badge variant="outline" className="text-xs">
+                    {conversation.messageCount} messages
+                  </Badge>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                        <MoreVertical className="h-3 w-3" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem onClick={() => updateConversationStatus(conversation._id, "active")}>
+                        Mark Active
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => updateConversationStatus(conversation._id, "resolved")}>
+                        Mark Resolved
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => updateConversationStatus(conversation._id, "pending")}>
+                        Mark Pending
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Messages Panel */}
+      <div className="w-1/2 flex flex-col">
+        {selectedConversation ? (
+          <>
+            {/* Chat Header */}
+            <div className="p-4 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-medium text-gray-900">
+                    {selectedConversation.propertyTitle || "General Inquiry"}
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    {selectedConversation.participantDetails.map(p => p.name).join(", ")}
+                  </p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Badge className={getStatusColor(selectedConversation.status)}>
+                    {selectedConversation.status}
+                  </Badge>
+                  {selectedConversation.participantDetails.find(p => p.phone) && (
+                    <Button variant="outline" size="sm">
+                      <Phone className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+              
+              {selectedConversation.propertyPrice && (
+                <div className="mt-2 text-sm text-[#C70000] font-semibold">
+                  ₹{selectedConversation.propertyPrice.toLocaleString()}
+                </div>
+              )}
             </div>
 
-            {/* Conversations */}
-            <div className="max-h-[600px] overflow-y-auto">
-              {filteredConversations.length === 0 ? (
-                <div className="p-8 text-center text-gray-500">
-                  <MessageSquare className="h-12 w-12 mx-auto mb-2 text-gray-300" />
-                  <p>No conversations found</p>
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              {messagesLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin text-[#C70000]" />
+                </div>
+              ) : messages.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <MessageCircle className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                  <p className="text-sm">No messages yet</p>
                 </div>
               ) : (
-                filteredConversations.map((conv) => (
+                messages.map((message) => (
                   <div
-                    key={conv._id}
-                    onClick={() => setSelectedConversation(conv)}
-                    className={`p-4 border-b cursor-pointer hover:bg-gray-50 ${
-                      selectedConversation?._id === conv._id
-                        ? "bg-blue-50 border-blue-200"
-                        : ""
+                    key={message._id}
+                    className={`flex ${
+                      message.senderType === "admin" ? "justify-end" : "justify-start"
                     }`}
                   >
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex-1">
-                        <h4 className="font-medium text-sm truncate">
-                          {conv.property?.title || "Property Chat"}
-                        </h4>
-                        <p className="text-xs text-gray-500">
-                          {conv.participantDetails
-                            .filter((p) => p.userType !== "admin")
-                            .map((p) => p.name)
-                            .join(", ")}
-                        </p>
-                      </div>
-                      <div className="flex flex-col items-end space-y-1">
-                        <span className="text-xs text-gray-400">
-                          {formatTime(conv.lastMessageAt)}
+                    <div
+                      className={`max-w-[70%] rounded-lg px-3 py-2 ${
+                        message.senderType === "admin"
+                          ? "bg-[#C70000] text-white"
+                          : "bg-gray-100 text-gray-900"
+                      }`}
+                    >
+                      <p className="text-sm">{message.message}</p>
+                      <div className="flex items-center justify-between mt-1">
+                        <span
+                          className={`text-xs ${
+                            message.senderType === "admin"
+                              ? "text-red-100"
+                              : "text-gray-500"
+                          }`}
+                        >
+                          {message.senderName}
                         </span>
-                        {conv.hasUnreadAdminMessages && (
-                          <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                        )}
+                        <span
+                          className={`text-xs ${
+                            message.senderType === "admin"
+                              ? "text-red-100"
+                              : "text-gray-400"
+                          }`}
+                        >
+                          {formatTime(message.createdAt)}
+                        </span>
                       </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <p className="text-xs text-gray-600 truncate flex-1">
-                        {conv.lastMessage?.message || "No messages yet"}
-                      </p>
-                      <Badge
-                        className={`ml-2 text-xs ${getStatusColor(conv.status)}`}
-                      >
-                        {conv.status || "open"}
-                      </Badge>
                     </div>
                   </div>
                 ))
               )}
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Chat Interface */}
-        <Card className="lg:col-span-2">
-          {selectedConversation ? (
-            <>
-              <CardHeader className="border-b">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-lg">
-                      {selectedConversation.property?.title}
-                    </CardTitle>
-                    <p className="text-sm text-gray-600">
-                      with{" "}
-                      {selectedConversation.participantDetails
-                        .filter((p) => p.userType !== "admin")
-                        .map((p) => p.name)
-                        .join(", ")}
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Badge
-                      className={getStatusColor(selectedConversation.status)}
-                    >
-                      {selectedConversation.status || "open"}
-                    </Badge>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() =>
-                        updateConversationStatus(
-                          selectedConversation._id,
-                          selectedConversation.status === "closed"
-                            ? "open"
-                            : "closed",
-                        )
-                      }
-                    >
-                      {selectedConversation.status === "closed"
-                        ? "Reopen"
-                        : "Close"}
-                    </Button>
-                  </div>
+            {/* Reply Input */}
+            <div className="border-t border-gray-200 p-4">
+              <div className="flex items-end space-x-2">
+                <div className="flex-1">
+                  <Textarea
+                    value={replyMessage}
+                    onChange={(e) => setReplyMessage(e.target.value)}
+                    placeholder="Type your reply..."
+                    className="min-h-[60px] max-h-32 resize-none"
+                    disabled={sending}
+                  />
                 </div>
-              </CardHeader>
-
-              <CardContent className="p-0">
-                {/* Messages */}
-                <div className="h-96 overflow-y-auto p-4 space-y-4">
-                  {messages.map((message) => (
-                    <div
-                      key={message._id}
-                      className={`flex ${
-                        message.senderType === "admin"
-                          ? "justify-end"
-                          : "justify-start"
-                      }`}
-                    >
-                      <div
-                        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                          message.senderType === "admin"
-                            ? "bg-[#C70000] text-white"
-                            : "bg-gray-100 text-gray-900"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-medium">
-                            {message.senderName}
-                          </span>
-                          <span className="text-xs opacity-75">
-                            {new Date(message.createdAt).toLocaleTimeString()}
-                          </span>
-                        </div>
-                        {message.imageUrl ? (
-                          <img
-                            src={message.imageUrl}
-                            alt="Sent image"
-                            className="max-w-full h-auto rounded"
-                          />
-                        ) : (
-                          <p className="text-sm">{message.message}</p>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Reply Input */}
-                <div className="border-t p-4">
-                  <div className="flex space-x-2">
-                    <Textarea
-                      placeholder="Type your reply..."
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      className="flex-1 resize-none"
-                      rows={2}
-                      onKeyPress={(e) => {
-                        if (e.key === "Enter" && !e.shiftKey) {
-                          e.preventDefault();
-                          sendAdminMessage();
-                        }
-                      }}
-                    />
-                    <Button
-                      onClick={sendAdminMessage}
-                      disabled={!newMessage.trim() || sending}
-                      className="bg-[#C70000] hover:bg-[#A60000]"
-                    >
-                      <Send className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </>
-          ) : (
-            <CardContent className="flex items-center justify-center h-96">
-              <div className="text-center">
-                <MessageSquare className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500">
-                  Select a conversation to start chatting
-                </p>
+                <Button
+                  onClick={sendReply}
+                  disabled={!replyMessage.trim() || sending}
+                  className="bg-[#C70000] hover:bg-[#A60000] text-white px-4 py-2"
+                >
+                  {sending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Send className="h-4 w-4" />
+                  )}
+                </Button>
               </div>
-            </CardContent>
-          )}
-        </Card>
+            </div>
+          </>
+        ) : (
+          <div className="flex-1 flex items-center justify-center text-gray-500">
+            <div className="text-center">
+              <MessageCircle className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+              <p>Select a conversation to view messages</p>
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Error Alert */}
+      {error && (
+        <Alert className="absolute bottom-4 right-4 w-80 border-red-200 bg-red-50">
+          <AlertCircle className="h-4 w-4 text-red-600" />
+          <AlertDescription className="text-red-700">
+            {error}
+          </AlertDescription>
+        </Alert>
+      )}
     </div>
   );
 }
