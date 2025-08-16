@@ -36,7 +36,7 @@ export const getSubcategories: RequestHandler = async (req, res) => {
       let matchCriteria: any = {
         status: "active",
         approvalStatus: "approved",
-        subCategory: { $ne: null, $ne: "" },
+        subCategory: { $ne: null, $nin: [""] },
       };
 
       // Handle different category types
@@ -84,7 +84,7 @@ export const getSubcategories: RequestHandler = async (req, res) => {
             $match: {
               status: "active",
               approvalStatus: "approved",
-              subCategory: { $ne: null, $ne: "" },
+              subCategory: { $ne: null, $nin: [""] },
             },
           },
           {
@@ -203,7 +203,7 @@ export const getSubcategoriesWithCounts: RequestHandler = async (req, res) => {
           },
           {
             $match: {
-              _id: { $ne: null, $ne: "" }, // Only include subcategories that exist
+              _id: { $ne: null, $nin: [""] }, // Only include subcategories that exist
             },
           },
         ])
