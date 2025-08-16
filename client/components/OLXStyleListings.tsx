@@ -52,7 +52,7 @@ export default function OLXStyleListings() {
       console.log("📡 Properties response:", {
         status: response.status,
         ok: response.ok,
-        url: response.url
+        url: response.url,
       });
 
       if (response.ok) {
@@ -78,13 +78,13 @@ export default function OLXStyleListings() {
       console.error("Error fetching properties:", {
         error: error.message || error,
         name: error.name,
-        stack: error.stack
+        stack: error.stack,
       });
 
       // Provide appropriate fallback based on error type
-      if (error.name === 'AbortError') {
+      if (error.name === "AbortError") {
         console.log("🔄 Request timed out, using mock data");
-      } else if (error.message?.includes('Failed to fetch')) {
+      } else if (error.message?.includes("Failed to fetch")) {
         console.log("🌐 Network connectivity issue, using mock data");
       }
 
@@ -102,7 +102,9 @@ export default function OLXStyleListings() {
         title: "3 BHK Flat for Sale in Rohtak",
         price: 4500000,
         location: { city: "Rohtak", state: "Haryana", address: "Model Town" },
-        images: ["https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400"],
+        images: [
+          "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400",
+        ],
         propertyType: "apartment",
         createdAt: new Date().toISOString(),
         contactInfo: { name: "Rajesh Kumar" },
@@ -112,7 +114,9 @@ export default function OLXStyleListings() {
         title: "2 BHK Independent House",
         price: 3200000,
         location: { city: "Rohtak", state: "Haryana", address: "Sector 14" },
-        images: ["https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=400"],
+        images: [
+          "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=400",
+        ],
         propertyType: "house",
         createdAt: new Date(Date.now() - 86400000).toISOString(),
         contactInfo: { name: "Priya Sharma" },
@@ -122,7 +126,9 @@ export default function OLXStyleListings() {
         title: "Commercial Shop for Rent",
         price: 25000,
         location: { city: "Rohtak", state: "Haryana", address: "Railway Road" },
-        images: ["https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400"],
+        images: [
+          "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400",
+        ],
         propertyType: "commercial",
         createdAt: new Date(Date.now() - 172800000).toISOString(),
         contactInfo: { name: "Amit Singh" },
@@ -132,11 +138,13 @@ export default function OLXStyleListings() {
         title: "4 BHK Villa with Garden",
         price: 8500000,
         location: { city: "Rohtak", state: "Haryana", address: "Civil Lines" },
-        images: ["https://images.unsplash.com/photo-1593696140826-c58b021acf8b?w=400"],
+        images: [
+          "https://images.unsplash.com/photo-1593696140826-c58b021acf8b?w=400",
+        ],
         propertyType: "villa",
         createdAt: new Date(Date.now() - 345600000).toISOString(),
         contactInfo: { name: "Vikash Yadav" },
-      }
+      },
     ];
     setProperties(mockProperties);
   };

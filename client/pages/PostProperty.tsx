@@ -177,18 +177,24 @@ export default function PostProperty() {
 
   useEffect(() => {
     // JS wiring for wizard actions
-    const prev = () => document.querySelector('[data-action="prev"],[data-testid="prev-step"]')?.click() || window.app?.goToPrevStep?.();
-    const next = () => document.querySelector('[data-action="next"],[data-testid="next-step"]')?.click() || window.app?.goToNextStep?.();
-    
-    const prevBtn = document.getElementById('btn-prev');
-    const nextBtn = document.getElementById('btn-next');
-    
-    if (prevBtn) prevBtn.addEventListener('click', prev);
-    if (nextBtn) nextBtn.addEventListener('click', next);
-    
+    const prev = () =>
+      document
+        .querySelector('[data-action="prev"],[data-testid="prev-step"]')
+        ?.click() || window.app?.goToPrevStep?.();
+    const next = () =>
+      document
+        .querySelector('[data-action="next"],[data-testid="next-step"]')
+        ?.click() || window.app?.goToNextStep?.();
+
+    const prevBtn = document.getElementById("btn-prev");
+    const nextBtn = document.getElementById("btn-next");
+
+    if (prevBtn) prevBtn.addEventListener("click", prev);
+    if (nextBtn) nextBtn.addEventListener("click", next);
+
     return () => {
-      if (prevBtn) prevBtn.removeEventListener('click', prev);
-      if (nextBtn) nextBtn.removeEventListener('click', next);
+      if (prevBtn) prevBtn.removeEventListener("click", prev);
+      if (nextBtn) nextBtn.removeEventListener("click", next);
     };
   }, []);
 
@@ -243,15 +249,16 @@ export default function PostProperty() {
       case 1:
         // Basic validation: title, description, property type are required
         // Subcategory is only required if property type is selected and options are available
-        const hasBasicInfo = formData.title.trim() &&
-                            formData.description.trim() &&
-                            formData.propertyType;
+        const hasBasicInfo =
+          formData.title.trim() &&
+          formData.description.trim() &&
+          formData.propertyType;
 
         if (!hasBasicInfo) return false;
 
         // If property type is selected, subcategory becomes required
         if (formData.propertyType && subCategories[formData.propertyType]) {
-          return formData.subCategory.trim() !== '';
+          return formData.subCategory.trim() !== "";
         }
 
         return true;
@@ -262,7 +269,7 @@ export default function PostProperty() {
           formData.location.address.trim()
         );
       case 3:
-        return formData.specifications.area.trim() !== '';
+        return formData.specifications.area.trim() !== "";
       case 4:
         return formData.images.length > 0;
       case 5:
@@ -287,11 +294,14 @@ export default function PostProperty() {
         if (!formData.title.trim()) missingFields.push("Property Title");
         if (!formData.description.trim()) missingFields.push("Description");
         if (!formData.propertyType) missingFields.push("Property Type");
-        if (formData.propertyType && !formData.subCategory) missingFields.push("Sub Category");
+        if (formData.propertyType && !formData.subCategory)
+          missingFields.push("Sub Category");
       }
 
       if (missingFields.length > 0) {
-        alert(`Please fill the following required fields: ${missingFields.join(", ")}`);
+        alert(
+          `Please fill the following required fields: ${missingFields.join(", ")}`,
+        );
       } else {
         alert("Please fill all required fields");
       }
@@ -365,7 +375,9 @@ export default function PostProperty() {
         if (withPackage) {
           setShowPackageSelection(true);
         } else {
-          alert("Property posted successfully and submitted for admin approval!");
+          alert(
+            "Property posted successfully and submitted for admin approval!",
+          );
           window.location.href = "/user-dashboard";
         }
       } else {
@@ -469,7 +481,7 @@ export default function PostProperty() {
   return (
     <div className="min-h-screen bg-gray-50 post-property-page">
       <Header />
-      
+
       <style>{`
         .post-property-page { padding-bottom: 160px!important; }
         .wizard-actions {
@@ -539,7 +551,9 @@ export default function PostProperty() {
                   required
                 />
                 {!formData.title.trim() && (
-                  <p className="text-red-500 text-xs mt-1">Property title is required</p>
+                  <p className="text-red-500 text-xs mt-1">
+                    Property title is required
+                  </p>
                 )}
               </div>
 
@@ -555,7 +569,9 @@ export default function PostProperty() {
                     handleInputChange("subCategory", "");
                   }}
                 >
-                  <SelectTrigger className={!formData.propertyType ? "border-red-300" : ""}>
+                  <SelectTrigger
+                    className={!formData.propertyType ? "border-red-300" : ""}
+                  >
                     <SelectValue placeholder="Select property type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -579,7 +595,9 @@ export default function PostProperty() {
                       handleInputChange("subCategory", value)
                     }
                   >
-                    <SelectTrigger className={!formData.subCategory ? "border-red-300" : ""}>
+                    <SelectTrigger
+                      className={!formData.subCategory ? "border-red-300" : ""}
+                    >
                       <SelectValue placeholder="Select sub category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -591,7 +609,9 @@ export default function PostProperty() {
                     </SelectContent>
                   </Select>
                   {!formData.subCategory && (
-                    <p className="text-red-500 text-xs mt-1">Please select a sub category</p>
+                    <p className="text-red-500 text-xs mt-1">
+                      Please select a sub category
+                    </p>
                   )}
                 </div>
               )}
@@ -606,12 +626,16 @@ export default function PostProperty() {
                     handleInputChange("description", e.target.value)
                   }
                   placeholder="Describe your property in detail..."
-                  className={!formData.description.trim() ? "border-red-300" : ""}
+                  className={
+                    !formData.description.trim() ? "border-red-300" : ""
+                  }
                   rows={4}
                   required
                 />
                 {!formData.description.trim() && (
-                  <p className="text-red-500 text-xs mt-1">Property description is required</p>
+                  <p className="text-red-500 text-xs mt-1">
+                    Property description is required
+                  </p>
                 )}
               </div>
             </div>
@@ -989,7 +1013,10 @@ export default function PostProperty() {
                 <Input
                   value={formData.contactInfo.alternativePhone || ""}
                   onChange={(e) =>
-                    handleInputChange("contactInfo.alternativePhone", e.target.value)
+                    handleInputChange(
+                      "contactInfo.alternativePhone",
+                      e.target.value,
+                    )
                   }
                   placeholder="Enter alternative mobile number"
                 />
@@ -1002,7 +1029,10 @@ export default function PostProperty() {
                 <Input
                   value={formData.contactInfo.whatsappNumber || ""}
                   onChange={(e) =>
-                    handleInputChange("contactInfo.whatsappNumber", e.target.value)
+                    handleInputChange(
+                      "contactInfo.whatsappNumber",
+                      e.target.value,
+                    )
                   }
                   placeholder="Enter WhatsApp number"
                 />
@@ -1101,38 +1131,40 @@ export default function PostProperty() {
 
         {/* Wizard Actions */}
         <div id="wizard-actions" className="wizard-actions">
-          <button 
-            id="btn-prev" 
+          <button
+            id="btn-prev"
             aria-label="Previous"
             data-action="prev"
             data-testid="prev-step"
             onClick={handlePrevStep}
             disabled={currentStep === 1}
             style={{
-              padding: '8px 16px',
-              backgroundColor: currentStep === 1 ? '#f3f4f6' : '#ffffff',
-              color: currentStep === 1 ? '#9ca3af' : '#374151',
-              border: '1px solid #d1d5db',
-              borderRadius: '6px',
-              cursor: currentStep === 1 ? 'not-allowed' : 'pointer'
+              padding: "8px 16px",
+              backgroundColor: currentStep === 1 ? "#f3f4f6" : "#ffffff",
+              color: currentStep === 1 ? "#9ca3af" : "#374151",
+              border: "1px solid #d1d5db",
+              borderRadius: "6px",
+              cursor: currentStep === 1 ? "not-allowed" : "pointer",
             }}
           >
             Previous
           </button>
-          <button 
-            id="btn-next" 
+          <button
+            id="btn-next"
             aria-label="Next"
             data-action="next"
             data-testid="next-step"
             onClick={handleNextStep}
             disabled={!validateStep(currentStep)}
             style={{
-              padding: '8px 16px',
-              backgroundColor: validateStep(currentStep) ? '#C70000' : '#f3f4f6',
-              color: validateStep(currentStep) ? '#ffffff' : '#9ca3af',
-              border: '1px solid #d1d5db',
-              borderRadius: '6px',
-              cursor: validateStep(currentStep) ? 'pointer' : 'not-allowed'
+              padding: "8px 16px",
+              backgroundColor: validateStep(currentStep)
+                ? "#C70000"
+                : "#f3f4f6",
+              color: validateStep(currentStep) ? "#ffffff" : "#9ca3af",
+              border: "1px solid #d1d5db",
+              borderRadius: "6px",
+              cursor: validateStep(currentStep) ? "pointer" : "not-allowed",
             }}
           >
             Next

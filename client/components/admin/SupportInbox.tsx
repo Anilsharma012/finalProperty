@@ -49,7 +49,7 @@ export default function SupportInbox() {
       console.log("Fetching conversations...");
 
       // Use the global api helper
-      const result = await (window as any).api('/admin/conversations?limit=20');
+      const result = await (window as any).api("/admin/conversations?limit=20");
 
       console.log("API result:", result);
 
@@ -101,7 +101,10 @@ export default function SupportInbox() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]" data-testid="support-inbox">
+      <div
+        className="flex items-center justify-center min-h-[400px]"
+        data-testid="support-inbox"
+      >
         <div className="animate-spin w-8 h-8 border-2 border-[#C70000] border-t-transparent rounded-full"></div>
       </div>
     );
@@ -124,7 +127,9 @@ export default function SupportInbox() {
         {conversations.length === 0 ? (
           <div className="text-center py-12">
             <MessageSquare className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">No tickets</h3>
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">
+              No tickets
+            </h3>
             <p className="text-gray-500">No support conversations found.</p>
           </div>
         ) : (
@@ -141,13 +146,15 @@ export default function SupportInbox() {
                         {conversation.property?.title || "Property Chat"}
                       </h3>
                       <p className="text-sm text-gray-600 mt-1">
-                        Participants: {conversation.participantDetails
+                        Participants:{" "}
+                        {conversation.participantDetails
                           .filter((p) => p.userType !== "admin")
                           .map((p) => p.name)
                           .join(", ")}
                       </p>
                       <p className="text-sm text-gray-500 mt-2">
-                        Last message: {conversation.lastMessage?.message || "No messages yet"}
+                        Last message:{" "}
+                        {conversation.lastMessage?.message || "No messages yet"}
                       </p>
                     </div>
                     <div className="text-right">

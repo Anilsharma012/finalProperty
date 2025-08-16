@@ -90,7 +90,10 @@ import {
 export default function Admin() {
   const { user, token, isAuthenticated, loading: authLoading } = useAuth();
   // Check if we're on the support route and set initial section accordingly
-  const initialSection = window.location.pathname === '/admin/support' ? 'support-inbox' : 'dashboard';
+  const initialSection =
+    window.location.pathname === "/admin/support"
+      ? "support-inbox"
+      : "dashboard";
   const [activeSection, setActiveSection] = useState(initialSection);
   const [stats, setStats] = useState<any>({
     totalUsers: 0,
@@ -113,29 +116,38 @@ export default function Admin() {
 
     try {
       // Check current environment
-      const environment = window.location.hostname.includes('.fly.dev') ? 'fly.dev' :
-                         window.location.hostname.includes('.netlify.app') ? 'netlify' :
-                         window.location.hostname === 'localhost' ? 'localhost' : 'unknown';
+      const environment = window.location.hostname.includes(".fly.dev")
+        ? "fly.dev"
+        : window.location.hostname.includes(".netlify.app")
+          ? "netlify"
+          : window.location.hostname === "localhost"
+            ? "localhost"
+            : "unknown";
 
       diagnostics.push(`Environment: ${environment}`);
       diagnostics.push(`URL: ${window.location.href}`);
 
       // Check if we can reach the base domain
       try {
-        const healthCheck = await fetch(window.location.origin + '/api/ping', {
-          method: 'GET',
-          cache: 'no-cache',
-          timeout: 5000
+        const healthCheck = await fetch(window.location.origin + "/api/ping", {
+          method: "GET",
+          cache: "no-cache",
+          timeout: 5000,
         });
-        diagnostics.push(`Health check: ${healthCheck.status} ${healthCheck.statusText}`);
+        diagnostics.push(
+          `Health check: ${healthCheck.status} ${healthCheck.statusText}`,
+        );
       } catch (healthError) {
         diagnostics.push(`Health check failed: ${healthError.message}`);
       }
 
       // Check browser capabilities
-      diagnostics.push(`Fetch API: ${typeof fetch !== 'undefined' ? 'Available' : 'Not available'}`);
-      diagnostics.push(`Online status: ${navigator.onLine ? 'Online' : 'Offline'}`);
-
+      diagnostics.push(
+        `Fetch API: ${typeof fetch !== "undefined" ? "Available" : "Not available"}`,
+      );
+      diagnostics.push(
+        `Online status: ${navigator.onLine ? "Online" : "Offline"}`,
+      );
     } catch (error) {
       diagnostics.push(`Diagnostics error: ${error.message}`);
     }
@@ -262,8 +274,8 @@ export default function Admin() {
         const response = await fetch(testUrl, {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
+            "Cache-Control": "no-cache",
+            Pragma: "no-cache",
           },
           signal: controller.signal,
           cache: "no-cache",
@@ -275,7 +287,7 @@ export default function Admin() {
           status: response.status,
           statusText: response.statusText,
           ok: response.ok,
-          url: response.url
+          url: response.url,
         });
 
         if (!response.ok) {
@@ -295,13 +307,13 @@ export default function Admin() {
           error: error.message || error,
           name: error.name,
           stack: error.stack,
-          cause: error.cause
+          cause: error.cause,
         });
 
         // Determine the type of error and respond accordingly
-        if (error.name === 'AbortError') {
+        if (error.name === "AbortError") {
           console.log("🔄 Request timed out, enabling offline mode");
-        } else if (error.message?.includes('Failed to fetch')) {
+        } else if (error.message?.includes("Failed to fetch")) {
           console.log("🌐 Network connectivity issue detected");
         } else {
           console.log("❌ Unknown connectivity error");
@@ -314,16 +326,23 @@ export default function Admin() {
         await runNetworkDiagnostics();
 
         // For any fetch failures, immediately switch to mock data in production
-        if (error.message?.includes('Failed to fetch') || error.name === 'TypeError') {
-          console.log("🏭 Network error detected, switching to mock data immediately");
+        if (
+          error.message?.includes("Failed to fetch") ||
+          error.name === "TypeError"
+        ) {
+          console.log(
+            "🏭 Network error detected, switching to mock data immediately",
+          );
           loadMockData();
           return;
         }
 
         // For production environments, go straight to mock data on network errors
-        if (window.location.hostname.includes('.fly.dev') ||
-            window.location.hostname.includes('.netlify.app') ||
-            window.location.hostname !== 'localhost') {
+        if (
+          window.location.hostname.includes(".fly.dev") ||
+          window.location.hostname.includes(".netlify.app") ||
+          window.location.hostname !== "localhost"
+        ) {
           console.log("🏭 Production environment detected, using mock data");
           loadMockData();
         } else {
@@ -377,7 +396,7 @@ export default function Admin() {
       const statsResponse = await fetch(statsUrl, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
         cache: "no-cache",
       });
@@ -385,7 +404,7 @@ export default function Admin() {
       console.log("📊 Stats response:", {
         status: statsResponse.status,
         statusText: statsResponse.statusText,
-        ok: statsResponse.ok
+        ok: statsResponse.ok,
       });
 
       if (statsResponse.ok) {
@@ -412,10 +431,13 @@ export default function Admin() {
       console.error("Error fetching stats:", {
         error: error.message || error,
         name: error.name,
-        stack: error.stack
+        stack: error.stack,
       });
 
-      if (error.name === 'TypeError' && error.message?.includes('Failed to fetch')) {
+      if (
+        error.name === "TypeError" &&
+        error.message?.includes("Failed to fetch")
+      ) {
         errors.push("Network connectivity issue");
       } else {
         errors.push("Stats API unreachable");
