@@ -187,11 +187,20 @@ export default function FeatureAdvertisementPackage() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      // Read response body once to avoid stream already read error
+      let data;
+      try {
+        const responseText = await response.text();
+        data = responseText ? JSON.parse(responseText) : {};
+      } catch (parseError) {
+        console.warn("Could not parse response as JSON");
+        data = {};
+      }
+
       if (response.ok) {
         setPackages(packages.filter(pkg => pkg._id !== packageId));
       } else {
-        const data = await response.json();
-        setError(data.error || "Failed to delete feature package");
+        setError(data.error || `Failed to delete feature package (${response.status})`);
       }
     } catch (error) {
       console.error("Error deleting feature package:", error);
