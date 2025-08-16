@@ -213,7 +213,13 @@ const ComprehensiveAuth = () => {
         }),
       });
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        console.error('Failed to parse OTP verify response:', parseError);
+        throw new Error('Invalid response from server');
+      }
 
       if (response.ok && data.success) {
         const { token, user } = data.data;
@@ -268,7 +274,13 @@ const ComprehensiveAuth = () => {
         }),
       });
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        console.error('Failed to parse Google auth response:', parseError);
+        throw new Error('Invalid response from server');
+      }
 
       if (response.ok && data.success) {
         const { token, user } = data.data;
