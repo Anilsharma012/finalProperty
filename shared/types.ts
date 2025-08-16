@@ -104,6 +104,25 @@ export interface Category {
   active: boolean;
 }
 
+export interface ServiceListing {
+  _id?: string;
+  category: string; // Category slug
+  subcategory: string; // Subcategory slug
+  name: string;
+  phone: string;
+  address: string;
+  photos: string[]; // Max 4 photos
+  geo: {
+    lat: number;
+    lng: number;
+  };
+  open: string; // Opening time
+  close: string; // Closing time
+  active: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
 export interface Subcategory {
   id: string;
   name: string;
