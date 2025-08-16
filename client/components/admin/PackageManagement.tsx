@@ -1,15 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { safeReadResponse, getApiErrorMessage } from "../../lib/response-utils";
-import {
-  Plus,
-  Edit,
-  Trash2,
-  Package,
-  Eye,
-  Search,
-  Filter,
-} from "lucide-react";
+import { Plus, Edit, Trash2, Package, Eye, Search, Filter } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
@@ -29,12 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import {
   Dialog,
   DialogContent,
@@ -113,7 +100,8 @@ export default function PackageManagement() {
   };
 
   const deletePackage = async (packageId: string) => {
-    if (!token || !confirm("Are you sure you want to delete this package?")) return;
+    if (!token || !confirm("Are you sure you want to delete this package?"))
+      return;
 
     try {
       const response = await fetch(`/api/packages/${packageId}`, {
@@ -124,8 +112,10 @@ export default function PackageManagement() {
       const { ok, status, data } = await safeReadResponse(response);
 
       if (ok) {
-        setPackages(packages.filter(pkg => pkg._id !== packageId));
-        alert("Package deleted successfully! Changes will be visible to users immediately.");
+        setPackages(packages.filter((pkg) => pkg._id !== packageId));
+        alert(
+          "Package deleted successfully! Changes will be visible to users immediately.",
+        );
       } else {
         setError(getApiErrorMessage(data, status, "delete package"));
       }
@@ -187,7 +177,7 @@ export default function PackageManagement() {
         },
         body: JSON.stringify({
           ...formData,
-          features: formData.features.filter(f => f.trim() !== ""),
+          features: formData.features.filter((f) => f.trim() !== ""),
         }),
       });
 
@@ -208,7 +198,9 @@ export default function PackageManagement() {
 
         // Show success message
         const action = editingPackage ? "updated" : "created";
-        alert(`Package ${action} successfully! Changes will be visible to users immediately.`);
+        alert(
+          `Package ${action} successfully! Changes will be visible to users immediately.`,
+        );
       } else {
         setError(data.error || "Failed to save package");
       }
@@ -237,11 +229,12 @@ export default function PackageManagement() {
     }
   };
 
-  const filteredPackages = packages.filter(pkg => {
-    const matchesSearch = pkg.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         pkg.description.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredPackages = packages.filter((pkg) => {
+    const matchesSearch =
+      pkg.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      pkg.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = selectedType === "all" || pkg.type === selectedType;
-    
+
     return matchesSearch && matchesType;
   });
 
@@ -276,10 +269,17 @@ export default function PackageManagement() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-2xl font-bold text-gray-900">Package Management</h3>
-          <p className="text-gray-600">Manage advertisement packages and pricing</p>
+          <h3 className="text-2xl font-bold text-gray-900">
+            Package Management
+          </h3>
+          <p className="text-gray-600">
+            Manage advertisement packages and pricing
+          </p>
         </div>
-        <Button onClick={handleCreatePackage} className="bg-[#C70000] hover:bg-[#A60000]">
+        <Button
+          onClick={handleCreatePackage}
+          className="bg-[#C70000] hover:bg-[#A60000]"
+        >
           <Plus className="h-4 w-4 mr-2" />
           Add Package
         </Button>
@@ -289,7 +289,9 @@ export default function PackageManagement() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Packages</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Packages
+            </CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -299,36 +301,42 @@ export default function PackageManagement() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Basic Packages</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Basic Packages
+            </CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {packages.filter(p => p.type === "basic").length}
+              {packages.filter((p) => p.type === "basic").length}
             </div>
             <p className="text-xs text-muted-foreground">Free tier</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Featured Packages</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Featured Packages
+            </CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {packages.filter(p => p.type === "featured").length}
+              {packages.filter((p) => p.type === "featured").length}
             </div>
             <p className="text-xs text-muted-foreground">Mid tier</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Premium Packages</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Premium Packages
+            </CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {packages.filter(p => p.type === "premium").length}
+              {packages.filter((p) => p.type === "premium").length}
             </div>
             <p className="text-xs text-muted-foreground">Premium tier</p>
           </CardContent>
@@ -415,7 +423,10 @@ export default function PackageManagement() {
                         </DialogHeader>
                         <div className="space-y-2">
                           {pkg.features.map((feature, index) => (
-                            <div key={index} className="flex items-center space-x-2">
+                            <div
+                              key={index}
+                              className="flex items-center space-x-2"
+                            >
                               <div className="w-2 h-2 bg-[#C70000] rounded-full"></div>
                               <span>{feature}</span>
                             </div>
@@ -441,7 +452,11 @@ export default function PackageManagement() {
                       <Button size="sm" variant="outline">
                         <Eye className="h-4 w-4" />
                       </Button>
-                      <Button size="sm" variant="outline" onClick={() => handleEditPackage(pkg)}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleEditPackage(pkg)}
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button
@@ -458,7 +473,10 @@ export default function PackageManagement() {
               ))}
               {filteredPackages.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-gray-500 py-8">
+                  <TableCell
+                    colSpan={7}
+                    className="text-center text-gray-500 py-8"
+                  >
                     No packages found
                   </TableCell>
                 </TableRow>
@@ -485,7 +503,9 @@ export default function PackageManagement() {
                 </label>
                 <Input
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   placeholder="Enter package name"
                 />
               </div>
@@ -493,7 +513,12 @@ export default function PackageManagement() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Package Type *
                 </label>
-                <Select value={formData.type} onValueChange={(value: any) => setFormData({ ...formData, type: value })}>
+                <Select
+                  value={formData.type}
+                  onValueChange={(value: any) =>
+                    setFormData({ ...formData, type: value })
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -512,7 +537,9 @@ export default function PackageManagement() {
               </label>
               <Textarea
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
                 placeholder="Enter package description"
                 rows={3}
               />
@@ -527,7 +554,12 @@ export default function PackageManagement() {
                   type="number"
                   min="0"
                   value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: parseInt(e.target.value) || 0 })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      price: parseInt(e.target.value) || 0,
+                    })
+                  }
                   placeholder="0"
                 />
               </div>
@@ -539,7 +571,12 @@ export default function PackageManagement() {
                   type="number"
                   min="1"
                   value={formData.duration}
-                  onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) || 30 })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      duration: parseInt(e.target.value) || 30,
+                    })
+                  }
                   placeholder="30"
                 />
               </div>
@@ -589,7 +626,9 @@ export default function PackageManagement() {
                 type="checkbox"
                 id="active"
                 checked={formData.active}
-                onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                onChange={(e) =>
+                  setFormData({ ...formData, active: e.target.checked })
+                }
                 className="rounded border-gray-300"
               />
               <label htmlFor="active" className="text-sm text-gray-700">
@@ -613,7 +652,11 @@ export default function PackageManagement() {
                 disabled={saving || !formData.name || !formData.description}
                 className="bg-[#C70000] hover:bg-[#A50000]"
               >
-                {saving ? "Saving..." : editingPackage ? "Update Package" : "Create Package"}
+                {saving
+                  ? "Saving..."
+                  : editingPackage
+                    ? "Update Package"
+                    : "Create Package"}
               </Button>
             </div>
           </div>

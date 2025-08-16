@@ -1,26 +1,49 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../hooks/useAuth';
-import { useNavigate, Link } from 'react-router-dom';
-import { Property } from '@shared/types';
-import { api } from '../lib/api';
-import { Button } from '../components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Badge } from '../components/ui/badge';
-import { Input } from '../components/ui/input';
-import { Textarea } from '../components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
-import { Switch } from '../components/ui/switch';
-import { Label } from '../components/ui/label';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
-import { 
-  Bell, 
-  Home, 
-  Eye, 
-  MessageSquare, 
-  TrendingUp, 
-  Clock, 
-  CheckCircle, 
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../hooks/useAuth";
+import { useNavigate, Link } from "react-router-dom";
+import { Property } from "@shared/types";
+import { api } from "../lib/api";
+import { Button } from "../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Input } from "../components/ui/input";
+import { Textarea } from "../components/ui/textarea";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../components/ui/dialog";
+import { Switch } from "../components/ui/switch";
+import { Label } from "../components/ui/label";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../components/ui/table";
+import {
+  Bell,
+  Home,
+  Eye,
+  MessageSquare,
+  TrendingUp,
+  Clock,
+  CheckCircle,
   XCircle,
   User,
   Settings,
@@ -49,16 +72,16 @@ import {
   Filter,
   ExternalLink,
   Check,
-  X
-} from 'lucide-react';
-import OLXStyleHeader from '../components/OLXStyleHeader';
-import BottomNavigation from '../components/BottomNavigation';
+  X,
+} from "lucide-react";
+import OLXStyleHeader from "../components/OLXStyleHeader";
+import BottomNavigation from "../components/BottomNavigation";
 
 interface Notification {
   _id: string;
   title: string;
   message: string;
-  type: 'approval' | 'rejection' | 'account' | 'general';
+  type: "approval" | "rejection" | "account" | "general";
   isRead: boolean;
   createdAt: string;
   actionUrl?: string;
@@ -81,14 +104,14 @@ interface Package {
   price: number;
   features: string[];
   duration: number; // days
-  type: 'basic' | 'premium' | 'elite';
+  type: "basic" | "premium" | "elite";
 }
 
 interface Payment {
   _id: string;
   amount: number;
   package: string;
-  status: 'completed' | 'pending' | 'failed';
+  status: "completed" | "pending" | "failed";
   date: string;
   transactionId: string;
 }
@@ -96,10 +119,10 @@ interface Payment {
 export default function EnhancedSellerDashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState("overview");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  
+  const [error, setError] = useState("");
+
   // Data states
   const [properties, setProperties] = useState<Property[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -107,12 +130,12 @@ export default function EnhancedSellerDashboard() {
   const [packages, setPackages] = useState<Package[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [profileData, setProfileData] = useState({
-    name: user?.name || '',
-    email: user?.email || '',
-    phone: user?.phone || '',
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
+    name: user?.name || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
     emailNotifications: true,
     pushNotifications: true,
   });
@@ -132,24 +155,24 @@ export default function EnhancedSellerDashboard() {
 
   useEffect(() => {
     if (!user) {
-      navigate('/login');
+      navigate("/login");
       return;
     }
-    
-    if (user.userType !== 'seller') {
-      navigate('/user-dashboard');
+
+    if (user.userType !== "seller") {
+      navigate("/user-dashboard");
       return;
     }
-    
+
     fetchDashboardData();
   }, [user, navigate]);
 
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        navigate('/login');
+        navigate("/login");
         return;
       }
 
@@ -159,13 +182,13 @@ export default function EnhancedSellerDashboard() {
         notificationsRes,
         messagesRes,
         packagesRes,
-        paymentsRes
+        paymentsRes,
       ] = await Promise.all([
-        api.get('/seller/properties', token),
-        api.get('/seller/notifications', token),
-        api.get('/seller/messages', token),
-        api.get('/seller/packages', token),
-        api.get('/seller/payments', token)
+        api.get("/seller/properties", token),
+        api.get("/seller/notifications", token),
+        api.get("/seller/messages", token),
+        api.get("/seller/packages", token),
+        api.get("/seller/payments", token),
       ]);
 
       // Handle properties
@@ -193,10 +216,9 @@ export default function EnhancedSellerDashboard() {
       if (paymentsRes.data.success) {
         setPayments(paymentsRes.data.data);
       }
-
     } catch (error: any) {
-      console.error('Error fetching dashboard data:', error);
-      setError('Failed to load dashboard data. Please try again.');
+      console.error("Error fetching dashboard data:", error);
+      setError("Failed to load dashboard data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -204,49 +226,57 @@ export default function EnhancedSellerDashboard() {
 
   const calculateStats = (properties: Property[]) => {
     const totalViews = properties.reduce((sum, prop) => sum + prop.views, 0);
-    const totalInquiries = properties.reduce((sum, prop) => sum + prop.inquiries, 0);
-    const unreadNotifications = notifications.filter(n => !n.isRead).length;
-    const unreadMessages = messages.filter(m => !m.isRead).length;
-    
+    const totalInquiries = properties.reduce(
+      (sum, prop) => sum + prop.inquiries,
+      0,
+    );
+    const unreadNotifications = notifications.filter((n) => !n.isRead).length;
+    const unreadMessages = messages.filter((m) => !m.isRead).length;
+
     setStats({
       totalProperties: properties.length,
-      pendingApproval: properties.filter(p => p.approvalStatus === 'pending').length,
-      approved: properties.filter(p => p.approvalStatus === 'approved').length,
-      rejected: properties.filter(p => p.approvalStatus === 'rejected').length,
+      pendingApproval: properties.filter((p) => p.approvalStatus === "pending")
+        .length,
+      approved: properties.filter((p) => p.approvalStatus === "approved")
+        .length,
+      rejected: properties.filter((p) => p.approvalStatus === "rejected")
+        .length,
       totalViews,
       totalInquiries,
       unreadNotifications,
       unreadMessages,
       profileViews: Math.floor(Math.random() * 500) + 100, // Mock data
-      premiumListings: properties.filter(p => p.isPremium).length,
+      premiumListings: properties.filter((p) => p.isPremium).length,
     });
   };
 
   const markNotificationAsRead = async (notificationId: string) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       await api.put(`/seller/notifications/${notificationId}/read`, {}, token);
-      setNotifications(notifications.map(n => 
-        n._id === notificationId ? { ...n, isRead: true } : n
-      ));
+      setNotifications(
+        notifications.map((n) =>
+          n._id === notificationId ? { ...n, isRead: true } : n,
+        ),
+      );
     } catch (error) {
-      console.error('Error marking notification as read:', error);
+      console.error("Error marking notification as read:", error);
     }
   };
 
   const deleteNotification = async (notificationId: string) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       await api.delete(`/seller/notifications/${notificationId}`, token);
-      setNotifications(notifications.filter(n => n._id !== notificationId));
+      setNotifications(notifications.filter((n) => n._id !== notificationId));
     } catch (error) {
-      console.error('Error deleting notification:', error);
+      console.error("Error deleting notification:", error);
     }
   };
 
   const updateProfile = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const updateData = {
         name: profileData.name,
         email: profileData.email,
@@ -255,49 +285,65 @@ export default function EnhancedSellerDashboard() {
         pushNotifications: profileData.pushNotifications,
       };
 
-      await api.put('/seller/profile', updateData, token);
-      setError('');
+      await api.put("/seller/profile", updateData, token);
+      setError("");
       // Show success message
     } catch (error) {
-      console.error('Error updating profile:', error);
-      setError('Failed to update profile');
+      console.error("Error updating profile:", error);
+      setError("Failed to update profile");
     }
   };
 
   const changePassword = async () => {
     if (profileData.newPassword !== profileData.confirmPassword) {
-      setError('New passwords do not match');
+      setError("New passwords do not match");
       return;
     }
 
     try {
-      const token = localStorage.getItem('token');
-      await api.put('/seller/change-password', {
-        currentPassword: profileData.currentPassword,
-        newPassword: profileData.newPassword,
-      }, token);
-      
-      setProfileData(prev => ({
+      const token = localStorage.getItem("token");
+      await api.put(
+        "/seller/change-password",
+        {
+          currentPassword: profileData.currentPassword,
+          newPassword: profileData.newPassword,
+        },
+        token,
+      );
+
+      setProfileData((prev) => ({
         ...prev,
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: '',
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
       }));
       // Show success message
     } catch (error) {
-      console.error('Error changing password:', error);
-      setError('Failed to change password');
+      console.error("Error changing password:", error);
+      setError("Failed to change password");
     }
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'pending':
-        return <Badge variant="outline" className="bg-yellow-100 text-yellow-800">Pending Review</Badge>;
-      case 'approved':
-        return <Badge variant="default" className="bg-green-100 text-green-800">Approved</Badge>;
-      case 'rejected':
-        return <Badge variant="destructive" className="bg-red-100 text-red-800">Rejected</Badge>;
+      case "pending":
+        return (
+          <Badge variant="outline" className="bg-yellow-100 text-yellow-800">
+            Pending Review
+          </Badge>
+        );
+      case "approved":
+        return (
+          <Badge variant="default" className="bg-green-100 text-green-800">
+            Approved
+          </Badge>
+        );
+      case "rejected":
+        return (
+          <Badge variant="destructive" className="bg-red-100 text-red-800">
+            Rejected
+          </Badge>
+        );
       default:
         return <Badge variant="outline">Unknown</Badge>;
     }
@@ -305,11 +351,11 @@ export default function EnhancedSellerDashboard() {
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
-      case 'approval':
+      case "approval":
         return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case 'rejection':
+      case "rejection":
         return <XCircle className="h-4 w-4 text-red-500" />;
-      case 'account':
+      case "account":
         return <User className="h-4 w-4 text-blue-500" />;
       default:
         return <Bell className="h-4 w-4 text-gray-500" />;
@@ -318,7 +364,7 @@ export default function EnhancedSellerDashboard() {
 
   const handleLogout = () => {
     logout();
-    navigate('/');
+    navigate("/");
   };
 
   if (loading) {
@@ -339,18 +385,24 @@ export default function EnhancedSellerDashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       <OLXStyleHeader />
-      
+
       <div className="container mx-auto px-4 py-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Seller Dashboard</h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Seller Dashboard
+            </h1>
             <p className="text-gray-600">Welcome back, {user?.name}!</p>
           </div>
           <div className="flex items-center space-x-2">
             {/* Notification Bell */}
             <div className="relative">
-              <Button variant="outline" size="sm" onClick={() => setActiveTab('notifications')}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setActiveTab("notifications")}
+              >
                 <Bell className="h-4 w-4" />
                 {stats.unreadNotifications > 0 && (
                   <Badge className="absolute -top-2 -right-2 h-5 w-5 text-xs bg-red-500 text-white">
@@ -387,34 +439,40 @@ export default function EnhancedSellerDashboard() {
               <div className="text-2xl font-bold">{stats.totalProperties}</div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Pending</CardTitle>
               <Clock className="h-4 w-4 text-yellow-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-yellow-600">{stats.pendingApproval}</div>
+              <div className="text-2xl font-bold text-yellow-600">
+                {stats.pendingApproval}
+              </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Approved</CardTitle>
               <CheckCircle className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{stats.approved}</div>
+              <div className="text-2xl font-bold text-green-600">
+                {stats.approved}
+              </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Views</CardTitle>
               <Eye className="h-4 w-4 text-blue-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-blue-600">{stats.totalViews}</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {stats.totalViews}
+              </div>
             </CardContent>
           </Card>
 
@@ -424,17 +482,23 @@ export default function EnhancedSellerDashboard() {
               <MessageSquare className="h-4 w-4 text-purple-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-purple-600">{stats.unreadMessages}</div>
+              <div className="text-2xl font-bold text-purple-600">
+                {stats.unreadMessages}
+              </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Profile Views</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Profile Views
+              </CardTitle>
               <Users className="h-4 w-4 text-indigo-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-indigo-600">{stats.profileViews}</div>
+              <div className="text-2xl font-bold text-indigo-600">
+                {stats.profileViews}
+              </div>
             </CardContent>
           </Card>
 
@@ -444,7 +508,9 @@ export default function EnhancedSellerDashboard() {
               <Crown className="h-4 w-4 text-amber-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-amber-600">{stats.premiumListings}</div>
+              <div className="text-2xl font-bold text-amber-600">
+                {stats.premiumListings}
+              </div>
             </CardContent>
           </Card>
 
@@ -454,7 +520,9 @@ export default function EnhancedSellerDashboard() {
               <TrendingUp className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{stats.totalInquiries}</div>
+              <div className="text-2xl font-bold text-green-600">
+                {stats.totalInquiries}
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -500,15 +568,27 @@ export default function EnhancedSellerDashboard() {
                       Post New Property
                     </Button>
                   </Link>
-                  <Button variant="outline" className="w-full" onClick={() => setActiveTab('properties')}>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => setActiveTab("properties")}
+                  >
                     <Home className="h-4 w-4 mr-2" />
                     Manage Properties
                   </Button>
-                  <Button variant="outline" className="w-full" onClick={() => setActiveTab('messages')}>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => setActiveTab("messages")}
+                  >
                     <MessageSquare className="h-4 w-4 mr-2" />
                     View Messages ({stats.unreadMessages})
                   </Button>
-                  <Button variant="outline" className="w-full" onClick={() => setActiveTab('payments')}>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => setActiveTab("payments")}
+                  >
                     <Crown className="h-4 w-4 mr-2" />
                     Upgrade to Premium
                   </Button>
@@ -520,7 +600,11 @@ export default function EnhancedSellerDashboard() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Recent Properties</CardTitle>
-                <Button variant="outline" size="sm" onClick={() => setActiveTab('properties')}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setActiveTab("properties")}
+                >
                   View All
                 </Button>
               </CardHeader>
@@ -528,7 +612,9 @@ export default function EnhancedSellerDashboard() {
                 {properties.length === 0 ? (
                   <div className="text-center py-8">
                     <Home className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <p className="text-gray-500 mb-4">You haven't posted any properties yet</p>
+                    <p className="text-gray-500 mb-4">
+                      You haven't posted any properties yet
+                    </p>
                     <Link to="/post-property">
                       <Button className="bg-[#C70000] hover:bg-[#A60000] text-white">
                         <Plus className="h-4 w-4 mr-2" />
@@ -539,10 +625,15 @@ export default function EnhancedSellerDashboard() {
                 ) : (
                   <div className="space-y-4">
                     {properties.slice(0, 3).map((property) => (
-                      <div key={property._id} className="border border-gray-200 rounded-lg p-4">
+                      <div
+                        key={property._id}
+                        className="border border-gray-200 rounded-lg p-4"
+                      >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <h3 className="font-medium text-gray-900">{property.title}</h3>
+                            <h3 className="font-medium text-gray-900">
+                              {property.title}
+                            </h3>
                             <p className="text-sm text-gray-500 mt-1">
                               <MapPin className="inline h-3 w-3 mr-1" />
                               {property.location.address}
@@ -605,17 +696,25 @@ export default function EnhancedSellerDashboard() {
                       <div
                         key={notification._id}
                         className={`border rounded-lg p-4 ${
-                          notification.isRead ? 'bg-gray-50' : 'bg-blue-50 border-blue-200'
+                          notification.isRead
+                            ? "bg-gray-50"
+                            : "bg-blue-50 border-blue-200"
                         }`}
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex items-start space-x-3 flex-1">
                             {getNotificationIcon(notification.type)}
                             <div className="flex-1">
-                              <h4 className="font-medium text-gray-900">{notification.title}</h4>
-                              <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
+                              <h4 className="font-medium text-gray-900">
+                                {notification.title}
+                              </h4>
+                              <p className="text-sm text-gray-600 mt-1">
+                                {notification.message}
+                              </p>
                               <p className="text-xs text-gray-400 mt-2">
-                                {new Date(notification.createdAt).toLocaleString()}
+                                {new Date(
+                                  notification.createdAt,
+                                ).toLocaleString()}
                               </p>
                             </div>
                           </div>
@@ -624,7 +723,9 @@ export default function EnhancedSellerDashboard() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => markNotificationAsRead(notification._id)}
+                                onClick={() =>
+                                  markNotificationAsRead(notification._id)
+                                }
                               >
                                 <Check className="h-3 w-3" />
                               </Button>
@@ -632,7 +733,9 @@ export default function EnhancedSellerDashboard() {
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => deleteNotification(notification._id)}
+                              onClick={() =>
+                                deleteNotification(notification._id)
+                              }
                             >
                               <X className="h-3 w-3" />
                             </Button>
@@ -665,7 +768,9 @@ export default function EnhancedSellerDashboard() {
                 {properties.length === 0 ? (
                   <div className="text-center py-8">
                     <Home className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <p className="text-gray-500 mb-4">No properties posted yet</p>
+                    <p className="text-gray-500 mb-4">
+                      No properties posted yet
+                    </p>
                     <Link to="/post-property">
                       <Button className="bg-[#C70000] hover:bg-[#A60000]">
                         <Plus className="h-4 w-4 mr-2" />
@@ -691,9 +796,14 @@ export default function EnhancedSellerDashboard() {
                         <TableRow key={property._id}>
                           <TableCell>
                             <div>
-                              <div className="font-medium">{property.title}</div>
+                              <div className="font-medium">
+                                {property.title}
+                              </div>
                               <div className="text-sm text-gray-500">
-                                Posted {new Date(property.createdAt).toLocaleDateString()}
+                                Posted{" "}
+                                {new Date(
+                                  property.createdAt,
+                                ).toLocaleDateString()}
                               </div>
                             </div>
                           </TableCell>
@@ -709,11 +819,12 @@ export default function EnhancedSellerDashboard() {
                           </TableCell>
                           <TableCell>
                             {getStatusBadge(property.approvalStatus)}
-                            {property.approvalStatus === 'rejected' && property.rejectionReason && (
-                              <p className="text-xs text-red-600 mt-1">
-                                Reason: {property.rejectionReason}
-                              </p>
-                            )}
+                            {property.approvalStatus === "rejected" &&
+                              property.rejectionReason && (
+                                <p className="text-xs text-red-600 mt-1">
+                                  Reason: {property.rejectionReason}
+                                </p>
+                              )}
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center space-x-1">
@@ -775,21 +886,29 @@ export default function EnhancedSellerDashboard() {
                       <div
                         key={message._id}
                         className={`border rounded-lg p-4 ${
-                          message.isRead ? 'bg-gray-50' : 'bg-blue-50 border-blue-200'
+                          message.isRead
+                            ? "bg-gray-50"
+                            : "bg-blue-50 border-blue-200"
                         }`}
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center space-x-2 mb-2">
-                              <h4 className="font-medium text-gray-900">{message.buyerName}</h4>
+                              <h4 className="font-medium text-gray-900">
+                                {message.buyerName}
+                              </h4>
                               <Badge variant="outline" className="text-xs">
                                 {message.buyerEmail}
                               </Badge>
                             </div>
-                            <p className="text-sm text-gray-600 mb-2">{message.message}</p>
+                            <p className="text-sm text-gray-600 mb-2">
+                              {message.message}
+                            </p>
                             <div className="flex items-center space-x-4 text-xs text-gray-400">
                               <span>Property: {message.propertyTitle}</span>
-                              <span>{new Date(message.timestamp).toLocaleString()}</span>
+                              <span>
+                                {new Date(message.timestamp).toLocaleString()}
+                              </span>
                             </div>
                           </div>
                           <Button size="sm" variant="outline">
@@ -818,19 +937,27 @@ export default function EnhancedSellerDashboard() {
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
                       <span>Total Profile Views</span>
-                      <span className="font-bold text-blue-600">{stats.profileViews}</span>
+                      <span className="font-bold text-blue-600">
+                        {stats.profileViews}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span>Property Views</span>
-                      <span className="font-bold text-green-600">{stats.totalViews}</span>
+                      <span className="font-bold text-green-600">
+                        {stats.totalViews}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span>Interested Buyers</span>
-                      <span className="font-bold text-purple-600">{stats.totalInquiries}</span>
+                      <span className="font-bold text-purple-600">
+                        {stats.totalInquiries}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span>Premium Listings</span>
-                      <span className="font-bold text-amber-600">{stats.premiumListings}</span>
+                      <span className="font-bold text-amber-600">
+                        {stats.premiumListings}
+                      </span>
                     </div>
                   </div>
                 </CardContent>
@@ -846,7 +973,8 @@ export default function EnhancedSellerDashboard() {
                 <CardContent>
                   <div className="space-y-4">
                     <p className="text-sm text-gray-600">
-                      Upgrade to premium to get more visibility and better reach for your properties.
+                      Upgrade to premium to get more visibility and better reach
+                      for your properties.
                     </p>
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2">
@@ -855,14 +983,19 @@ export default function EnhancedSellerDashboard() {
                       </div>
                       <div className="flex items-center space-x-2">
                         <Star className="h-4 w-4 text-amber-500" />
-                        <span className="text-sm">Priority in search results</span>
+                        <span className="text-sm">
+                          Priority in search results
+                        </span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <TrendingUp className="h-4 w-4 text-amber-500" />
                         <span className="text-sm">10x more visibility</span>
                       </div>
                     </div>
-                    <Button className="w-full bg-amber-500 hover:bg-amber-600" onClick={() => setActiveTab('payments')}>
+                    <Button
+                      className="w-full bg-amber-500 hover:bg-amber-600"
+                      onClick={() => setActiveTab("payments")}
+                    >
                       <Crown className="h-4 w-4 mr-2" />
                       Upgrade to Premium
                     </Button>
@@ -889,21 +1022,30 @@ export default function EnhancedSellerDashboard() {
                       <div key={pkg._id} className="border rounded-lg p-4">
                         <div className="flex items-center justify-between mb-3">
                           <h3 className="font-bold text-lg">{pkg.name}</h3>
-                          <Badge className={
-                            pkg.type === 'elite' ? 'bg-purple-100 text-purple-800' :
-                            pkg.type === 'premium' ? 'bg-amber-100 text-amber-800' :
-                            'bg-blue-100 text-blue-800'
-                          }>
+                          <Badge
+                            className={
+                              pkg.type === "elite"
+                                ? "bg-purple-100 text-purple-800"
+                                : pkg.type === "premium"
+                                  ? "bg-amber-100 text-amber-800"
+                                  : "bg-blue-100 text-blue-800"
+                            }
+                          >
                             {pkg.type.toUpperCase()}
                           </Badge>
                         </div>
                         <div className="text-2xl font-bold text-[#C70000] mb-3">
                           ₹{pkg.price.toLocaleString()}
-                          <span className="text-sm text-gray-500">/{pkg.duration} days</span>
+                          <span className="text-sm text-gray-500">
+                            /{pkg.duration} days
+                          </span>
                         </div>
                         <div className="space-y-1 mb-4">
                           {pkg.features.map((feature, index) => (
-                            <div key={index} className="flex items-center space-x-2">
+                            <div
+                              key={index}
+                              className="flex items-center space-x-2"
+                            >
                               <CheckCircle className="h-3 w-3 text-green-500" />
                               <span className="text-sm">{feature}</span>
                             </div>
@@ -935,10 +1077,15 @@ export default function EnhancedSellerDashboard() {
                   ) : (
                     <div className="space-y-3">
                       {payments.map((payment) => (
-                        <div key={payment._id} className="border rounded-lg p-3">
+                        <div
+                          key={payment._id}
+                          className="border rounded-lg p-3"
+                        >
                           <div className="flex items-center justify-between">
                             <div>
-                              <div className="font-medium">{payment.package}</div>
+                              <div className="font-medium">
+                                {payment.package}
+                              </div>
                               <div className="text-sm text-gray-500">
                                 {new Date(payment.date).toLocaleDateString()}
                               </div>
@@ -950,11 +1097,15 @@ export default function EnhancedSellerDashboard() {
                               <div className="font-bold text-[#C70000]">
                                 ₹{payment.amount.toLocaleString()}
                               </div>
-                              <Badge className={
-                                payment.status === 'completed' ? 'bg-green-100 text-green-800' :
-                                payment.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                                'bg-red-100 text-red-800'
-                              }>
+                              <Badge
+                                className={
+                                  payment.status === "completed"
+                                    ? "bg-green-100 text-green-800"
+                                    : payment.status === "pending"
+                                      ? "bg-yellow-100 text-yellow-800"
+                                      : "bg-red-100 text-red-800"
+                                }
+                              >
                                 {payment.status}
                               </Badge>
                             </div>
@@ -995,7 +1146,12 @@ export default function EnhancedSellerDashboard() {
                     <Input
                       id="name"
                       value={profileData.name}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, name: e.target.value }))}
+                      onChange={(e) =>
+                        setProfileData((prev) => ({
+                          ...prev,
+                          name: e.target.value,
+                        }))
+                      }
                     />
                   </div>
                   <div>
@@ -1004,7 +1160,12 @@ export default function EnhancedSellerDashboard() {
                       id="email"
                       type="email"
                       value={profileData.email}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, email: e.target.value }))}
+                      onChange={(e) =>
+                        setProfileData((prev) => ({
+                          ...prev,
+                          email: e.target.value,
+                        }))
+                      }
                     />
                   </div>
                   <div>
@@ -1012,7 +1173,12 @@ export default function EnhancedSellerDashboard() {
                     <Input
                       id="phone"
                       value={profileData.phone}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
+                      onChange={(e) =>
+                        setProfileData((prev) => ({
+                          ...prev,
+                          phone: e.target.value,
+                        }))
+                      }
                     />
                   </div>
                   <Button onClick={updateProfile} className="w-full">
@@ -1036,7 +1202,12 @@ export default function EnhancedSellerDashboard() {
                       id="currentPassword"
                       type="password"
                       value={profileData.currentPassword}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, currentPassword: e.target.value }))}
+                      onChange={(e) =>
+                        setProfileData((prev) => ({
+                          ...prev,
+                          currentPassword: e.target.value,
+                        }))
+                      }
                     />
                   </div>
                   <div>
@@ -1045,42 +1216,72 @@ export default function EnhancedSellerDashboard() {
                       id="newPassword"
                       type="password"
                       value={profileData.newPassword}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, newPassword: e.target.value }))}
+                      onChange={(e) =>
+                        setProfileData((prev) => ({
+                          ...prev,
+                          newPassword: e.target.value,
+                        }))
+                      }
                     />
                   </div>
                   <div>
-                    <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                    <Label htmlFor="confirmPassword">
+                      Confirm New Password
+                    </Label>
                     <Input
                       id="confirmPassword"
                       type="password"
                       value={profileData.confirmPassword}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                      onChange={(e) =>
+                        setProfileData((prev) => ({
+                          ...prev,
+                          confirmPassword: e.target.value,
+                        }))
+                      }
                     />
                   </div>
                   <Button onClick={changePassword} className="w-full mb-4">
                     Change Password
                   </Button>
-                  
+
                   <div className="space-y-3 pt-4 border-t">
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="emailNotifications">Email Notifications</Label>
+                      <Label htmlFor="emailNotifications">
+                        Email Notifications
+                      </Label>
                       <Switch
                         id="emailNotifications"
                         checked={profileData.emailNotifications}
-                        onCheckedChange={(checked) => setProfileData(prev => ({ ...prev, emailNotifications: checked }))}
+                        onCheckedChange={(checked) =>
+                          setProfileData((prev) => ({
+                            ...prev,
+                            emailNotifications: checked,
+                          }))
+                        }
                       />
                     </div>
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="pushNotifications">Push Notifications</Label>
+                      <Label htmlFor="pushNotifications">
+                        Push Notifications
+                      </Label>
                       <Switch
                         id="pushNotifications"
                         checked={profileData.pushNotifications}
-                        onCheckedChange={(checked) => setProfileData(prev => ({ ...prev, pushNotifications: checked }))}
+                        onCheckedChange={(checked) =>
+                          setProfileData((prev) => ({
+                            ...prev,
+                            pushNotifications: checked,
+                          }))
+                        }
                       />
                     </div>
                   </div>
 
-                  <Button onClick={handleLogout} variant="destructive" className="w-full mt-4">
+                  <Button
+                    onClick={handleLogout}
+                    variant="destructive"
+                    className="w-full mt-4"
+                  >
                     <LogOut className="h-4 w-4 mr-2" />
                     Logout
                   </Button>
@@ -1090,7 +1291,7 @@ export default function EnhancedSellerDashboard() {
           </TabsContent>
         </Tabs>
       </div>
-      
+
       <BottomNavigation />
     </div>
   );

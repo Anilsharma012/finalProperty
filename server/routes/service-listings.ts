@@ -18,9 +18,9 @@ export const getServiceListings: RequestHandler = async (req, res) => {
 
     // Build query filter
     const filter: any = { subcategory: subSlug };
-    
+
     // Filter by active status
-    if (req.query.active === 'true') {
+    if (req.query.active === "true") {
       filter.active = true;
     }
 
@@ -49,7 +49,7 @@ export const getServiceListings: RequestHandler = async (req, res) => {
 export const getAllServiceListings: RequestHandler = async (req, res) => {
   try {
     const db = getDatabase();
-    
+
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const skip = (page - 1) * limit;
@@ -57,16 +57,18 @@ export const getAllServiceListings: RequestHandler = async (req, res) => {
     const filter: any = {};
     if (req.query.category) filter.category = req.query.category;
     if (req.query.subcategory) filter.subcategory = req.query.subcategory;
-    if (req.query.active !== undefined) filter.active = req.query.active === 'true';
+    if (req.query.active !== undefined)
+      filter.active = req.query.active === "true";
 
     const [listings, total] = await Promise.all([
-      db.collection("service_listings")
+      db
+        .collection("service_listings")
         .find(filter)
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
         .toArray(),
-      db.collection("service_listings").countDocuments(filter)
+      db.collection("service_listings").countDocuments(filter),
     ]);
 
     const response: ApiResponse<{
@@ -104,13 +106,15 @@ export const getAllServiceListings: RequestHandler = async (req, res) => {
 export const createServiceListing: RequestHandler = async (req, res) => {
   try {
     const db = getDatabase();
-    const listingData: Omit<ServiceListing, '_id'> = {
+    const listingData: Omit<ServiceListing, "_id"> = {
       ...req.body,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
-    const result = await db.collection("service_listings").insertOne(listingData);
+    const result = await db
+      .collection("service_listings")
+      .insertOne(listingData);
 
     const response: ApiResponse<{ _id: string }> = {
       success: true,
@@ -138,10 +142,9 @@ export const updateServiceListing: RequestHandler = async (req, res) => {
       updatedAt: new Date(),
     };
 
-    const result = await db.collection("service_listings").updateOne(
-      { _id: new ObjectId(listingId) },
-      { $set: updateData }
-    );
+    const result = await db
+      .collection("service_listings")
+      .updateOne({ _id: new ObjectId(listingId) }, { $set: updateData });
 
     if (result.matchedCount === 0) {
       return res.status(404).json({
@@ -201,9 +204,9 @@ export const deleteServiceListing: RequestHandler = async (req, res) => {
 export const bulkImportServiceListings: RequestHandler = async (req, res) => {
   try {
     const db = getDatabase();
-    
+
     // Parse CSV data from request body
-    const csvData = JSON.parse(req.body.csvData || '[]');
+    const csvData = JSON.parse(req.body.csvData || "[]");
     const results = {
       created: 0,
       errors: [] as string[],
@@ -213,17 +216,19 @@ export const bulkImportServiceListings: RequestHandler = async (req, res) => {
       try {
         // Auto-create category if it doesn't exist
         if (row.categorySlug) {
-          const existingCategory = await db.collection("categories").findOne({ 
-            slug: row.categorySlug, 
-            type: 'service' 
+          const existingCategory = await db.collection("categories").findOne({
+            slug: row.categorySlug,
+            type: "service",
           });
-          
+
           if (!existingCategory) {
             await db.collection("categories").insertOne({
-              name: row.categorySlug.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
+              name: row.categorySlug
+                .replace(/-/g, " ")
+                .replace(/\b\w/g, (l: string) => l.toUpperCase()),
               slug: row.categorySlug,
-              type: 'service',
-              icon: '🔧',
+              type: "service",
+              icon: "🔧",
               description: `${row.categorySlug} services`,
               subcategories: [],
               order: 999,
@@ -234,47 +239,53 @@ export const bulkImportServiceListings: RequestHandler = async (req, res) => {
 
         // Auto-create subcategory if it doesn't exist
         if (row.subSlug && row.categorySlug) {
-          const category = await db.collection("categories").findOne({ 
-            slug: row.categorySlug, 
-            type: 'service' 
+          const category = await db.collection("categories").findOne({
+            slug: row.categorySlug,
+            type: "service",
           });
-          
+
           if (category) {
-            const hasSubcategory = category.subcategories?.some((sub: any) => sub.slug === row.subSlug);
-            
+            const hasSubcategory = category.subcategories?.some(
+              (sub: any) => sub.slug === row.subSlug,
+            );
+
             if (!hasSubcategory) {
               await db.collection("categories").updateOne(
-                { slug: row.categorySlug, type: 'service' },
+                { slug: row.categorySlug, type: "service" },
                 {
                   $push: {
                     subcategories: {
                       id: row.subSlug,
-                      name: row.subSlug.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
+                      name: row.subSlug
+                        .replace(/-/g, " ")
+                        .replace(/\b\w/g, (l: string) => l.toUpperCase()),
                       slug: row.subSlug,
                       description: `${row.subSlug} services`,
-                    }
-                  }
-                }
+                    },
+                  },
+                },
               );
             }
           }
         }
 
         // Create service listing
-        const listing: Omit<ServiceListing, '_id'> = {
+        const listing: Omit<ServiceListing, "_id"> = {
           category: row.categorySlug,
           subcategory: row.subSlug,
           name: row.name,
           phone: row.phone,
           address: row.address,
-          photos: [row.photo1, row.photo2, row.photo3, row.photo4].filter(Boolean),
+          photos: [row.photo1, row.photo2, row.photo3, row.photo4].filter(
+            Boolean,
+          ),
           geo: {
             lat: parseFloat(row.lat) || 0,
             lng: parseFloat(row.lng) || 0,
           },
-          open: row.open || '09:00',
-          close: row.close || '18:00',
-          active: row.active !== 'false',
+          open: row.open || "09:00",
+          close: row.close || "18:00",
+          active: row.active !== "false",
           createdAt: new Date(),
           updatedAt: new Date(),
         };

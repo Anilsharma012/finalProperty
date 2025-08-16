@@ -12,9 +12,11 @@ export interface SafeResponse<T = any> {
  * Safely reads a fetch response body and parses JSON
  * Prevents "body stream already read" errors
  */
-export const safeReadResponse = async <T = any>(response: Response): Promise<SafeResponse<T>> => {
+export const safeReadResponse = async <T = any>(
+  response: Response,
+): Promise<SafeResponse<T>> => {
   let data: T = {} as T;
-  
+
   try {
     const responseText = await response.text();
     if (responseText.trim()) {
@@ -29,18 +31,22 @@ export const safeReadResponse = async <T = any>(response: Response): Promise<Saf
   return {
     ok: response.ok,
     status: response.status,
-    data
+    data,
   };
 };
 
 /**
  * Standard error message generator for API responses
  */
-export const getApiErrorMessage = (data: any, status: number, operation: string): string => {
+export const getApiErrorMessage = (
+  data: any,
+  status: number,
+  operation: string,
+): string => {
   if (data?.error) {
     return data.error;
   }
-  
+
   return `Failed to ${operation} (${status})`;
 };
 
@@ -52,7 +58,7 @@ export const handleDelete = async (
   token: string,
   confirmMessage: string,
   onSuccess: () => void,
-  onError: (error: string) => void
+  onError: (error: string) => void,
 ): Promise<void> => {
   if (!confirm(confirmMessage)) {
     return;

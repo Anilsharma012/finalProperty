@@ -579,11 +579,37 @@ export function createServer() {
   app.get("/api/other-services/listings", getServiceListings);
 
   // Admin service listings routes
-  app.get("/api/admin/service-listings", authenticateToken, requireAdmin, getAllServiceListings);
-  app.post("/api/admin/service-listings", authenticateToken, requireAdmin, createServiceListing);
-  app.put("/api/admin/service-listings/:listingId", authenticateToken, requireAdmin, updateServiceListing);
-  app.delete("/api/admin/service-listings/:listingId", authenticateToken, requireAdmin, deleteServiceListing);
-  app.post("/api/admin/os-listings/import", authenticateToken, requireAdmin, serviceUpload.single("file"), bulkImportServiceListings);
+  app.get(
+    "/api/admin/service-listings",
+    authenticateToken,
+    requireAdmin,
+    getAllServiceListings,
+  );
+  app.post(
+    "/api/admin/service-listings",
+    authenticateToken,
+    requireAdmin,
+    createServiceListing,
+  );
+  app.put(
+    "/api/admin/service-listings/:listingId",
+    authenticateToken,
+    requireAdmin,
+    updateServiceListing,
+  );
+  app.delete(
+    "/api/admin/service-listings/:listingId",
+    authenticateToken,
+    requireAdmin,
+    deleteServiceListing,
+  );
+  app.post(
+    "/api/admin/os-listings/import",
+    authenticateToken,
+    requireAdmin,
+    serviceUpload.single("file"),
+    bulkImportServiceListings,
+  );
 
   // Homepage slider routes
   app.get("/api/homepage-sliders", getHomepageSliders);

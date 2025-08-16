@@ -205,7 +205,10 @@ export default function AdminCategories({ token }: AdminCategoriesProps) {
 
       {/* Add Category Form */}
       {showAddForm && (
-        <div data-testid="add-category-form" className="bg-white p-6 rounded-lg shadow border">
+        <div
+          data-testid="add-category-form"
+          className="bg-white p-6 rounded-lg shadow border"
+        >
           <h3 className="text-lg font-semibold mb-4">Add New Category</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -293,7 +296,11 @@ export default function AdminCategories({ token }: AdminCategoriesProps) {
       {/* Categories List */}
       <div data-testid="categories-list" className="space-y-4">
         {categories.map((category) => (
-          <div key={category._id} data-testid={`category-item-${category._id}`} className="bg-white rounded-lg shadow border">
+          <div
+            key={category._id}
+            data-testid={`category-item-${category._id}`}
+            className="bg-white rounded-lg shadow border"
+          >
             <div className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">

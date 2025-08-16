@@ -10,7 +10,7 @@ import {
   Settings,
   Store,
   MapPin,
-  Bed
+  Bed,
 } from "lucide-react";
 
 interface CategoryButton {
@@ -25,37 +25,37 @@ const categoryButtons: CategoryButton[] = [
     name: "Buy Property",
     path: "/buy",
     icon: Home,
-    description: "Find your dream home"
+    description: "Find your dream home",
   },
   {
     name: "For Sale",
     path: "/sale",
     icon: Store,
-    description: "Sell your property"
+    description: "Sell your property",
   },
   {
     name: "Rent Property",
     path: "/rent",
     icon: Building,
-    description: "Rent homes & offices"
+    description: "Rent homes & offices",
   },
   {
     name: "Lease Property",
     path: "/lease",
     icon: Calendar,
-    description: "Long-term leasing"
+    description: "Long-term leasing",
   },
   {
     name: "PG & Hostels",
     path: "/pg",
     icon: Bed,
-    description: "Paying guest accommodations"
+    description: "Paying guest accommodations",
   },
   {
     name: "Other Services",
     path: "/services",
     icon: Settings,
-    description: "Property related services"
+    description: "Property related services",
   },
 ];
 
@@ -86,19 +86,23 @@ export default function CategoryBar() {
                 <IconComponent
                   className={cn(
                     "h-8 w-8 mb-2",
-                    isActive ? "text-white" : "text-[#C70000]"
+                    isActive ? "text-white" : "text-[#C70000]",
                   )}
                 />
-                <span className={cn(
-                  "text-sm font-semibold mb-1",
-                  isActive ? "text-white" : "text-gray-900"
-                )}>
+                <span
+                  className={cn(
+                    "text-sm font-semibold mb-1",
+                    isActive ? "text-white" : "text-gray-900",
+                  )}
+                >
                   {category.name}
                 </span>
-                <span className={cn(
-                  "text-xs",
-                  isActive ? "text-red-100" : "text-gray-500"
-                )}>
+                <span
+                  className={cn(
+                    "text-xs",
+                    isActive ? "text-red-100" : "text-gray-500",
+                  )}
+                >
                   {category.description}
                 </span>
               </Link>

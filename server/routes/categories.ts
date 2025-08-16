@@ -12,7 +12,8 @@ export const getCategories: RequestHandler = async (req, res) => {
       // Database not initialized yet
       return res.status(503).json({
         success: false,
-        error: "Database connection is being established. Please try again in a moment.",
+        error:
+          "Database connection is being established. Please try again in a moment.",
       });
     }
 
@@ -24,12 +25,12 @@ export const getCategories: RequestHandler = async (req, res) => {
       filter.type = req.query.type;
     } else {
       // Default to property type for backward compatibility
-      filter.type = { $in: ['property', null, undefined] };
+      filter.type = { $in: ["property", null, undefined] };
     }
 
     // Filter by active status
     if (req.query.active !== undefined) {
-      filter.active = req.query.active === 'true';
+      filter.active = req.query.active === "true";
     }
 
     const categories = await db
@@ -112,7 +113,7 @@ export const getSubcategories: RequestHandler = async (req, res) => {
 
     // Filter subcategories by active status if specified
     let subcategories = category.subcategories || [];
-    if (req.query.active === 'true') {
+    if (req.query.active === "true") {
       subcategories = subcategories.filter((sub: any) => sub.active !== false);
     }
 

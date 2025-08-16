@@ -1,18 +1,22 @@
-import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import ServiceCategories from './ServiceCategories';
-import ServiceListings from './ServiceListings';
-import BulkImportServices from './BulkImportServices';
-import { Layers, List, MapPin, Plus } from 'lucide-react';
+import React, { useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import ServiceCategories from "./ServiceCategories";
+import ServiceListings from "./ServiceListings";
+import BulkImportServices from "./BulkImportServices";
+import { Layers, List, MapPin, Plus } from "lucide-react";
 
 export default function OtherServicesManagement() {
-  const [activeTab, setActiveTab] = useState('categories');
+  const [activeTab, setActiveTab] = useState("categories");
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Other Services Management</h1>
-        <p className="text-gray-600">Manage service categories, subcategories, and listings</p>
+        <h1 className="text-3xl font-bold text-gray-900">
+          Other Services Management
+        </h1>
+        <p className="text-gray-600">
+          Manage service categories, subcategories, and listings
+        </p>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -41,10 +45,12 @@ export default function OtherServicesManagement() {
 
         <TabsContent value="subcategories" className="mt-6">
           <div className="text-center py-20">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Service Subcategories</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              Service Subcategories
+            </h3>
             <p className="text-gray-500">
-              Subcategories are managed within Service Categories. 
-              Go to Service Categories tab to add subcategories to existing categories.
+              Subcategories are managed within Service Categories. Go to Service
+              Categories tab to add subcategories to existing categories.
             </p>
           </div>
         </TabsContent>

@@ -96,7 +96,7 @@ export interface Category {
   _id?: string;
   name: string;
   slug: string;
-  type: 'property' | 'service'; // default 'property'
+  type: "property" | "service"; // default 'property'
   icon: string;
   description?: string;
   subcategories: Subcategory[];
@@ -194,7 +194,14 @@ export interface CustomField {
   _id?: string;
   name: string;
   slug: string;
-  type: "text" | "number" | "select" | "multiselect" | "checkbox" | "date" | "textarea";
+  type:
+    | "text"
+    | "number"
+    | "select"
+    | "multiselect"
+    | "checkbox"
+    | "date"
+    | "textarea";
   label: string;
   placeholder?: string;
   required: boolean;

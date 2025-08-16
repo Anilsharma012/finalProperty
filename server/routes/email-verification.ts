@@ -35,7 +35,7 @@ export const sendEmailVerification: RequestHandler = async (req, res) => {
     }
 
     // Generate verification token
-    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationToken = crypto.randomBytes(32).toString("hex");
     const verificationExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
     // Store verification token
@@ -47,12 +47,12 @@ export const sendEmailVerification: RequestHandler = async (req, res) => {
           emailVerificationExpiry: verificationExpiry,
           updatedAt: new Date(),
         },
-      }
+      },
     );
 
     // For demo purposes, we'll just return the verification link
     // In a real app, you would send this via email service
-    const verificationLink = `${req.protocol}://${req.get('host')}/api/auth/verify-email?token=${verificationToken}`;
+    const verificationLink = `${req.protocol}://${req.get("host")}/api/auth/verify-email?token=${verificationToken}`;
 
     console.log(`Email verification link for ${email}: ${verificationLink}`);
 
@@ -80,7 +80,7 @@ export const verifyEmail: RequestHandler = async (req, res) => {
     const db = getDatabase();
     const { token } = req.query;
 
-    if (!token || typeof token !== 'string') {
+    if (!token || typeof token !== "string") {
       return res.status(400).json({
         success: false,
         error: "Verification token is required",
@@ -112,7 +112,7 @@ export const verifyEmail: RequestHandler = async (req, res) => {
           emailVerificationToken: "",
           emailVerificationExpiry: "",
         },
-      }
+      },
     );
 
     // Return HTML response for successful verification
@@ -139,11 +139,11 @@ export const verifyEmail: RequestHandler = async (req, res) => {
       </html>
     `;
 
-    res.setHeader('Content-Type', 'text/html');
+    res.setHeader("Content-Type", "text/html");
     res.send(successHtml);
   } catch (error) {
     console.error("Error verifying email:", error);
-    
+
     const errorHtml = `
       <!DOCTYPE html>
       <html>
@@ -167,7 +167,7 @@ export const verifyEmail: RequestHandler = async (req, res) => {
       </html>
     `;
 
-    res.setHeader('Content-Type', 'text/html');
+    res.setHeader("Content-Type", "text/html");
     res.send(errorHtml);
   }
 };
@@ -185,7 +185,9 @@ export const resendEmailVerification: RequestHandler = async (req, res) => {
       });
     }
 
-    const user = await db.collection("users").findOne({ _id: new ObjectId(userId) });
+    const user = await db
+      .collection("users")
+      .findOne({ _id: new ObjectId(userId) });
 
     if (!user) {
       return res.status(404).json({
@@ -202,7 +204,7 @@ export const resendEmailVerification: RequestHandler = async (req, res) => {
     }
 
     // Generate new verification token
-    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationToken = crypto.randomBytes(32).toString("hex");
     const verificationExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
     // Store verification token
@@ -214,13 +216,15 @@ export const resendEmailVerification: RequestHandler = async (req, res) => {
           emailVerificationExpiry: verificationExpiry,
           updatedAt: new Date(),
         },
-      }
+      },
     );
 
     // For demo purposes, return the verification link
-    const verificationLink = `${req.protocol}://${req.get('host')}/api/auth/verify-email?token=${verificationToken}`;
+    const verificationLink = `${req.protocol}://${req.get("host")}/api/auth/verify-email?token=${verificationToken}`;
 
-    console.log(`Resend email verification link for ${user.email}: ${verificationLink}`);
+    console.log(
+      `Resend email verification link for ${user.email}: ${verificationLink}`,
+    );
 
     const response: ApiResponse<{ verificationLink: string }> = {
       success: true,
