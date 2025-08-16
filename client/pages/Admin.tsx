@@ -310,6 +310,16 @@ export default function Admin() {
         console.log("🔄 Enabling graceful offline mode with retry capability");
         setOfflineMode(true);
 
+        // Run network diagnostics
+        await runNetworkDiagnostics();
+
+        // For any fetch failures, immediately switch to mock data in production
+        if (error.message?.includes('Failed to fetch') || error.name === 'TypeError') {
+          console.log("🏭 Network error detected, switching to mock data immediately");
+          loadMockData();
+          return;
+        }
+
         // For production environments, go straight to mock data on network errors
         if (window.location.hostname.includes('.fly.dev') ||
             window.location.hostname.includes('.netlify.app') ||
