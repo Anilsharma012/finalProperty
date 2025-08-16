@@ -94,7 +94,7 @@ const ComprehensiveAuth = () => {
           };
 
       console.log(`Making ${isLogin ? 'login' : 'registration'} request...`);
-      
+
       const response = await fetch(`/api/${endpoint}`, {
         method: "POST",
         headers: {
@@ -103,14 +103,14 @@ const ComprehensiveAuth = () => {
         body: JSON.stringify(payload),
       });
 
-      const responseText = await response.text();
-      console.log('Raw response:', responseText);
-      
       let data;
       try {
-        data = JSON.parse(responseText);
+        // Use response.json() directly instead of text() + parse to avoid body stream issues
+        data = await response.json();
+        console.log('JSON response:', data);
       } catch (parseError) {
-        throw new Error('Invalid response format');
+        console.error('Failed to parse response as JSON:', parseError);
+        throw new Error('Invalid response format from server');
       }
 
       if (response.ok && data.success) {
