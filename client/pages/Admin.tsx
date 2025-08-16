@@ -953,6 +953,8 @@ export default function Admin() {
           return <DatabaseDiagnostics />;
         case "other-services":
           return <OtherServicesManagement />;
+        case "support-inbox":
+          return <SupportInbox />;
         default:
           return renderDashboard();
       }
