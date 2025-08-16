@@ -106,10 +106,20 @@ const ComprehensiveAuth = () => {
       let data;
       try {
         // Use response.json() directly instead of text() + parse to avoid body stream issues
-        data = await response.json();
-        console.log('JSON response:', data);
+        if (response.headers.get('content-type')?.includes('application/json')) {
+          data = await response.json();
+        } else {
+          // Handle non-JSON responses
+          const text = await response.text();
+          try {
+            data = JSON.parse(text);
+          } catch {
+            data = { success: false, error: text || 'Invalid response format' };
+          }
+        }
+        console.log('Parsed response:', data);
       } catch (parseError) {
-        console.error('Failed to parse response as JSON:', parseError);
+        console.error('Failed to parse response:', parseError);
         throw new Error('Invalid response format from server');
       }
 
