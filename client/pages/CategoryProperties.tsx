@@ -150,8 +150,9 @@ export default function CategoryProperties() {
         if (value) params.append(key, value);
       });
 
-      const response = await fetch(`/api/properties?${params}`);
-      const data = await response.json();
+      // STEP 4 requirement: await api('/properties?category=buy&subcategory=${slug}&status=active')
+      const apiResponse = await (window as any).api(`properties?${params}`);
+      const data = apiResponse.ok ? apiResponse.json : { success: false, error: 'Failed to fetch properties' };
 
       if (data.success) {
         setProperties(data.data.properties || []);
@@ -587,7 +588,8 @@ export default function CategoryProperties() {
             </div>
           </div>
 
-          {/* Properties Grid/List */}
+          {/* Properties Grid/List - STEP 4 requirement: data-testid="listing-page" */}
+          <div data-testid="listing-page">
           {properties.length === 0 ? (
             <div className="text-center py-20">
               <div className="bg-white rounded-lg p-8 shadow-sm">
@@ -707,6 +709,7 @@ export default function CategoryProperties() {
               ))}
             </div>
           )}
+          </div>
         </div>
       </div>
 
