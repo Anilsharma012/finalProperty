@@ -64,6 +64,7 @@ import SystemStatus from "../components/admin/SystemStatus";
 import SellerVerificationFields from "../components/admin/SellerVerificationFields";
 import PendingPropertiesApproval from "../components/admin/PendingPropertiesApproval";
 import OtherServicesManagement from "../components/admin/OtherServicesManagement";
+import SupportInbox from "../components/admin/SupportInbox";
 import {
   Table,
   TableBody,
@@ -88,7 +89,12 @@ import {
 
 export default function Admin() {
   const { user, token, isAuthenticated, loading: authLoading } = useAuth();
-  const [activeSection, setActiveSection] = useState("dashboard");
+  // Check if we're on the support route and set initial section accordingly
+  const initialSection =
+    window.location.pathname === "/admin/support"
+      ? "support-inbox"
+      : "dashboard";
+  const [activeSection, setActiveSection] = useState(initialSection);
   const [stats, setStats] = useState<any>({
     totalUsers: 0,
     totalProperties: 0,
@@ -103,6 +109,52 @@ export default function Admin() {
   const [offlineMode, setOfflineMode] = useState(false);
   const [skipDataLoading, setSkipDataLoading] = useState(false);
   const [forceOfflineMode, setForceOfflineMode] = useState(false);
+  const [networkDiagnostics, setNetworkDiagnostics] = useState<string[]>([]);
+
+  const runNetworkDiagnostics = async () => {
+    const diagnostics: string[] = [];
+
+    try {
+      // Check current environment
+      const environment = window.location.hostname.includes(".fly.dev")
+        ? "fly.dev"
+        : window.location.hostname.includes(".netlify.app")
+          ? "netlify"
+          : window.location.hostname === "localhost"
+            ? "localhost"
+            : "unknown";
+
+      diagnostics.push(`Environment: ${environment}`);
+      diagnostics.push(`URL: ${window.location.href}`);
+
+      // Check if we can reach the base domain
+      try {
+        const healthCheck = await fetch(window.location.origin + "/api/ping", {
+          method: "GET",
+          cache: "no-cache",
+          timeout: 5000,
+        });
+        diagnostics.push(
+          `Health check: ${healthCheck.status} ${healthCheck.statusText}`,
+        );
+      } catch (healthError) {
+        diagnostics.push(`Health check failed: ${healthError.message}`);
+      }
+
+      // Check browser capabilities
+      diagnostics.push(
+        `Fetch API: ${typeof fetch !== "undefined" ? "Available" : "Not available"}`,
+      );
+      diagnostics.push(
+        `Online status: ${navigator.onLine ? "Online" : "Offline"}`,
+      );
+    } catch (error) {
+      diagnostics.push(`Diagnostics error: ${error.message}`);
+    }
+
+    setNetworkDiagnostics(diagnostics);
+    return diagnostics;
+  };
 
   const loadMockData = () => {
     setStats({
@@ -202,20 +254,41 @@ export default function Admin() {
       return;
     }
 
-    // Quick connectivity test
+    // Enhanced connectivity test with better error handling
     const testConnectivity = async () => {
       try {
+        console.log("🔍 Starting connectivity test...");
+        console.log("📍 Current environment:", window.location.href);
+
+        // Log API configuration for debugging
+        const testUrl = createApiUrl("admin/stats");
+        console.log("🎯 Testing API endpoint:", testUrl);
+
         // Try a simple fetch with a reasonable timeout
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        const timeoutId = setTimeout(() => {
+          console.log("⏰ Request timeout after 10 seconds");
+          controller.abort();
+        }, 10000);
 
-        const response = await fetch(createApiUrl("admin/stats"), {
-          headers: { Authorization: `Bearer ${token}` },
+        const response = await fetch(testUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Cache-Control": "no-cache",
+            Pragma: "no-cache",
+          },
           signal: controller.signal,
           cache: "no-cache",
         });
 
         clearTimeout(timeoutId);
+
+        console.log("📡 Response received:", {
+          status: response.status,
+          statusText: response.statusText,
+          ok: response.ok,
+          url: response.url,
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -224,26 +297,66 @@ export default function Admin() {
         // If we get here, connectivity is working
         console.log("✅ Connectivity test passed, loading admin data");
         if (!skipDataLoading) {
-          fetchAdminData();
+          await fetchAdminData();
         } else {
           setLoading(false);
           setOfflineMode(true);
         }
       } catch (error) {
-        console.warn("⚠️ Connectivity test failed:", error.message || error);
+        console.error("⚠️ Connectivity test failed:", {
+          error: error.message || error,
+          name: error.name,
+          stack: error.stack,
+          cause: error.cause,
+        });
+
+        // Determine the type of error and respond accordingly
+        if (error.name === "AbortError") {
+          console.log("🔄 Request timed out, enabling offline mode");
+        } else if (error.message?.includes("Failed to fetch")) {
+          console.log("🌐 Network connectivity issue detected");
+        } else {
+          console.log("❌ Unknown connectivity error");
+        }
+
         console.log("🔄 Enabling graceful offline mode with retry capability");
         setOfflineMode(true);
 
-        // Try to load real data anyway, fallback to mock if it fails
-        if (!skipDataLoading) {
-          try {
-            await fetchAdminData();
-          } catch (dataError) {
-            console.log("📡 Data fetch also failed, using mock data");
-            loadMockData();
-          }
+        // Run network diagnostics
+        await runNetworkDiagnostics();
+
+        // For any fetch failures, immediately switch to mock data in production
+        if (
+          error.message?.includes("Failed to fetch") ||
+          error.name === "TypeError"
+        ) {
+          console.log(
+            "🏭 Network error detected, switching to mock data immediately",
+          );
+          loadMockData();
+          return;
+        }
+
+        // For production environments, go straight to mock data on network errors
+        if (
+          window.location.hostname.includes(".fly.dev") ||
+          window.location.hostname.includes(".netlify.app") ||
+          window.location.hostname !== "localhost"
+        ) {
+          console.log("🏭 Production environment detected, using mock data");
+          loadMockData();
         } else {
-          setLoading(false);
+          // Try to load real data anyway for development
+          if (!skipDataLoading) {
+            try {
+              await fetchAdminData();
+            } catch (dataError) {
+              console.log("📡 Data fetch also failed, using mock data");
+              loadMockData();
+            }
+          } else {
+            setLoading(false);
+          }
         }
       }
     };
@@ -274,11 +387,24 @@ export default function Admin() {
       token.substring(0, 20) + "...",
     );
 
-    // Fetch stats with individual error handling
+    // Fetch stats with enhanced error handling
     try {
       console.log("Fetching admin stats...");
-      const statsResponse = await fetch(createApiUrl("admin/stats"), {
-        headers: { Authorization: `Bearer ${token}` },
+      const statsUrl = createApiUrl("admin/stats");
+      console.log("📊 Stats URL:", statsUrl);
+
+      const statsResponse = await fetch(statsUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        cache: "no-cache",
+      });
+
+      console.log("📊 Stats response:", {
+        status: statsResponse.status,
+        statusText: statsResponse.statusText,
+        ok: statsResponse.ok,
       });
 
       if (statsResponse.ok) {
@@ -302,8 +428,20 @@ export default function Admin() {
         errors.push(`Stats API error: ${statsResponse.status}`);
       }
     } catch (error) {
-      console.error("Error fetching stats:", error);
-      errors.push("Stats API unreachable");
+      console.error("Error fetching stats:", {
+        error: error.message || error,
+        name: error.name,
+        stack: error.stack,
+      });
+
+      if (
+        error.name === "TypeError" &&
+        error.message?.includes("Failed to fetch")
+      ) {
+        errors.push("Network connectivity issue");
+      } else {
+        errors.push("Stats API unreachable");
+      }
     }
 
     // Fetch users with individual error handling
@@ -545,17 +683,40 @@ export default function Admin() {
               <li key={index}>• {err}</li>
             ))}
           </ul>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              setApiErrors([]);
-              fetchAdminData();
-            }}
-            className="mt-2"
-          >
-            Retry
-          </Button>
+          {networkDiagnostics.length > 0 && (
+            <details className="mt-3">
+              <summary className="text-sm text-yellow-700 cursor-pointer hover:text-yellow-800">
+                Show Network Diagnostics
+              </summary>
+              <ul className="text-xs text-yellow-600 ml-4 mt-2">
+                {networkDiagnostics.map((diagnostic, index) => (
+                  <li key={index}>• {diagnostic}</li>
+                ))}
+              </ul>
+            </details>
+          )}
+          <div className="flex space-x-2 mt-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setApiErrors([]);
+                fetchAdminData();
+              }}
+            >
+              Retry
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={async () => {
+                const diagnostics = await runNetworkDiagnostics();
+                console.log("Network diagnostics:", diagnostics);
+              }}
+            >
+              Run Diagnostics
+            </Button>
+          </div>
         </div>
       )}
       {loading ? (
@@ -952,6 +1113,8 @@ export default function Admin() {
           return <DatabaseDiagnostics />;
         case "other-services":
           return <OtherServicesManagement />;
+        case "support-inbox":
+          return <SupportInbox />;
         default:
           return renderDashboard();
       }

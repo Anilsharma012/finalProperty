@@ -6,7 +6,10 @@ interface HomepageBannerProps {
   className?: string;
 }
 
-export default function HomepageBanner({ position, className = "" }: HomepageBannerProps) {
+export default function HomepageBanner({
+  position,
+  className = "",
+}: HomepageBannerProps) {
   const [banners, setBanners] = useState<BannerAd[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -27,14 +30,56 @@ export default function HomepageBanner({ position, className = "" }: HomepageBan
 
   const fetchBanners = async () => {
     try {
-      const response = await fetch(`/api/banners/${position}`);
-      const data = await response.json();
+      console.log(`🏷️ Fetching banners for position: ${position}`);
 
-      if (data.success) {
-        setBanners(data.data);
+      // Add timeout and error handling
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        console.log("⏰ Banners request timeout");
+        controller.abort();
+      }, 8000);
+
+      const response = await fetch(`/api/banners/${position}`, {
+        signal: controller.signal,
+        cache: "no-cache",
+      });
+
+      clearTimeout(timeoutId);
+
+      console.log("📡 Banners response:", {
+        status: response.status,
+        ok: response.ok,
+        url: response.url,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("📊 Banners data:", data);
+
+        if (data.success && Array.isArray(data.data)) {
+          setBanners(data.data);
+        } else {
+          console.log("⚠️ No banner data or invalid format");
+        }
+      } else {
+        console.log(`⚠️ Banners request failed: ${response.status}`);
       }
-    } catch (error) {
-      console.error("Error fetching banners:", error);
+    } catch (error: any) {
+      console.error("Error fetching banners:", {
+        error: error.message || error,
+        name: error.name,
+        position: position,
+      });
+
+      // Provide appropriate logging based on error type
+      if (error.name === "AbortError") {
+        console.log("🔄 Banners request timed out");
+      } else if (error.message?.includes("Failed to fetch")) {
+        console.log("🌐 Network connectivity issue for banners");
+      }
+
+      // Set empty banners array - component will handle no banners gracefully
+      setBanners([]);
     } finally {
       setLoading(false);
     }
@@ -80,7 +125,7 @@ export default function HomepageBanner({ position, className = "" }: HomepageBan
                 target.src = `https://via.placeholder.com/800x200/f97316/ffffff?text=${encodeURIComponent(currentBanner.title)}`;
               }}
             />
-            
+
             {/* Gradient overlay for better text readability */}
             <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent rounded-lg"></div>
           </div>
@@ -99,17 +144,17 @@ export default function HomepageBanner({ position, className = "" }: HomepageBan
             {/* Call-to-action arrow */}
             {currentBanner.link && (
               <div className="text-white/80 hover:text-white transition-colors">
-                <svg 
-                  className="w-5 h-5 md:w-6 md:h-6" 
-                  fill="none" 
-                  stroke="currentColor" 
+                <svg
+                  className="w-5 h-5 md:w-6 md:h-6"
+                  fill="none"
+                  stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={2} 
-                    d="M9 5l7 7-7 7" 
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
                   />
                 </svg>
               </div>
@@ -125,8 +170,8 @@ export default function HomepageBanner({ position, className = "" }: HomepageBan
                 key={index}
                 onClick={() => setCurrentIndex(index)}
                 className={`w-2 h-2 rounded-full transition-all duration-200 ${
-                  index === currentIndex 
-                    ? "bg-white" 
+                  index === currentIndex
+                    ? "bg-white"
                     : "bg-white/50 hover:bg-white/70"
                 }`}
               />

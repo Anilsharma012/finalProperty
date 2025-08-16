@@ -1,37 +1,40 @@
-// Global API helper function
-export function api(path: string, options: any = {}) {
-  const token = localStorage.getItem("token");
+// Import the existing API URL creation logic
+import { createApiUrl } from "./api";
 
-  // Use relative URLs (empty base) since we're on the same domain
-  const baseUrl = "";
+// Make API helper available globally
+function api(p: string, o: any = {}) {
+  const t = localStorage.getItem("token");
 
-  // Ensure path starts with /api/
-  const apiPath = path.startsWith("/api/")
-    ? path
-    : `/api${path.startsWith("/") ? path : "/" + path}`;
+  // Use the existing API URL logic to construct the proper URL
+  const url = createApiUrl(p);
 
-  return fetch(baseUrl + apiPath, {
-    method: options.method || "GET",
+  return fetch(url, {
+    method: o.method || "GET",
     headers: {
       "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(t ? { Authorization: `Bearer ${t}` } : {}),
     },
-    body: options.body ? JSON.stringify(options.body) : undefined,
-  }).then(async (response) => {
-    // Check if response is ok
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    body: o.body ? JSON.stringify(o.body) : undefined,
+  }).then(async (r) => {
+    let jsonData;
+    try {
+      jsonData = await r.json();
+    } catch (e) {
+      // If JSON parsing fails, return a structured error
+      const text = await r.text();
+      console.error("Failed to parse JSON response:", text);
+      jsonData = { error: "Invalid JSON response", rawResponse: text };
     }
 
-    // Try to parse as JSON
-    try {
-      return await response.json();
-    } catch (error) {
-      throw new Error("Invalid JSON response");
-    }
+    return {
+      ok: r.ok,
+      status: r.status,
+      json: jsonData,
+    };
   });
 }
 
 // Make it globally available
 (window as any).api = api;
+
+export { api };
