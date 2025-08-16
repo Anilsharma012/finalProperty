@@ -56,12 +56,22 @@ export const getSubcategories: RequestHandler = async (req, res) => {
       const subcategoriesWithApprovedProperties =
         await propertiesCollection.distinct("subCategory", propertyFilter);
 
-      // Filter to only include subcategories that have approved properties
+      // For debugging: Show all subcategories first
+      const allSubcategories = (categoryDoc.subcategories || [])
+        .sort((a: any, b: any) => a.name.localeCompare(b.name));
+
+      // Also get filtered subcategories for comparison
       const availableSubcategories = (categoryDoc.subcategories || [])
         .filter((sub: any) =>
           subcategoriesWithApprovedProperties.includes(sub.slug),
         )
         .sort((a: any, b: any) => a.name.localeCompare(b.name));
+
+      // Debug info
+      console.log(`📋 Category: ${category}`);
+      console.log(`📊 Total subcategories in category: ${allSubcategories.length}`);
+      console.log(`📊 Subcategories with approved properties: ${availableSubcategories.length}`);
+      console.log(`🔍 Property filter used:`, propertyFilter);
 
       res.json({
         success: true,
