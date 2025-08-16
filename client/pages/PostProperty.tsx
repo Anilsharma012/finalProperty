@@ -453,7 +453,90 @@ export default function PostProperty() {
     <div className="min-h-screen bg-gray-50">
       <Header />
 
-      <div className="p-4">
+      {/* Desktop: Sticky top controls */}
+      <div className="hidden lg:block sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-3">
+          <div className="flex justify-between items-center">
+            <button
+              data-testid="btn-back"
+              onClick={() => window.history.back()}
+              className="px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors flex items-center"
+            >
+              <ChevronLeft className="h-4 w-4 mr-1" />
+              Back
+            </button>
+
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-600">
+                Step {currentStep} of {stepTitles.length}
+              </span>
+              <div className="flex space-x-1">
+                {stepTitles.map((_, index) => (
+                  <div
+                    key={index}
+                    className={`w-2 h-2 rounded-full ${
+                      index + 1 <= currentStep ? "bg-[#C70000]" : "bg-gray-200"
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <button
+                data-testid="btn-next"
+                onClick={() => document.querySelector('[data-section="next"]')?.scrollIntoView({behavior:'smooth'})}
+                className="px-4 py-2 bg-[#C70000] text-white hover:bg-[#A60000] rounded-lg transition-colors flex items-center"
+              >
+                Next
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </button>
+              <button
+                data-testid="btn-cancel"
+                onClick={() => window.location.href = '/'}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile: Fixed bottom controls */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg">
+        <div className="px-4 py-3">
+          <div className="flex justify-between items-center">
+            <button
+              data-testid="btn-back"
+              onClick={() => window.history.back()}
+              className="flex-1 px-3 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors flex items-center justify-center mr-2"
+            >
+              <ChevronLeft className="h-4 w-4 mr-1" />
+              Back
+            </button>
+
+            <button
+              data-testid="btn-next"
+              onClick={() => document.querySelector('[data-section="next"]')?.scrollIntoView({behavior:'smooth'})}
+              className="flex-1 px-3 py-2 bg-[#C70000] text-white hover:bg-[#A60000] rounded-lg transition-colors flex items-center justify-center mx-1"
+            >
+              Next
+              <ChevronRight className="h-4 w-4 ml-1" />
+            </button>
+
+            <button
+              data-testid="btn-cancel"
+              onClick={() => window.location.href = '/'}
+              className="flex-1 px-3 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors flex items-center justify-center ml-2"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-4 pb-20 lg:pb-4">
         {/* Progress Bar */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
