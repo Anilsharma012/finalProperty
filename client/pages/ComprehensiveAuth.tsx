@@ -197,10 +197,15 @@ const ComprehensiveAuth = () => {
       }
     } catch (error: any) {
       console.error("OTP send error:", error);
-      // Fallback for demo
-      setOtpSent(true);
-      setOtpTimer(60);
-      setSuccess("OTP sent successfully! Use 123456 for demo");
+
+      if (error.message.includes('Failed to fetch') || error.message.includes('Network')) {
+        setError("Network error. Please check your connection and try again.");
+      } else {
+        // Fallback for demo
+        setOtpSent(true);
+        setOtpTimer(60);
+        setSuccess("OTP sent successfully! Use 123456 for demo");
+      }
     } finally {
       setLoading(false);
     }
