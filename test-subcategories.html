@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Subcategories API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { margin: 10px 0; padding: 10px; background: #f5f5f5; border-radius: 5px; }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e8; color: #2e7d32; }
+    </style>
+</head>
+<body>
+    <h1>Subcategories API Test</h1>
+    
+    <div id="results"></div>
+    
+    <script>
+        async function testAPI() {
+            const results = document.getElementById('results');
+            const categories = ['buy', 'sale', 'rent', 'lease', 'pg'];
+            
+            for (const category of categories) {
+                try {
+                    console.log(`Testing category: ${category}`);
+                    
+                    // Test the global API function (like frontend does)
+                    const response = await window.api(`/subcategories?category=${category}&approved=true`);
+                    
+                    const div = document.createElement('div');
+                    div.className = 'result success';
+                    
+                    if (response.ok && response.json.success) {
+                        const data = response.json.data;
+                        div.innerHTML = `
+                            <h3>✅ ${category.toUpperCase()}</h3>
+                            <p>Found ${data.length} subcategories:</p>
+                            <ul>
+                                ${data.map(sub => `<li>${sub.name} (${sub.slug})</li>`).join('')}
+                            </ul>
+                        `;
+                    } else {
+                        div.className = 'result error';
+                        div.innerHTML = `
+                            <h3>❌ ${category.toUpperCase()}</h3>
+                            <p>Error: ${response.json?.error || 'Unknown error'}</p>
+                        `;
+                    }
+                    
+                    results.appendChild(div);
+                } catch (error) {
+                    const div = document.createElement('div');
+                    div.className = 'result error';
+                    div.innerHTML = `
+                        <h3>❌ ${category.toUpperCase()}</h3>
+                        <p>Exception: ${error.message}</p>
+                    `;
+                    results.appendChild(div);
+                }
+            }
+        }
+        
+        // Wait for API to be available then test
+        if (window.api) {
+            testAPI();
+        } else {
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(testAPI, 1000);
+            });
+        }
+    </script>
+</body>
+</html>
