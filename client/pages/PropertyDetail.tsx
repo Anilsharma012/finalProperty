@@ -126,7 +126,14 @@ export default function PropertyDetail() {
       let errorMessage = "Failed to load property";
 
       if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-        errorMessage = "Network error. Please check your internet connection and try again.";
+        // Network error - try to retry up to 2 times
+        if (retryCount < 2) {
+          console.log(`Retrying fetch property... Attempt ${retryCount + 1}`);
+          setTimeout(() => fetchProperty(retryCount + 1), 1000 * (retryCount + 1));
+          return;
+        } else {
+          errorMessage = "Network error. Please check your internet connection and try again.";
+        }
       } else if (error.message.includes('Invalid JSON')) {
         errorMessage = "Server error. Please try again later.";
       } else if (error.message) {
