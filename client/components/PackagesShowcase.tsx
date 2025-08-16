@@ -46,10 +46,9 @@ export default function PackagesShowcase() {
       setLoading(true);
       setError(null);
 
-      // Import enhanced api dynamically to avoid circular dependencies
-      const { enhancedApi } = await import('../lib/api-enhanced');
-      const response = await enhancedApi.get("packages?activeOnly=true");
-      const data = response.data;
+      // Use the global API function as specified by user
+      const response = await (window as any).api('/plans?isActive=true');
+      const data = response.ok ? response.json : { success: false, error: 'Failed to fetch plans' };
 
       if (data.success && Array.isArray(data.data)) {
         // Limit to 3 for showcase
@@ -146,18 +145,19 @@ export default function PackagesShowcase() {
           {packages.map((pkg, index) => (
             <div
               key={pkg._id}
+              data-testid="plan-card"
               className={`relative rounded-xl border-2 overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-105 ${
-                pkg.type === "featured" 
-                  ? "border-orange-300 transform scale-105 shadow-lg" 
+                pkg.type === "featured"
+                  ? "border-orange-300 transform scale-105 shadow-lg"
                   : "border-gray-200"
               }`}
             >
-              {/* Popular Badge */}
-              {pkg.type === "featured" && (
+              {/* Premium Badge */}
+              {pkg.premium && (
                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                   <div className="bg-orange-500 text-white px-4 py-1 rounded-full text-sm font-semibold flex items-center">
-                    <TrendingUp className="h-4 w-4 mr-1" />
-                    Most Popular
+                    <Crown className="h-4 w-4 mr-1" />
+                    Premium
                   </div>
                 </div>
               )}
@@ -199,11 +199,11 @@ export default function PackagesShowcase() {
                 </div>
 
                 {/* CTA Button */}
-                <Button 
-                  onClick={() => window.location.href = '/post-property'}
+                <Button
+                  onClick={() => window.location.href = `/checkout/${pkg._id}`}
                   className={`w-full ${
-                    pkg.type === "basic" 
-                      ? "bg-gray-600 hover:bg-gray-700" 
+                    pkg.type === "basic"
+                      ? "bg-gray-600 hover:bg-gray-700"
                       : pkg.type === "featured"
                         ? "bg-orange-600 hover:bg-orange-700"
                         : "bg-purple-600 hover:bg-purple-700"
