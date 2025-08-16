@@ -197,8 +197,7 @@ const ComprehensiveAuth = () => {
         }),
       });
 
-      const responseText = await response.text();
-      const data = JSON.parse(responseText);
+      const data = await response.json();
 
       if (response.ok && data.success) {
         const { token, user } = data.data;
