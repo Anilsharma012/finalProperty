@@ -2,10 +2,6 @@ import { RequestHandler } from "express";
 import { ObjectId } from "mongodb";
 import { getDatabase } from "../db/mongodb";
 import { ServiceListing, ApiResponse } from "@shared/types";
-import multer from "multer";
-
-// Configure multer for file uploads
-const upload = multer({ dest: "uploads/" });
 
 // Get service listings by subcategory
 export const getServiceListings: RequestHandler = async (req, res) => {
@@ -206,15 +202,8 @@ export const bulkImportServiceListings: RequestHandler = async (req, res) => {
   try {
     const db = getDatabase();
     
-    if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        error: "CSV file is required",
-      });
-    }
-
-    // Parse CSV data from request body (assuming it's processed by middleware)
-    const csvData = req.body.csvData || [];
+    // Parse CSV data from request body
+    const csvData = JSON.parse(req.body.csvData || '[]');
     const results = {
       created: 0,
       errors: [] as string[],
@@ -231,7 +220,7 @@ export const bulkImportServiceListings: RequestHandler = async (req, res) => {
           
           if (!existingCategory) {
             await db.collection("categories").insertOne({
-              name: row.categorySlug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+              name: row.categorySlug.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
               slug: row.categorySlug,
               type: 'service',
               icon: '🔧',
@@ -260,7 +249,7 @@ export const bulkImportServiceListings: RequestHandler = async (req, res) => {
                   $push: {
                     subcategories: {
                       id: row.subSlug,
-                      name: row.subSlug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                      name: row.subSlug.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
                       slug: row.subSlug,
                       description: `${row.subSlug} services`,
                     }
@@ -292,7 +281,7 @@ export const bulkImportServiceListings: RequestHandler = async (req, res) => {
 
         await db.collection("service_listings").insertOne(listing);
         results.created++;
-      } catch (error) {
+      } catch (error: any) {
         results.errors.push(`Error processing row: ${error.message}`);
       }
     }
@@ -311,5 +300,3 @@ export const bulkImportServiceListings: RequestHandler = async (req, res) => {
     });
   }
 };
-
-export { upload };
