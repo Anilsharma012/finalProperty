@@ -56,22 +56,21 @@ export const getSubcategories: RequestHandler = async (req, res) => {
       const subcategoriesWithApprovedProperties =
         await propertiesCollection.distinct("subCategory", propertyFilter);
 
-      // For debugging: Show all subcategories first
+      // Get all subcategories for this category
       const allSubcategories = (categoryDoc.subcategories || [])
         .sort((a: any, b: any) => a.name.localeCompare(b.name));
 
-      // Also get filtered subcategories for comparison
-      const availableSubcategories = (categoryDoc.subcategories || [])
+      // Get subcategories that have approved properties
+      const subcategoriesWithProperties = (categoryDoc.subcategories || [])
         .filter((sub: any) =>
           subcategoriesWithApprovedProperties.includes(sub.slug),
         )
         .sort((a: any, b: any) => a.name.localeCompare(b.name));
 
-      // Debug info
-      console.log(`📋 Category: ${category}`);
-      console.log(`📊 Total subcategories in category: ${allSubcategories.length}`);
-      console.log(`📊 Subcategories with approved properties: ${availableSubcategories.length}`);
-      console.log(`🔍 Property filter used:`, propertyFilter);
+      // Use subcategories with properties if available, otherwise show all admin-created subcategories
+      const availableSubcategories = subcategoriesWithProperties.length > 0
+        ? subcategoriesWithProperties
+        : allSubcategories;
 
       res.json({
         success: true,
