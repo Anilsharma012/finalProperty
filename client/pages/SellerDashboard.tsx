@@ -44,7 +44,7 @@ export default function SellerDashboard() {
 
   useEffect(() => {
     if (!user) {
-      navigate('/simple-login');
+      navigate('/login');
       return;
     }
 
@@ -74,7 +74,7 @@ export default function SellerDashboard() {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        navigate('/simple-login');
+        navigate('/login');
         return;
       }
 
@@ -101,7 +101,7 @@ export default function SellerDashboard() {
       if (error.message.includes('401') || error.message.includes('403')) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        navigate('/simple-login');
+        navigate('/login');
         return;
       }
       setError('Failed to load your properties. Please try again.');
