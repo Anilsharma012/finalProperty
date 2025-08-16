@@ -150,8 +150,11 @@ export default function CategoryProperties() {
         if (value) params.append(key, value);
       });
 
-      const response = await fetch(`/api/properties?${params}`);
-      const data = await response.json();
+      // STEP 4 requirement: await api('/properties?category=buy&subcategory=${slug}&status=active')
+      const apiResponse = await (window as any).api(`properties?${params}`);
+      const data = apiResponse.ok
+        ? apiResponse.json
+        : { success: false, error: "Failed to fetch properties" };
 
       if (data.success) {
         setProperties(data.data.properties || []);
@@ -587,126 +590,131 @@ export default function CategoryProperties() {
             </div>
           </div>
 
-          {/* Properties Grid/List */}
-          {properties.length === 0 ? (
-            <div className="text-center py-20">
-              <div className="bg-white rounded-lg p-8 shadow-sm">
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  No Properties Found
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  No properties match your current filters. Try adjusting your
-                  search criteria.
-                </p>
-                <Button
-                  onClick={clearFilters}
-                  variant="outline"
-                  className="border-[#C70000] text-[#C70000]"
-                >
-                  Clear Filters
-                </Button>
+          {/* Properties Grid/List - STEP 4 requirement: data-testid="listing-page" */}
+          <div data-testid="listing-page">
+            {properties.length === 0 ? (
+              <div className="text-center py-20">
+                <div className="bg-white rounded-lg p-8 shadow-sm">
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    No Properties Found
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    No properties match your current filters. Try adjusting your
+                    search criteria.
+                  </p>
+                  <Button
+                    onClick={clearFilters}
+                    variant="outline"
+                    className="border-[#C70000] text-[#C70000]"
+                  >
+                    Clear Filters
+                  </Button>
+                </div>
               </div>
-            </div>
-          ) : (
-            <div
-              className={
-                viewMode === "grid"
-                  ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-                  : "space-y-4"
-              }
-            >
-              {properties.map((property) => (
-                <div
-                  key={property._id}
-                  className={`bg-white rounded-lg shadow-sm overflow-hidden ${
-                    viewMode === "grid" ? "flex flex-col" : "flex"
-                  }`}
-                >
+            ) : (
+              <div
+                className={
+                  viewMode === "grid"
+                    ? "prop-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                    : "space-y-4"
+                }
+              >
+                {properties.map((property) => (
                   <div
-                    className={`relative ${
-                      viewMode === "grid"
-                        ? "w-full h-48"
-                        : "w-32 h-32 flex-shrink-0"
+                    key={property._id}
+                    className={`prop-card bg-white rounded-lg shadow-sm overflow-hidden ${
+                      viewMode === "grid" ? "flex flex-col" : "flex"
                     }`}
                   >
-                    <img
-                      src={
-                        property.coverImageUrl ??
-                        property.images?.[0]?.url ??
-                        property.images?.[0] ??
-                        "/placeholder.png"
-                      }
-                      alt={property.title}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = "/placeholder.png";
-                      }}
-                    />
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        // Handle favorites toggle
-                      }}
-                      className="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50"
-                    >
-                      <Heart className="h-4 w-4 text-gray-600" />
-                    </button>
-                  </div>
-
-                  <div className={`p-4 ${viewMode === "grid" ? "flex-1" : ""}`}>
                     <div
-                      className={`${viewMode === "grid" ? "mb-2" : "flex justify-between items-start mb-2"}`}
+                      className={`relative ${
+                        viewMode === "grid"
+                          ? "w-full h-48"
+                          : "w-32 h-32 flex-shrink-0"
+                      }`}
                     >
-                      <h3 className="font-semibold text-gray-900 leading-tight">
-                        {property.title}
-                      </h3>
-                      <span
-                        className={`text-lg font-bold text-[#C70000] ${viewMode === "list" ? "ml-2" : ""}`}
+                      <img
+                        src={
+                          property.coverImageUrl ??
+                          property.images?.[0]?.url ??
+                          property.images?.[0] ??
+                          "/placeholder.png"
+                        }
+                        alt={property.title}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = "/placeholder.png";
+                        }}
+                      />
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Handle favorites toggle
+                        }}
+                        className="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50"
                       >
-                        ₹{property.price?.toLocaleString() || "0"}
-                        {property.priceType === "rent" && "/month"}
-                      </span>
+                        <Heart className="h-4 w-4 text-gray-600" />
+                      </button>
                     </div>
 
-                    <div className="flex items-center text-gray-500 mb-2">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      <span className="text-sm">
-                        {property.location?.address || "Location not available"}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center text-gray-500 mb-3 text-sm">
-                      {property.specifications?.bedrooms && (
-                        <span className="mr-4">
-                          {property.specifications.bedrooms} BHK
-                        </span>
-                      )}
-                      {property.specifications?.bathrooms && (
-                        <span className="mr-4">
-                          {property.specifications.bathrooms} Bath
-                        </span>
-                      )}
-                      <span>{property.specifications?.area || 0} sq ft</span>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-400">
-                        {property.contactInfo?.name || "Owner"}
-                      </span>
-                      <Button
-                        size="sm"
-                        className="bg-[#C70000] hover:bg-[#A60000] text-white"
+                    <div
+                      className={`p-4 ${viewMode === "grid" ? "flex-1" : ""}`}
+                    >
+                      <div
+                        className={`${viewMode === "grid" ? "mb-2" : "flex justify-between items-start mb-2"}`}
                       >
-                        <Phone className="h-3 w-3 mr-1" />
-                        Call
-                      </Button>
+                        <h3 className="font-semibold text-gray-900 leading-tight">
+                          {property.title}
+                        </h3>
+                        <span
+                          className={`text-lg font-bold text-[#C70000] ${viewMode === "list" ? "ml-2" : ""}`}
+                        >
+                          ₹{property.price?.toLocaleString() || "0"}
+                          {property.priceType === "rent" && "/month"}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center text-gray-500 mb-2">
+                        <MapPin className="h-4 w-4 mr-1" />
+                        <span className="text-sm">
+                          {property.location?.address ||
+                            "Location not available"}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center text-gray-500 mb-3 text-sm">
+                        {property.specifications?.bedrooms && (
+                          <span className="mr-4">
+                            {property.specifications.bedrooms} BHK
+                          </span>
+                        )}
+                        {property.specifications?.bathrooms && (
+                          <span className="mr-4">
+                            {property.specifications.bathrooms} Bath
+                          </span>
+                        )}
+                        <span>{property.specifications?.area || 0} sq ft</span>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-400">
+                          {property.contactInfo?.name || "Owner"}
+                        </span>
+                        <Button
+                          size="sm"
+                          className="bg-[#C70000] hover:bg-[#A60000] text-white"
+                        >
+                          <Phone className="h-3 w-3 mr-1" />
+                          Call
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

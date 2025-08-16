@@ -33,20 +33,46 @@ export const getSubcategories: RequestHandler = async (req, res) => {
       }
 
       // Get live subcategory data by checking which subcategories have approved properties
-      const subcategoriesWithApprovedProperties =
-        await propertiesCollection.distinct("subCategory", {
-          status: "active",
-          approvalStatus: "approved",
-          propertyType: category,
-          subCategory: { $ne: null, $ne: "" },
-        });
+      // For buy/sale categories, filter by priceType, for others use propertyType
+      const propertyFilter: any = {
+        status: "active",
+        approvalStatus: "approved",
+        subCategory: { $ne: null, $ne: "" },
+      };
 
-      // Filter to only include subcategories that have approved properties
-      const availableSubcategories = (categoryDoc.subcategories || [])
+      // Map category to appropriate property field filter
+      if (category === "buy" || category === "sale") {
+        propertyFilter.priceType = "sale";
+      } else if (category === "rent") {
+        propertyFilter.priceType = "rent";
+      } else if (category === "lease") {
+        propertyFilter.priceType = "lease";
+      } else if (category === "pg") {
+        propertyFilter.propertyType = "pg";
+      } else {
+        propertyFilter.propertyType = category;
+      }
+
+      const subcategoriesWithApprovedProperties =
+        await propertiesCollection.distinct("subCategory", propertyFilter);
+
+      // Get all subcategories for this category
+      const allSubcategories = (categoryDoc.subcategories || []).sort(
+        (a: any, b: any) => a.name.localeCompare(b.name),
+      );
+
+      // Get subcategories that have approved properties
+      const subcategoriesWithProperties = (categoryDoc.subcategories || [])
         .filter((sub: any) =>
           subcategoriesWithApprovedProperties.includes(sub.slug),
         )
         .sort((a: any, b: any) => a.name.localeCompare(b.name));
+
+      // Use subcategories with properties if available, otherwise show all admin-created subcategories
+      const availableSubcategories =
+        subcategoriesWithProperties.length > 0
+          ? subcategoriesWithProperties
+          : allSubcategories;
 
       res.json({
         success: true,
@@ -154,14 +180,29 @@ export const getSubcategoriesWithCounts: RequestHandler = async (req, res) => {
       }
 
       // Get live subcategory data by aggregating actual approved properties
+      // For buy/sale categories, filter by priceType, for others use propertyType
+      const propertyFilter: any = {
+        status: "active",
+        approvalStatus: "approved",
+      };
+
+      // Map category to appropriate property field filter
+      if (category === "buy" || category === "sale") {
+        propertyFilter.priceType = "sale";
+      } else if (category === "rent") {
+        propertyFilter.priceType = "rent";
+      } else if (category === "lease") {
+        propertyFilter.priceType = "lease";
+      } else if (category === "pg") {
+        propertyFilter.propertyType = "pg";
+      } else {
+        propertyFilter.propertyType = category;
+      }
+
       const subcategoriesWithCounts = await propertiesCollection
         .aggregate([
           {
-            $match: {
-              status: "active",
-              approvalStatus: "approved",
-              propertyType: category,
-            },
+            $match: propertyFilter,
           },
           {
             $group: {

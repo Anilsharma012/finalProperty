@@ -46,10 +46,11 @@ export default function PackagesShowcase() {
       setLoading(true);
       setError(null);
 
-      // Import enhanced api dynamically to avoid circular dependencies
-      const { enhancedApi } = await import('../lib/api-enhanced');
-      const response = await enhancedApi.get("packages?activeOnly=true");
-      const data = response.data;
+      // Use the global API function as specified by user
+      const response = await (window as any).api("/plans?isActive=true");
+      const data = response.ok
+        ? response.json
+        : { success: false, error: "Failed to fetch plans" };
 
       if (data.success && Array.isArray(data.data)) {
         // Limit to 3 for showcase
@@ -136,8 +137,8 @@ export default function PackagesShowcase() {
             </h2>
           </div>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Boost your property visibility with our specially designed packages for Rohtak market. 
-            Get more views, inquiries, and faster sales.
+            Boost your property visibility with our specially designed packages
+            for Rohtak market. Get more views, inquiries, and faster sales.
           </p>
         </div>
 
@@ -146,26 +147,31 @@ export default function PackagesShowcase() {
           {packages.map((pkg, index) => (
             <div
               key={pkg._id}
+              data-testid="plan-card"
               className={`relative rounded-xl border-2 overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-105 ${
-                pkg.type === "featured" 
-                  ? "border-orange-300 transform scale-105 shadow-lg" 
+                pkg.type === "featured"
+                  ? "border-orange-300 transform scale-105 shadow-lg"
                   : "border-gray-200"
               }`}
             >
-              {/* Popular Badge */}
-              {pkg.type === "featured" && (
+              {/* Premium Badge */}
+              {pkg.premium && (
                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                   <div className="bg-orange-500 text-white px-4 py-1 rounded-full text-sm font-semibold flex items-center">
-                    <TrendingUp className="h-4 w-4 mr-1" />
-                    Most Popular
+                    <Crown className="h-4 w-4 mr-1" />
+                    Premium
                   </div>
                 </div>
               )}
 
               {/* Package Header */}
-              <div className={`bg-gradient-to-r ${getPackageColor(pkg.type)} p-6 text-center`}>
+              <div
+                className={`bg-gradient-to-r ${getPackageColor(pkg.type)} p-6 text-center`}
+              >
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white mb-4 shadow-lg">
-                  <div className={`${pkg.type === "basic" ? "text-gray-600" : pkg.type === "featured" ? "text-orange-600" : "text-purple-600"}`}>
+                  <div
+                    className={`${pkg.type === "basic" ? "text-gray-600" : pkg.type === "featured" ? "text-orange-600" : "text-purple-600"}`}
+                  >
                     {getPackageIcon(pkg.type)}
                   </div>
                 </div>
@@ -182,7 +188,7 @@ export default function PackagesShowcase() {
               {/* Package Content */}
               <div className="p-6">
                 <p className="text-gray-600 mb-6">{pkg.description}</p>
-                
+
                 {/* Features (limited to 4 for showcase) */}
                 <div className="space-y-3 mb-6">
                   {pkg.features.slice(0, 4).map((feature, featureIndex) => (
@@ -199,17 +205,21 @@ export default function PackagesShowcase() {
                 </div>
 
                 {/* CTA Button */}
-                <Button 
-                  onClick={() => window.location.href = '/post-property'}
+                <Button
+                  onClick={() =>
+                    (window.location.href = `/checkout/${pkg._id}`)
+                  }
                   className={`w-full ${
-                    pkg.type === "basic" 
-                      ? "bg-gray-600 hover:bg-gray-700" 
+                    pkg.type === "basic"
+                      ? "bg-gray-600 hover:bg-gray-700"
                       : pkg.type === "featured"
                         ? "bg-orange-600 hover:bg-orange-700"
                         : "bg-purple-600 hover:bg-purple-700"
                   } text-white`}
                 >
-                  {pkg.price === 0 ? "Start Free Listing" : `Choose for ₹${pkg.price}`}
+                  {pkg.price === 0
+                    ? "Start Free Listing"
+                    : `Choose for ₹${pkg.price}`}
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               </div>
@@ -256,10 +266,11 @@ export default function PackagesShowcase() {
             Ready to Sell Your Property Faster?
           </h3>
           <p className="text-gray-600 mb-6">
-            Join thousands of successful sellers in Rohtak who trust our platform
+            Join thousands of successful sellers in Rohtak who trust our
+            platform
           </p>
-          <Button 
-            onClick={() => window.location.href = '/post-property'}
+          <Button
+            onClick={() => (window.location.href = "/post-property")}
             className="bg-[#C70000] hover:bg-[#A60000] text-white px-8 py-3 text-lg"
           >
             Post Your Property Now

@@ -757,6 +757,9 @@ export function createServer() {
   );
   app.post("/api/packages/initialize", initializePackages);
 
+  // Plans route (alias for packages as requested by user)
+  app.get("/api/plans", getAdPackages);
+
   // Payment routes
   app.post("/api/payments/transaction", authenticateToken, createTransaction);
   app.get("/api/payments/transactions", authenticateToken, getUserTransactions);

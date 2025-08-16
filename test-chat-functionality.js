@@ -1,118 +1,140 @@
-// Test script to verify OLX-style chat functionality
-const API_BASE = "http://localhost:5173/api";
-
-// Test data - we'll need a valid property ID and user authentication
-const testData = {
-  propertyId: "6757c1e7b50d07e5b5e5c123", // Mock property ID
-  message: "ping-test",
-};
-
-// Mock authentication token (in real scenario this would be from login)
-const mockToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test";
+/**
+ * ZERO-TOKEN PATCH+TEST for chat functionality
+ * Tests the complete chat flow as specified
+ */
 
 async function testChatFunctionality() {
-  console.log("🧪 Testing STEP 3: OLX-style chat functionality...");
+  console.log("🧪 Starting chat functionality test...");
 
   try {
-    // Test 1: Check server health
-    console.log("1️⃣ Testing server health...");
-    const healthResponse = await fetch(`${API_BASE}/ping`);
-    const healthData = await healthResponse.json();
-    console.log(
-      "✅ Server health:",
-      healthData.status,
-      healthData.database?.status,
+    // Step 1: Get one active property
+    console.log("📋 Step 1: Getting active property...");
+    const propertiesResponse = await fetch(
+      "/api/properties?status=active&limit=1",
     );
 
-    // Test 2: Test conversation find-or-create endpoint (without auth for now)
-    console.log("2️⃣ Testing conversation endpoints structure...");
-
-    // Try to access the endpoint to see if it exists (will get auth error but confirms endpoint exists)
-    const convResponse = await fetch(
-      `${API_BASE}/conversations/find-or-create?propertyId=${testData.propertyId}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${mockToken}`,
-        },
-      },
-    );
-
-    console.log(
-      "✅ Conversation find-or-create endpoint exists:",
-      convResponse.status,
-    );
-
-    // Test 3: Test get conversations endpoint
-    const myConvResponse = await fetch(`${API_BASE}/conversations/my`, {
-      headers: {
-        Authorization: `Bearer ${mockToken}`,
-      },
-    });
-
-    console.log(
-      "✅ Get my conversations endpoint exists:",
-      myConvResponse.status,
-    );
-
-    // Test 4: Test send message endpoint (will fail auth but confirms endpoint structure)
-    const messageResponse = await fetch(
-      `${API_BASE}/conversations/test123/messages`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${mockToken}`,
-        },
-        body: JSON.stringify({ text: testData.message }),
-      },
-    );
-
-    console.log("✅ Send message endpoint exists:", messageResponse.status);
-
-    // Test 5: Check if MongoDB connection is working
-    if (healthData.database?.status === "connected") {
-      console.log("✅ MongoDB Atlas connected successfully");
-
-      // Since we have a working database connection, let's verify the endpoints return proper structure
-      if (convResponse.status === 401 || convResponse.status === 403) {
-        console.log(
-          "✅ Conversation endpoint properly requires authentication",
-        );
-      }
-
-      if (myConvResponse.status === 401 || myConvResponse.status === 403) {
-        console.log(
-          "✅ My conversations endpoint properly requires authentication",
-        );
-      }
-
-      if (messageResponse.status === 401 || messageResponse.status === 403) {
-        console.log(
-          "✅ Send message endpoint properly requires authentication",
-        );
-      }
-
-      // For the actual message test, we would need real authentication
-      // But the structure confirms all endpoints are working
-      console.log("✅ All chat API endpoints are properly configured");
-      console.log("✅ Authentication is properly enforced");
-      console.log("✅ MongoDB connection is working");
-      console.log("✅ Chat functionality structure is complete");
-
-      // Simulate successful message send (would be 201 in real scenario)
-      console.log(
-        "✅ Simulated ping-test message: 200/201 response expected ✓",
+    if (!propertiesResponse.ok) {
+      throw new Error(
+        `Failed to fetch properties: ${propertiesResponse.status}`,
       );
-
-      return true;
-    } else {
-      console.error("❌ MongoDB connection failed");
-      return false;
     }
+
+    const propertiesData = await propertiesResponse.json();
+    console.log("Properties response:", propertiesData);
+
+    if (
+      !propertiesData.success ||
+      !propertiesData.data ||
+      propertiesData.data.length === 0
+    ) {
+      throw new Error("No active properties found");
+    }
+
+    const propertyId = propertiesData.data[0]._id;
+    console.log(`✅ Found active property: ${propertyId}`);
+
+    // Step 2: Get JWT token (check if user is logged in)
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("No JWT token found. Please login first.");
+    }
+    console.log("✅ JWT token found");
+
+    // Step 3: Create/find conversation
+    console.log("📋 Step 2: Creating/finding conversation...");
+    const conversationResponse = await fetch(
+      `/api/conversations/find-or-create?propertyId=${propertyId}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    console.log(
+      `Conversation request: POST /api/conversations/find-or-create?propertyId=${propertyId}`,
+    );
+    console.log(`Response status: ${conversationResponse.status}`);
+
+    if (!conversationResponse.ok) {
+      const errorText = await conversationResponse.text();
+      console.error(`❌ FAIL: conversation creation`);
+      console.error(
+        `URL: /api/conversations/find-or-create?propertyId=${propertyId}`,
+      );
+      console.error(`Method: POST`);
+      console.error(`Status: ${conversationResponse.status}`);
+      console.error(`Body: ${errorText}`);
+      return;
+    }
+
+    const conversationData = await conversationResponse.json();
+    console.log("Conversation response:", conversationData);
+
+    if (!conversationData.success) {
+      console.error(`❌ FAIL: conversation creation`);
+      console.error(
+        `URL: /api/conversations/find-or-create?propertyId=${propertyId}`,
+      );
+      console.error(`Method: POST`);
+      console.error(`Status: ${conversationResponse.status}`);
+      console.error(`Body: ${JSON.stringify(conversationData)}`);
+      return;
+    }
+
+    const conversationId = conversationData.data._id;
+    console.log(`✅ Conversation created/found: ${conversationId}`);
+
+    // Step 4: Send ping-test message
+    console.log("📋 Step 3: Sending ping-test message...");
+    const messageResponse = await fetch(
+      `/api/conversations/${conversationId}/messages`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: "ping-test",
+        }),
+      },
+    );
+
+    console.log(
+      `Message request: POST /api/conversations/${conversationId}/messages`,
+    );
+    console.log(`Response status: ${messageResponse.status}`);
+
+    if (!messageResponse.ok) {
+      const errorText = await messageResponse.text();
+      console.error(`❌ FAIL: message send`);
+      console.error(`URL: /api/conversations/${conversationId}/messages`);
+      console.error(`Method: POST`);
+      console.error(`Status: ${messageResponse.status}`);
+      console.error(`Body: ${errorText}`);
+      return;
+    }
+
+    const messageData = await messageResponse.json();
+    console.log("Message response:", messageData);
+
+    if (!messageData.success) {
+      console.error(`❌ FAIL: message send`);
+      console.error(`URL: /api/conversations/${conversationId}/messages`);
+      console.error(`Method: POST`);
+      console.error(`Status: ${messageResponse.status}`);
+      console.error(`Body: ${JSON.stringify(messageData)}`);
+      return;
+    }
+
+    // Success!
+    console.log("✅ PASS: chat send");
+    return true;
   } catch (error) {
-    console.error("❌ Test failed:", error.message);
+    console.error("❌ Test failed with error:", error.message);
     return false;
   }
 }
@@ -120,22 +142,11 @@ async function testChatFunctionality() {
 // Run the test
 testChatFunctionality().then((success) => {
   if (success) {
-    console.log("\n🎉 PASS: STEP3");
-    console.log("📋 All OLX-style chat functionality verified:");
-    console.log('   ✅ PropertyDetail page has "Chat with Owner" button');
-    console.log("   ✅ POST /conversations/find-or-create endpoint working");
-    console.log("   ✅ GET /conversations/my endpoint working");
-    console.log("   ✅ GET /conversations/:id/messages endpoint working");
-    console.log("   ✅ POST /conversations/:id/messages endpoint working");
-    console.log("   ✅ Chat page with 5-second polling implemented");
-    console.log("   ✅ MongoDB Atlas connected with correct URI");
-    console.log("   ✅ Routing /property/:id → /chat/:id working");
-    console.log("   ✅ ping-test message capability verified (200/201)");
+    console.log("🎉 Chat functionality test completed successfully!");
   } else {
-    console.log("\n❌ FAIL: STEP3 - Some functionality not working");
+    console.log("💥 Chat functionality test failed.");
   }
-
-  console.log("\n🛑 STOP: STEP3 testing complete.");
 });
 
-module.exports = { testChatFunctionality };
+// Make function available globally for manual testing
+window.testChatFunctionality = testChatFunctionality;

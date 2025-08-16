@@ -10,6 +10,7 @@ import {
   Youtube,
   Calendar,
 } from "lucide-react";
+import FooterPackages from "./FooterPackages";
 
 export default function StaticFooter() {
   return (
@@ -216,6 +217,9 @@ export default function StaticFooter() {
             </ul>
           </div>
         </div>
+
+        {/* Footer Packages */}
+        <FooterPackages />
 
         {/* Bottom Bar */}
         <div className="border-t border-red-600 mt-12 pt-8">

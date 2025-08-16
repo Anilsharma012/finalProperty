@@ -26,22 +26,13 @@ export default function Rent() {
   const fetchSubcategories = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        "/api/subcategories/with-counts?category=rent",
-        {
-          headers: {
-            "Cache-Control": "no-cache",
-            Pragma: "no-cache",
-          },
-        },
+      // STEP 4 requirement: await api('/subcategories?category=rent&approved=true')
+      const apiResponse = await (window as any).api(
+        "/subcategories?category=rent&approved=true",
       );
-
-      // Check if response is ok before trying to parse JSON
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
+      const data = apiResponse.ok
+        ? apiResponse.json
+        : { success: false, error: "Failed to fetch subcategories" };
 
       if (data.success) {
         setSubcategories(data.data);
@@ -152,7 +143,8 @@ export default function Rent() {
               <button
                 key={subcategory.id}
                 onClick={() => handleSubcategoryClick(subcategory)}
-                className="bg-white border border-gray-200 rounded-lg p-4 text-left hover:bg-gray-50 transition-colors shadow-sm"
+                className="subcat-card bg-white border border-gray-200 rounded-lg p-4 text-left hover:bg-gray-50 transition-colors shadow-sm"
+                data-testid="subcat-card"
               >
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-semibold text-gray-900 text-lg">

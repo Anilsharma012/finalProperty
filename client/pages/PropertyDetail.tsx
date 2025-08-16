@@ -26,6 +26,7 @@ import {
 } from "../components/ui/card";
 import { toast } from "../components/ui/use-toast";
 import ChatBot from "../components/ChatBot";
+import ApiDiagnostic from "../components/ApiDiagnostic";
 
 interface Property {
   _id: string;
@@ -83,36 +84,71 @@ export default function PropertyDetail() {
     }
   }, [id]);
 
-  const fetchProperty = async () => {
+  const fetchProperty = async (retryCount = 0) => {
     try {
       setLoading(true);
+      setError(""); // Clear previous errors
 
       // Validate ObjectId format
-      if (!id || id.length !== 24) {
-        setError("Invalid property ID");
+      if (!id) {
+        setError("Property ID is required");
         setLoading(false);
         return;
       }
 
-      const response = await fetch(`/api/properties/${id}`);
+      if (id.length !== 24) {
+        setError("Invalid property ID format");
+        setLoading(false);
+        return;
+      }
 
-      if (response.ok) {
-        const data = await response.json();
+      // Use the global API helper for better error handling and CORS support
+      const apiResponse = await (window as any).api(`properties/${id}`);
+
+      if (apiResponse.ok) {
+        const data = apiResponse.json;
         if (data.success) {
           setProperty(data.data);
         } else {
           setError(data.error || "Property not found");
         }
-      } else if (response.status === 404) {
+      } else if (apiResponse.status === 404) {
         setError("Property not found");
-      } else if (response.status === 400) {
+      } else if (apiResponse.status === 400) {
         setError("Invalid property ID");
       } else {
-        setError("Failed to load property");
+        const errorData = apiResponse.json;
+        setError(errorData.error || "Failed to load property");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching property:", error);
-      setError("Failed to load property");
+
+      // Provide more specific error messages based on error type
+      let errorMessage = "Failed to load property";
+
+      if (
+        error.name === "TypeError" &&
+        error.message.includes("Failed to fetch")
+      ) {
+        // Network error - try to retry up to 2 times
+        if (retryCount < 2) {
+          console.log(`Retrying fetch property... Attempt ${retryCount + 1}`);
+          setTimeout(
+            () => fetchProperty(retryCount + 1),
+            1000 * (retryCount + 1),
+          );
+          return;
+        } else {
+          errorMessage =
+            "Network error. Please check your internet connection and try again.";
+        }
+      } else if (error.message.includes("Invalid JSON")) {
+        errorMessage = "Server error. Please try again later.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -120,7 +156,7 @@ export default function PropertyDetail() {
 
   const trackView = async () => {
     try {
-      await fetch(`/api/analytics/view/${id}`, {
+      await (window as any).api(`analytics/view/${id}`, {
         method: "POST",
       });
     } catch (error) {
@@ -130,9 +166,9 @@ export default function PropertyDetail() {
 
   const handleCall = (phoneNumber: string) => {
     // Track phone click
-    fetch(`/api/analytics/phone/${id}`, { method: "POST" }).catch(
-      console.error,
-    );
+    (window as any)
+      .api(`analytics/phone/${id}`, { method: "POST" })
+      .catch(console.error);
     window.open(`tel:${phoneNumber}`, "_self");
   };
 
@@ -223,16 +259,21 @@ export default function PropertyDetail() {
 
   if (error || !property) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            Property Not Found
-          </h2>
-          <p className="text-gray-600 mb-6">{error}</p>
-          <Button onClick={() => navigate(-1)} variant="outline">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Go Back
-          </Button>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="max-w-4xl w-full space-y-6">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Property Not Found
+            </h2>
+            <p className="text-gray-600 mb-6">{error}</p>
+            <Button onClick={() => navigate(-1)} variant="outline">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Go Back
+            </Button>
+          </div>
+
+          {/* Diagnostic component for debugging */}
+          <ApiDiagnostic propertyId={id} />
         </div>
       </div>
     );
