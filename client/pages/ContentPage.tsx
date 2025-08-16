@@ -32,7 +32,7 @@ export default function ContentPage() {
   const fetchPage = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/content/${slug}`);
+      const response = await fetch(`/api/content/pages/slug/${slug}`);
       
       if (response.ok) {
         const data = await response.json();
