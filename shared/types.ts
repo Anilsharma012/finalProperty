@@ -110,6 +110,7 @@ export interface Subcategory {
   slug: string;
   description?: string;
   image?: string;
+  categoryId?: string; // Reference to parent category for services
   filters?: {
     bedroomOptions?: number[];
     priceRanges?: Array<{
@@ -118,6 +119,25 @@ export interface Subcategory {
       max: number;
     }>;
   };
+}
+
+export interface ServiceListing {
+  _id?: string;
+  category: string; // Category slug
+  subcategory: string; // Subcategory slug
+  name: string;
+  phone: string;
+  address: string;
+  photos: string[]; // Max 4 photos
+  geo: {
+    lat: number;
+    lng: number;
+  };
+  open: string; // Opening time
+  close: string; // Closing time
+  active: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface SearchFilters {
