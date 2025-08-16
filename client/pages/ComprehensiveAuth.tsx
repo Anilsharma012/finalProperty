@@ -169,7 +169,13 @@ const ComprehensiveAuth = () => {
         body: JSON.stringify({ phone: formData.phone }),
       });
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        console.error('Failed to parse OTP send response:', parseError);
+        throw new Error('Invalid response from server');
+      }
 
       if (response.ok && data.success) {
         setOtpSent(true);
