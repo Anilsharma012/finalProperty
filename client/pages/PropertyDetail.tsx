@@ -112,9 +112,21 @@ export default function PropertyDetail() {
         const errorData = apiResponse.json;
         setError(errorData.error || "Failed to load property");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching property:", error);
-      setError("Failed to load property");
+
+      // Provide more specific error messages based on error type
+      let errorMessage = "Failed to load property";
+
+      if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+        errorMessage = "Network error. Please check your internet connection and try again.";
+      } else if (error.message.includes('Invalid JSON')) {
+        errorMessage = "Server error. Please try again later.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
