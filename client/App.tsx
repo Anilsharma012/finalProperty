@@ -55,8 +55,9 @@ import NetworkStatus from "./components/NetworkStatus";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <ErrorBoundary>
+function App() {
+  return (
+    <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <TooltipProvider>
@@ -144,7 +145,8 @@ const App = () => (
         </TooltipProvider>
       </AuthProvider>
     </QueryClientProvider>
-  </ErrorBoundary>
-);
+    </ErrorBoundary>
+  );
+}
 
 export default App;
