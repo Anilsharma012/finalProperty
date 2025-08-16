@@ -10,6 +10,7 @@ import {
   Youtube,
   Calendar,
 } from "lucide-react";
+import FooterPackages from "./FooterPackages";
 
 export default function StaticFooter() {
   return (
