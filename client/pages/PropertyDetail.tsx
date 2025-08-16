@@ -132,7 +132,7 @@ export default function PropertyDetail() {
 
   const handleCall = (phoneNumber: string) => {
     // Track phone click
-    fetch(`/api/analytics/phone/${id}`, { method: "POST" }).catch(
+    (window as any).api(`analytics/phone/${id}`, { method: "POST" }).catch(
       console.error,
     );
     window.open(`tel:${phoneNumber}`, "_self");
