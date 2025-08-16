@@ -155,14 +155,51 @@ export default function PropertyCard({
         {/* Description Preview */}
         {property.description && (
           <p className="text-gray-600 text-sm mt-2 overflow-hidden" style={{
-          display: '-webkit-box',
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical'
-        }}>
-          {property.description}
-        </p>
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical'
+          }}>
+            {property.description}
+          </p>
         )}
+
+        {/* Action Buttons */}
+        <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowChatModal(true);
+            }}
+            variant="outline"
+            size="sm"
+            className="flex-1 text-[#C70000] border-[#C70000] hover:bg-[#C70000] hover:text-white"
+          >
+            <MessageCircle className="h-4 w-4 mr-1" />
+            Chat
+          </Button>
+          {property.contactVisible && property.contactInfo && (
+            <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                window.location.href = `tel:${property.contactInfo.phone}`;
+              }}
+              variant="outline"
+              size="sm"
+              className="flex-1 text-green-600 border-green-600 hover:bg-green-600 hover:text-white"
+            >
+              <Phone className="h-4 w-4 mr-1" />
+              Call
+            </Button>
+          )}
+        </div>
       </div>
+
+      {/* Chat Modal */}
+      <PropertyChatModal
+        property={property}
+        isOpen={showChatModal}
+        onClose={() => setShowChatModal(false)}
+      />
     </div>
   );
 }
