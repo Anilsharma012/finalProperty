@@ -64,6 +64,7 @@ import SystemStatus from "../components/admin/SystemStatus";
 import SellerVerificationFields from "../components/admin/SellerVerificationFields";
 import PendingPropertiesApproval from "../components/admin/PendingPropertiesApproval";
 import OtherServicesManagement from "../components/admin/OtherServicesManagement";
+import SupportInbox from "../components/SupportInbox";
 import {
   Table,
   TableBody,
@@ -88,7 +89,15 @@ import {
 
 export default function Admin() {
   const { user, token, isAuthenticated, loading: authLoading } = useAuth();
-  const [activeSection, setActiveSection] = useState("dashboard");
+
+  // Get initial section from URL
+  const getInitialSection = () => {
+    const path = window.location.pathname;
+    if (path === "/admin/support") return "support-inbox";
+    return "dashboard";
+  };
+
+  const [activeSection, setActiveSection] = useState(getInitialSection());
   const [stats, setStats] = useState<any>({
     totalUsers: 0,
     totalProperties: 0,
@@ -952,6 +961,8 @@ export default function Admin() {
           return <DatabaseDiagnostics />;
         case "other-services":
           return <OtherServicesManagement />;
+        case "support-inbox":
+          return <SupportInbox />;
         default:
           return renderDashboard();
       }

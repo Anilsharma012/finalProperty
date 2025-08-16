@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./hooks/useAuth";
 import ErrorBoundary from "./components/ErrorBoundary";
 import "./lib/global-api"; // Make API helper globally available
+import "./lib/api-helper"; // Make api helper globally available
 import Index from "./pages/Index";
 import Categories from "./pages/Categories";
 import Properties from "./pages/Properties";
@@ -32,6 +33,10 @@ import SimpleLogin from "./pages/SimpleLogin";
 import ComprehensiveAuth from "./pages/ComprehensiveAuth";
 import UserDashboard from "./pages/UserDashboard";
 import PostProperty from "./pages/PostProperty";
+import AddProperty from "./pages/AddProperty";
+import Favorites from "./pages/Favorites";
+import ConversationsList from "./pages/ConversationsList";
+import ChatDemo from "./pages/ChatDemo";
 import SellerDashboard from "./pages/SellerDashboard";
 import BuyerDashboard from "./pages/BuyerDashboard";
 import AgentDashboard from "./pages/AgentDashboard";
@@ -96,6 +101,8 @@ const App = () => (
               <Route path="/property/:id" element={<PropertyDetail />} />
               <Route path="/properties/:id" element={<PropertyDetail />} />
               <Route path="/chat" element={<Chat />} />
+              <Route path="/conversations" element={<ConversationsList />} />
+              <Route path="/chat-demo" element={<ChatDemo />} />
               <Route path="/chat/:conversationId" element={<ChatPage />} />
               <Route path="/my-account" element={<MyAccount />} />
               <Route path="/agents" element={<Agents />} />
@@ -106,6 +113,8 @@ const App = () => (
               <Route path="/user" element={<User />} />
               <Route path="/user-dashboard" element={<UserDashboard />} />
               <Route path="/post-property" element={<PostProperty />} />
+              <Route path="/add-property" element={<AddProperty />} />
+              <Route path="/favorites" element={<Favorites />} />
               <Route path="/seller" element={<Seller />} />
               <Route path="/seller-dashboard" element={<SellerDashboard />} />
               <Route path="/support/:action" element={<Support />} />
@@ -117,6 +126,7 @@ const App = () => (
               <Route path="/buyer-dashboard" element={<BuyerDashboard />} />
               <Route path="/agent-dashboard" element={<AgentDashboard />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/admin/support" element={<Admin />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/staff/login" element={<StaffLogin />} />
               <Route path="/staff-dashboard" element={<StaffDashboard />} />
