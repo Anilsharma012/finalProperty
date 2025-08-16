@@ -94,21 +94,23 @@ export default function PropertyDetail() {
         return;
       }
 
-      const response = await fetch(`/api/properties/${id}`);
+      // Use the global API helper for better error handling and CORS support
+      const apiResponse = await (window as any).api(`properties/${id}`);
 
-      if (response.ok) {
-        const data = await response.json();
+      if (apiResponse.ok) {
+        const data = apiResponse.json;
         if (data.success) {
           setProperty(data.data);
         } else {
           setError(data.error || "Property not found");
         }
-      } else if (response.status === 404) {
+      } else if (apiResponse.status === 404) {
         setError("Property not found");
-      } else if (response.status === 400) {
+      } else if (apiResponse.status === 400) {
         setError("Invalid property ID");
       } else {
-        setError("Failed to load property");
+        const errorData = apiResponse.json;
+        setError(errorData.error || "Failed to load property");
       }
     } catch (error) {
       console.error("Error fetching property:", error);
