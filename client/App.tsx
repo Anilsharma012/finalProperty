@@ -32,6 +32,7 @@ import SimpleLogin from "./pages/SimpleLogin";
 import ComprehensiveAuth from "./pages/ComprehensiveAuth";
 import UserDashboard from "./pages/UserDashboard";
 import PostProperty from "./pages/PostProperty";
+import AddProperty from "./pages/AddProperty";
 import SellerDashboard from "./pages/SellerDashboard";
 import BuyerDashboard from "./pages/BuyerDashboard";
 import AgentDashboard from "./pages/AgentDashboard";
