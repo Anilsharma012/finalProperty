@@ -1139,7 +1139,7 @@ export default function PostProperty() {
 
         {/* Navigation Buttons - Enhanced for better visibility */}
         {currentStep < 6 && (
-          <div className="sticky bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 mt-6 z-50 shadow-lg">
+          <div data-section="next" className="sticky bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 mt-6 z-50 shadow-lg">
             <div className="max-w-7xl mx-auto">
               <div className="flex justify-between items-center w-full">
                 <Button
