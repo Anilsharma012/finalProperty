@@ -122,7 +122,7 @@ export default function PropertyDetail() {
 
   const trackView = async () => {
     try {
-      await fetch(`/api/analytics/view/${id}`, {
+      await (window as any).api(`analytics/view/${id}`, {
         method: "POST",
       });
     } catch (error) {
