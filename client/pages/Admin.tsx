@@ -106,6 +106,43 @@ export default function Admin() {
   const [offlineMode, setOfflineMode] = useState(false);
   const [skipDataLoading, setSkipDataLoading] = useState(false);
   const [forceOfflineMode, setForceOfflineMode] = useState(false);
+  const [networkDiagnostics, setNetworkDiagnostics] = useState<string[]>([]);
+
+  const runNetworkDiagnostics = async () => {
+    const diagnostics: string[] = [];
+
+    try {
+      // Check current environment
+      const environment = window.location.hostname.includes('.fly.dev') ? 'fly.dev' :
+                         window.location.hostname.includes('.netlify.app') ? 'netlify' :
+                         window.location.hostname === 'localhost' ? 'localhost' : 'unknown';
+
+      diagnostics.push(`Environment: ${environment}`);
+      diagnostics.push(`URL: ${window.location.href}`);
+
+      // Check if we can reach the base domain
+      try {
+        const healthCheck = await fetch(window.location.origin + '/api/ping', {
+          method: 'GET',
+          cache: 'no-cache',
+          timeout: 5000
+        });
+        diagnostics.push(`Health check: ${healthCheck.status} ${healthCheck.statusText}`);
+      } catch (healthError) {
+        diagnostics.push(`Health check failed: ${healthError.message}`);
+      }
+
+      // Check browser capabilities
+      diagnostics.push(`Fetch API: ${typeof fetch !== 'undefined' ? 'Available' : 'Not available'}`);
+      diagnostics.push(`Online status: ${navigator.onLine ? 'Online' : 'Offline'}`);
+
+    } catch (error) {
+      diagnostics.push(`Diagnostics error: ${error.message}`);
+    }
+
+    setNetworkDiagnostics(diagnostics);
+    return diagnostics;
+  };
 
   const loadMockData = () => {
     setStats({
