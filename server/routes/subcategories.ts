@@ -32,14 +32,30 @@ export const getSubcategories: RequestHandler = async (req, res) => {
         });
       }
 
+      // Build match criteria based on category type
+      let matchCriteria: any = {
+        status: "active",
+        approvalStatus: "approved",
+        subCategory: { $ne: null, $ne: "" },
+      };
+
+      // Handle different category types
+      if (category === "sale" || category === "buy") {
+        matchCriteria.priceType = "sale";
+      } else if (category === "rent") {
+        matchCriteria.priceType = "rent";
+      } else if (category === "lease") {
+        matchCriteria.priceType = "lease";
+      } else if (category === "pg") {
+        matchCriteria.propertyType = "pg";
+      } else {
+        // For other categories, treat as propertyType
+        matchCriteria.propertyType = category;
+      }
+
       // Get live subcategory data by checking which subcategories have approved properties
       const subcategoriesWithApprovedProperties =
-        await propertiesCollection.distinct("subCategory", {
-          status: "active",
-          approvalStatus: "approved",
-          propertyType: category,
-          subCategory: { $ne: null, $ne: "" },
-        });
+        await propertiesCollection.distinct("subCategory", matchCriteria);
 
       // Filter to only include subcategories that have approved properties
       const availableSubcategories = (categoryDoc.subcategories || [])
