@@ -57,8 +57,9 @@ export const getSubcategories: RequestHandler = async (req, res) => {
         await propertiesCollection.distinct("subCategory", propertyFilter);
 
       // Get all subcategories for this category
-      const allSubcategories = (categoryDoc.subcategories || [])
-        .sort((a: any, b: any) => a.name.localeCompare(b.name));
+      const allSubcategories = (categoryDoc.subcategories || []).sort(
+        (a: any, b: any) => a.name.localeCompare(b.name),
+      );
 
       // Get subcategories that have approved properties
       const subcategoriesWithProperties = (categoryDoc.subcategories || [])
@@ -68,9 +69,10 @@ export const getSubcategories: RequestHandler = async (req, res) => {
         .sort((a: any, b: any) => a.name.localeCompare(b.name));
 
       // Use subcategories with properties if available, otherwise show all admin-created subcategories
-      const availableSubcategories = subcategoriesWithProperties.length > 0
-        ? subcategoriesWithProperties
-        : allSubcategories;
+      const availableSubcategories =
+        subcategoriesWithProperties.length > 0
+          ? subcategoriesWithProperties
+          : allSubcategories;
 
       res.json({
         success: true,

@@ -14,14 +14,18 @@ export default function FooterPackages() {
   const fetchFooterPackages = async () => {
     try {
       setLoading(true);
-      
+
       // Get packages with placement='footer'
-      const response = await (window as any).api('/plans?isActive=true');
-      const data = response.ok ? response.json : { success: false, error: 'Failed to fetch plans' };
+      const response = await (window as any).api("/plans?isActive=true");
+      const data = response.ok
+        ? response.json
+        : { success: false, error: "Failed to fetch plans" };
 
       if (data.success && Array.isArray(data.data)) {
         // Filter for footer placement packages
-        const footerPackages = data.data.filter((pkg: AdPackage) => pkg.placement === 'footer');
+        const footerPackages = data.data.filter(
+          (pkg: AdPackage) => pkg.placement === "footer",
+        );
         setPackages(footerPackages);
       }
     } catch (error) {
@@ -66,9 +70,7 @@ export default function FooterPackages() {
               {/* Package Header */}
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-2">
-                  <div className="text-white">
-                    {getPackageIcon(pkg.type)}
-                  </div>
+                  <div className="text-white">{getPackageIcon(pkg.type)}</div>
                   <h5 className="font-semibold text-white">{pkg.name}</h5>
                 </div>
                 {pkg.premium && (
@@ -100,7 +102,7 @@ export default function FooterPackages() {
 
               {/* CTA Button */}
               <Button
-                onClick={() => window.location.href = `/checkout/${pkg._id}`}
+                onClick={() => (window.location.href = `/checkout/${pkg._id}`)}
                 className="w-full bg-white text-[#C70000] hover:bg-red-50 text-sm py-2"
               >
                 Choose Package
