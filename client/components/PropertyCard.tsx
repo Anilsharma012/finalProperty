@@ -21,6 +21,7 @@ export default function PropertyCard({
   onFavoriteClick,
   isFavorite = false,
 }: PropertyCardProps) {
+  const [showChatModal, setShowChatModal] = useState(false);
   const formatPrice = (price: number, priceType: string) => {
     const formatted = new Intl.NumberFormat("en-IN", {
       style: "currency",
