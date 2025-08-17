@@ -444,7 +444,7 @@ export function createServer() {
   app.use(express.urlencoded({ extended: true, limit: "1gb" }));
 
   // Mount CSV import BEFORE any global image upload middleware
-  app.use("/api", osImportRoutes);
+  app.use("/api", authenticateToken, requireAdmin, osImportRoutes);
 
   // Initialize MongoDB connection
   connectToDatabase()
