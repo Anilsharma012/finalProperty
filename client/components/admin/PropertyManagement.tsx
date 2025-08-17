@@ -591,7 +591,7 @@ export default function PropertyManagement() {
                   </TableCell>
                   <TableCell>
                     <span className="font-semibold">
-                      ₹{(property.price / 100000).toFixed(1)}L
+                      ₹{property.price ? (property.price / 100000).toFixed(1) : '0'}L
                     </span>
                   </TableCell>
                   <TableCell>
