@@ -98,15 +98,28 @@ export default function OsBulkImport() {
 
       console.log('Final CSV data for validation:', csvData);
 
-      // Validate required fields
-      const requiredFields = ['catSlug', 'subSlug', 'name', 'phone', 'address'];
-      const validationErrors: string[] = [];
-
       if (csvData.length === 0) {
         throw new Error("No valid data rows found in CSV file. Please check the file format.");
       }
 
-      csvData.forEach((row, index) => {
+      // Normalize field names - handle both catSlug and categorySlug
+      const normalizedCsvData = csvData.map(row => {
+        const normalizedRow = { ...row };
+
+        // Convert categorySlug to catSlug if present
+        if (row.categorySlug && !row.catSlug) {
+          normalizedRow.catSlug = row.categorySlug;
+          delete normalizedRow.categorySlug;
+        }
+
+        return normalizedRow;
+      });
+
+      // Validate required fields
+      const requiredFields = ['catSlug', 'subSlug', 'name', 'phone', 'address'];
+      const validationErrors: string[] = [];
+
+      normalizedCsvData.forEach((row, index) => {
         console.log(`Validating row ${index + 2}:`, row);
         requiredFields.forEach(field => {
           if (!row[field] || String(row[field]).trim() === '') {
@@ -120,6 +133,9 @@ export default function OsBulkImport() {
         console.error('Available fields in first row:', Object.keys(csvData[0] || {}));
         throw new Error(`Validation errors:\n${validationErrors.slice(0, 5).join('\n')}${validationErrors.length > 5 ? `\n... and ${validationErrors.length - 5} more errors` : ''}\n\nAvailable fields: ${Object.keys(csvData[0] || {}).join(', ')}`);
       }
+
+      // Use normalized data for the API call
+      console.log('Normalized CSV data:', normalizedCsvData);
 
       console.log('Parsed CSV data:', csvData);
 
