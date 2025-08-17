@@ -212,15 +212,15 @@ export default function PropertyManagement() {
   const handleEditProperty = (property: any) => {
     setSelectedProperty(property);
     setFormData({
-      title: property.title,
-      description: property.description,
-      price: property.price.toString(),
-      priceType: property.priceType,
-      propertyType: property.propertyType,
-      subCategory: property.subCategory,
-      location: property.location,
-      contactInfo: property.contactInfo,
-      status: property.status,
+      title: property.title || '',
+      description: property.description || '',
+      price: (property.price || 0).toString(),
+      priceType: property.priceType || 'sale',
+      propertyType: property.propertyType || '',
+      subCategory: property.subCategory || '',
+      location: property.location || { address: '', city: '', state: '', pincode: '' },
+      contactInfo: property.contactInfo || { name: '', phone: '', email: '' },
+      status: property.status || 'pending',
     });
     setSelectedImages([]);
     setShowEditDialog(true);
