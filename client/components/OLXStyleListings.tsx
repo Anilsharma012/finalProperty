@@ -284,23 +284,19 @@ export default function OLXStyleListings() {
                   </span>
                 </div>
 
-                {/* Chat Button */}
+                {/* Enquiry Button */}
                 <button
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    // Handle chat functionality
-                    const token = localStorage.getItem("token");
-                    if (token) {
-                      window.location.href = `/chat?propertyId=${property._id}&sellerId=${property.ownerId || property.contactInfo?.name}`;
-                    } else {
-                      window.location.href = `/login?redirect=/property/${property._id}`;
-                    }
+                    setSelectedProperty(property);
+                    setEnquiryModalOpen(true);
                   }}
+                  data-testid="enquiry-btn"
                   className="w-full bg-[#C70000] hover:bg-[#A60000] text-white text-xs py-2 px-3 rounded-md flex items-center justify-center space-x-1 transition-colors"
                 >
-                  <MessageCircle className="h-3 w-3" />
-                  <span>Chat</span>
+                  <Send className="h-3 w-3" />
+                  <span>Enquiry Now</span>
                 </button>
               </div>
             </div>
