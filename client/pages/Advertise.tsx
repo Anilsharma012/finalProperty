@@ -147,7 +147,7 @@ export default function Advertise() {
                       key={pkg._id}
                       data-testid="plan-card"
                       className={`relative rounded-xl border-2 overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-105 ${
-                        pkg.premium
+                        pkg.type === "premium"
                           ? "border-orange-300 transform scale-105 shadow-lg"
                           : "border-gray-200"
                       }`}
