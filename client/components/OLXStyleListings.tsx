@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Heart, MapPin, Clock, MessageCircle, Send } from "lucide-react";
 import PropertyLoadingSkeleton from "./PropertyLoadingSkeleton";
 import EnquiryModal from "./EnquiryModal";
+import { NetworkError } from "../utils/network-utils";
 
 interface Property {
   _id: string;
