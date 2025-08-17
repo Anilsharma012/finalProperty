@@ -53,7 +53,7 @@ const categoryButtons: CategoryButton[] = [
   },
   {
     name: "Other Services",
-    path: "/services",
+    path: "/other-services",
     icon: Settings,
     description: "Property related services",
   },
