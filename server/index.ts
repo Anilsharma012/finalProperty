@@ -36,7 +36,6 @@ import {
   updateServiceListing,
   deleteServiceListing,
   bulkImportServiceListings,
-  upload as serviceUpload,
 } from "./routes/service-listings";
 
 // Authentication routes
