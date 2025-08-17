@@ -64,7 +64,7 @@ function parseCSV(text: string): Record<string, string>[] {
     .map((rw) => Object.fromEntries(header.map((h, i) => [h, rw[i] ?? ""])));
 }
 
-r.post("/admin/os-listings/import", upload.single("file"), async (req, res) => {
+r.post("/os-listings/import", upload.single("file"), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: "file required" });
     const csv = req.file.buffer.toString("utf8");
