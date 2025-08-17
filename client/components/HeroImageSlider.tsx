@@ -3,7 +3,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface SliderImage {
   _id?: string;
-  url: string;
+  imageUrl: string;
+  linkUrl?: string;
   alt: string;
   title?: string;
   subtitle?: string;
