@@ -1654,4 +1654,13 @@ export function createServer() {
   return app;
 }
 
+export function initializeSocket(httpServer: any) {
+  socketServer = new ChatSocketServer(httpServer);
+  return socketServer;
+}
+
+export function getSocketServer() {
+  return socketServer;
+}
+
 // For production
