@@ -111,6 +111,7 @@ function App() {
                 <Route path="/properties/:id" element={<PropertyDetail />} />
                 <Route path="/chat" element={<Chat />} />
                 <Route path="/chat/:conversationId" element={<ChatPage />} />
+                <Route path="/chat/:id" element={<ChatConversation />} />
                 <Route path="/test-chat/:id" element={<TestChat />} />
                 <Route path="/step3-test" element={<Step3Test />} />
                 <Route path="/my-account" element={<MyAccount />} />
