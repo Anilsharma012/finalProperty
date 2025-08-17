@@ -211,11 +211,11 @@ export default function ManualPaymentApproval() {
   };
 
   const filteredTransactions = transactions.filter(transaction => {
-    const matchesSearch = 
-      transaction.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      transaction.userEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      transaction.packageName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      transaction.paymentDetails.transactionId?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      (transaction.userName?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (transaction.userEmail?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (transaction.packageName?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (transaction.paymentDetails?.transactionId?.toLowerCase() || '').includes(searchTerm.toLowerCase());
     
     const matchesStatus = selectedStatus === 'all' || transaction.status === selectedStatus;
     const matchesMethod = selectedMethod === 'all' || transaction.paymentMethod === selectedMethod;
