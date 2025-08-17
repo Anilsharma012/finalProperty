@@ -907,6 +907,28 @@ export function createServer() {
     getAdminAnalytics,
   );
 
+  // Other Services - Public APIs
+  app.get("/api/os/categories", getOsCategories);
+  app.get("/api/os/subcategories", getOsSubcategories);
+  app.get("/api/os/listings", getOsListings);
+
+  // Other Services - Admin APIs
+  app.get("/api/admin/os-categories", authenticateToken, requireAdmin, getAdminOsCategories);
+  app.post("/api/admin/os-categories", authenticateToken, requireAdmin, createOsCategory);
+  app.put("/api/admin/os-categories/:categoryId", authenticateToken, requireAdmin, updateOsCategory);
+  app.delete("/api/admin/os-categories/:categoryId", authenticateToken, requireAdmin, deleteOsCategory);
+
+  app.get("/api/admin/os-subcategories", authenticateToken, requireAdmin, getAdminOsSubcategories);
+  app.post("/api/admin/os-subcategories", authenticateToken, requireAdmin, createOsSubcategory);
+  app.put("/api/admin/os-subcategories/:subcategoryId", authenticateToken, requireAdmin, updateOsSubcategory);
+  app.delete("/api/admin/os-subcategories/:subcategoryId", authenticateToken, requireAdmin, deleteOsSubcategory);
+
+  app.get("/api/admin/os-listings", authenticateToken, requireAdmin, getAdminOsListings);
+  app.post("/api/admin/os-listings", authenticateToken, requireAdmin, createOsListing);
+  app.put("/api/admin/os-listings/:listingId", authenticateToken, requireAdmin, updateOsListing);
+  app.delete("/api/admin/os-listings/:listingId", authenticateToken, requireAdmin, deleteOsListing);
+  app.post("/api/admin/os-listings/import", authenticateToken, requireAdmin, upload.single("file"), bulkImportOsListings);
+
   // App routes
   app.get("/api/app/info", getAppInfo);
   app.get("/api/app/download", downloadAPK);
