@@ -211,9 +211,9 @@ export default function PropertyDetail() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({
+          body: {
             propertyId: property._id,
-          }),
+          },
         },
       );
 
