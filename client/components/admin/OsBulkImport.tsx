@@ -37,43 +37,62 @@ export default function OsBulkImport() {
       const csvContent = await file.text();
 
       // Parse CSV to JSON with better handling of quoted values
-      const lines = csvContent.split('\n').filter(line => line.trim());
+      const lines = csvContent.split(/\r?\n/).filter(line => line.trim());
       if (lines.length < 2) {
         throw new Error("CSV file must have at least a header row and one data row");
       }
 
-      const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+      console.log('CSV Lines:', lines);
+
+      // Parse headers
+      const headerLine = lines[0].trim();
+      const headers = headerLine.split(',').map(h => h.trim().replace(/^["']|["']$/g, ''));
+      console.log('Headers:', headers);
+
+      // Parse data rows
       const csvData = lines.slice(1).map((line, lineIndex) => {
+        const trimmedLine = line.trim();
+        if (!trimmedLine) return null; // Skip empty lines
+
         try {
-          // Simple CSV parser that handles quoted values
+          // Improved CSV parser that handles quoted values better
           const values: string[] = [];
           let current = '';
           let inQuotes = false;
+          let quoteChar = '';
 
-          for (let i = 0; i < line.length; i++) {
-            const char = line[i];
-            if (char === '"') {
-              inQuotes = !inQuotes;
+          for (let i = 0; i < trimmedLine.length; i++) {
+            const char = trimmedLine[i];
+
+            if ((char === '"' || char === "'") && !inQuotes) {
+              inQuotes = true;
+              quoteChar = char;
+            } else if (char === quoteChar && inQuotes) {
+              inQuotes = false;
+              quoteChar = '';
             } else if (char === ',' && !inQuotes) {
-              values.push(current.trim());
+              values.push(current.trim().replace(/^["']|["']$/g, ''));
               current = '';
             } else {
               current += char;
             }
           }
-          values.push(current.trim()); // Push the last value
+          values.push(current.trim().replace(/^["']|["']$/g, '')); // Push the last value
 
           const obj: any = {};
           headers.forEach((header, index) => {
             obj[header] = values[index] || '';
           });
+
+          console.log(`Row ${lineIndex + 2}:`, obj);
           return obj;
         } catch (error) {
-          console.error(`Error parsing line ${lineIndex + 2}:`, line);
-          throw new Error(`Invalid CSV format at line ${lineIndex + 2}`);
+          console.error(`Error parsing line ${lineIndex + 2}:`, trimmedLine);
+          throw new Error(`Invalid CSV format at line ${lineIndex + 2}: ${error}`);
         }
       }).filter(row => {
-        // Filter out empty rows
+        // Filter out null and empty rows
+        if (!row) return false;
         return Object.values(row).some(value => String(value).trim() !== '');
       });
 
