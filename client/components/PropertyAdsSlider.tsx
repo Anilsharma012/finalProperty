@@ -103,8 +103,14 @@ const PropertyAdsSlider: React.FC = () => {
               console.log("✅ Loaded", homeAds.length, "home advertisements");
             }
           }
-        } catch (error) {
-          console.warn("⚠️ Failed to fetch advertisements:", error);
+        } catch (error: any) {
+          if (error.name === "AbortError") {
+            console.warn("⏰ Advertisement fetch timed out");
+          } else if (error.message?.includes("Failed to fetch")) {
+            console.warn("🌐 Network issue fetching advertisements");
+          } else {
+            console.warn("⚠️ Failed to fetch advertisements:", error);
+          }
         }
 
         // Fetch featured properties as fallback
