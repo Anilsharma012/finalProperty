@@ -238,20 +238,17 @@ export default function PropertyListings() {
         </div>
       </section>
 
-      {/* Chat Modal */}
+      {/* Enquiry Modal */}
       {selectedProperty && (
-        <ChatModal
-          isOpen={chatModalOpen}
+        <EnquiryModal
+          isOpen={enquiryModalOpen}
           onClose={() => {
-            setChatModalOpen(false);
+            setEnquiryModalOpen(false);
             setSelectedProperty(null);
           }}
+          propertyId={selectedProperty.id.toString()}
           propertyTitle={selectedProperty.title}
-          propertyPrice={selectedProperty.price}
-          propertyImage={selectedProperty.image}
-          sellerId="seller1" // This would come from the property data
-          sellerName="Property Owner"
-          propertyId={selectedProperty.id}
+          ownerName="Property Owner"
         />
       )}
     </div>
