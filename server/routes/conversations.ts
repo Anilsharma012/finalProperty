@@ -467,6 +467,16 @@ export const sendMessageToConversation: RequestHandler = async (req, res) => {
       },
     );
 
+    // Emit real-time message via Socket.io
+    const socketServer = getSocketServer();
+    if (socketServer) {
+      const messageWithId = {
+        ...newMessage,
+        _id: messageResult.insertedId,
+      };
+      socketServer.emitNewMessage(conversation, messageWithId);
+    }
+
     const response: ApiResponse<any> = {
       success: true,
       data: {
