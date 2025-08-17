@@ -82,9 +82,9 @@ const PropertyAdsSlider: React.FC = () => {
             {
               signal: controller.signal,
               headers: {
-                'Cache-Control': 'no-cache',
-              }
-            }
+                "Cache-Control": "no-cache",
+              },
+            },
           );
 
           clearTimeout(timeoutId);
@@ -122,8 +122,8 @@ const PropertyAdsSlider: React.FC = () => {
           const propertiesResponse = await fetch("/api/properties/featured", {
             signal: controller.signal,
             headers: {
-              'Cache-Control': 'no-cache',
-            }
+              "Cache-Control": "no-cache",
+            },
           });
 
           clearTimeout(timeoutId);

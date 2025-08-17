@@ -52,9 +52,9 @@ export default function OLXStyleListings() {
         signal: controller.signal,
         cache: "no-cache",
         headers: {
-          'Cache-Control': 'no-cache',
-          'Accept': 'application/json',
-        }
+          "Cache-Control": "no-cache",
+          Accept: "application/json",
+        },
       });
 
       clearTimeout(timeoutId);
@@ -94,7 +94,10 @@ export default function OLXStyleListings() {
       // Provide appropriate fallback based on error type
       if (error.name === "AbortError") {
         console.log("⏰ Request timed out, using mock data");
-      } else if (error.message?.includes("Failed to fetch") || error.name === "TypeError") {
+      } else if (
+        error.message?.includes("Failed to fetch") ||
+        error.name === "TypeError"
+      ) {
         console.log("🌐 Network connectivity issue detected, using mock data");
       } else {
         console.log("🔄 Unknown error occurred, using mock data");
