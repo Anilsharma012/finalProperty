@@ -576,17 +576,17 @@ export default function PropertyManagement() {
                         <Home className="h-6 w-6 text-gray-500" />
                       </div>
                       <div>
-                        <p className="font-semibold">{property.title}</p>
+                        <p className="font-semibold">{property.title || 'Untitled Property'}</p>
                         <p className="text-sm text-gray-500">
-                          ID: {property._id.slice(-6)}
+                          ID: {property._id?.slice(-6) || 'N/A'}
                         </p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
                     <div>
-                      <p className="font-medium capitalize">{property.propertyType}</p>
-                      <p className="text-sm text-gray-500 capitalize">{property.subCategory}</p>
+                      <p className="font-medium capitalize">{property.propertyType || 'N/A'}</p>
+                      <p className="text-sm text-gray-500 capitalize">{property.subCategory || 'N/A'}</p>
                     </div>
                   </TableCell>
                   <TableCell>
