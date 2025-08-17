@@ -153,7 +153,7 @@ export default function Advertise() {
                       }`}
                     >
                       {/* Premium Badge */}
-                      {pkg.premium && (
+                      {pkg.type === "premium" && (
                         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                           <div className="bg-orange-500 text-white px-4 py-1 rounded-full text-sm font-semibold flex items-center">
                             <Crown className="h-4 w-4 mr-1" />
