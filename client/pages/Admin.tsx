@@ -1113,6 +1113,14 @@ export default function Admin() {
           return <DatabaseDiagnostics />;
         case "other-services":
           return <OtherServicesManagement />;
+        case "service-categories":
+          return <OtherServicesManagement activeTab="categories" />;
+        case "service-subcategories":
+          return <OtherServicesManagement activeTab="subcategories" />;
+        case "service-listings":
+          return <OtherServicesManagement activeTab="listings" />;
+        case "bulk-import":
+          return <OtherServicesManagement activeTab="bulk-import" />;
         case "support-inbox":
           return <SupportInbox />;
         default:
