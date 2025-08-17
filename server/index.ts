@@ -927,7 +927,7 @@ export function createServer() {
   app.post("/api/admin/os-listings", authenticateToken, requireAdmin, createOsListing);
   app.put("/api/admin/os-listings/:listingId", authenticateToken, requireAdmin, updateOsListing);
   app.delete("/api/admin/os-listings/:listingId", authenticateToken, requireAdmin, deleteOsListing);
-  app.post("/api/admin/os-listings/import", authenticateToken, requireAdmin, upload.single("file"), bulkImportOsListings);
+  app.post("/api/admin/os-listings/import", authenticateToken, requireAdmin, bulkImportOsListings);
 
   // Test route for Other Services
   app.post("/api/test/other-services", async (req, res) => {
