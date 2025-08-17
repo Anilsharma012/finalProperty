@@ -117,7 +117,7 @@ export default function ReportsManagement() {
       setError('');
 
       const response = await fetch(`/api/admin/reports/${reportId}`, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
