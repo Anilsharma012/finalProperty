@@ -98,13 +98,20 @@ export const createApiUrl = (endpoint: string): string => {
 
   // If we have a base URL, use it
   if (API_CONFIG.baseUrl) {
-    const fullUrl = `${API_CONFIG.baseUrl}/api/${cleanEndpoint.replace("api/", "")}`;
-    console.log("🌐 Full API URL:", fullUrl);
-    return fullUrl;
+    // Handle case where baseUrl already contains '/api'
+    if (API_CONFIG.baseUrl.endsWith('/api')) {
+      const fullUrl = `${API_CONFIG.baseUrl}/${cleanEndpoint}`;
+      console.log("🌐 Full API URL (baseUrl has /api):", fullUrl);
+      return fullUrl;
+    } else {
+      const fullUrl = `${API_CONFIG.baseUrl}/api/${cleanEndpoint}`;
+      console.log("🌐 Full API URL:", fullUrl);
+      return fullUrl;
+    }
   }
 
   // For development or same-domain, use relative URLs
-  const relativeUrl = `/api/${cleanEndpoint.replace("api/", "")}`;
+  const relativeUrl = `/api/${cleanEndpoint}`;
   console.log("🏠 Relative API URL:", relativeUrl);
   console.log("🌍 Environment:", environment);
   return relativeUrl;
