@@ -141,8 +141,14 @@ const PropertyAdsSlider: React.FC = () => {
               );
             }
           }
-        } catch (error) {
-          console.warn("⚠️ Failed to fetch featured properties:", error);
+        } catch (error: any) {
+          if (error.name === "AbortError") {
+            console.warn("⏰ Featured properties fetch timed out");
+          } else if (error.message?.includes("Failed to fetch")) {
+            console.warn("🌐 Network issue fetching featured properties");
+          } else {
+            console.warn("⚠️ Failed to fetch featured properties:", error);
+          }
         }
       } catch (error) {
         console.error("❌ Error fetching data:", error);
