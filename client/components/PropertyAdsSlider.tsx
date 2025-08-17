@@ -7,6 +7,7 @@ import {
   Bed,
   Bath,
 } from "lucide-react";
+import { safeFetch, NetworkError } from "../utils/network-utils";
 
 interface Advertisement {
   _id: string;
