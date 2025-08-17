@@ -55,8 +55,8 @@ r.post("/admin/os-listings/import", upload.single("file"), async (req, res) => {
 
     let created = 0, updated = 0; const errors: any[] = [];
     const db = getDatabase();
-    
-    for (const r of rows){
+
+    for (const r of normalizedRows){
       try{
         const catSlug = (r.catSlug||"").toLowerCase(); const subSlug = (r.subSlug||"").toLowerCase();
         if (!catSlug || !subSlug) throw new Error("catSlug/subSlug required");
