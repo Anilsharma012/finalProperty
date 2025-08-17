@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import ServiceCategories from "./ServiceCategories";
-import ServiceListings from "./ServiceListings";
-import BulkImportServices from "./BulkImportServices";
+import OsCategoriesManagement from "./OsCategoriesManagement";
+import OsSubcategoriesManagement from "./OsSubcategoriesManagement";
+import OsListingsManagement from "./OsListingsManagement";
+import OsBulkImport from "./OsBulkImport";
 import { Layers, List, MapPin, Plus } from "lucide-react";
 
 interface OtherServicesManagementProps {
@@ -49,27 +50,19 @@ export default function OtherServicesManagement({ activeTab: initialActiveTab = 
         </TabsList>
 
         <TabsContent value="categories" className="mt-6">
-          <ServiceCategories />
+          <OsCategoriesManagement />
         </TabsContent>
 
         <TabsContent value="subcategories" className="mt-6">
-          <div className="text-center py-20">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Service Subcategories
-            </h3>
-            <p className="text-gray-500">
-              Subcategories are managed within Service Categories. Go to Service
-              Categories tab to add subcategories to existing categories.
-            </p>
-          </div>
+          <OsSubcategoriesManagement />
         </TabsContent>
 
         <TabsContent value="listings" className="mt-6">
-          <ServiceListings />
+          <OsListingsManagement />
         </TabsContent>
 
         <TabsContent value="bulk-import" className="mt-6">
-          <BulkImportServices />
+          <OsBulkImport />
         </TabsContent>
       </Tabs>
     </div>
