@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import { getDatabase } from "../db/mongodb";
 import { ObjectId } from "mongodb";
 import { ApiResponse } from "@shared/types";
+import { getSocketServer } from "../index";
 
 // GET /admin/conversations - Admin support inbox to see all conversations
 export const getAdminConversations: RequestHandler = async (req, res) => {
