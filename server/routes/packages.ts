@@ -101,8 +101,8 @@ export const getAdPackages: RequestHandler = async (req, res) => {
 
     console.log(`📦 Found ${packages.length} packages`);
 
-    // If no packages found and activeOnly is true, try to initialize default packages
-    if (packages.length === 0 && activeOnly === "true") {
+    // If no packages found and either activeOnly or isActive is true, try to initialize default packages
+    if (packages.length === 0 && (activeOnly === "true" || isActive === "1")) {
       console.log("📦 No active packages found, checking if packages need initialization...");
       const totalPackages = await db.collection("ad_packages").countDocuments();
 
