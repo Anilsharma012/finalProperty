@@ -132,10 +132,11 @@ export default function PropertyListings() {
                           size="sm"
                           variant="outline"
                           className="h-6 px-2 text-xs border-[#C70000] text-[#C70000]"
-                          onClick={() => handleStartChat(property)}
+                          onClick={() => handleEnquiry(property)}
+                          data-testid="enquiry-btn"
                         >
-                          <MessageCircle className="h-3 w-3 mr-1" />
-                          Chat
+                          <Send className="h-3 w-3 mr-1" />
+                          Enquiry Now
                         </Button>
                         <Button
                           size="sm"
