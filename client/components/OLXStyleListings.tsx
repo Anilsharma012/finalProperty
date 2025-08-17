@@ -45,11 +45,15 @@ export default function OLXStyleListings() {
       const timeoutId = setTimeout(() => {
         console.log("⏰ Properties request timeout");
         controller.abort();
-      }, 10000);
+      }, 8000);
 
       const response = await fetch("/api/properties?status=active&limit=10", {
         signal: controller.signal,
         cache: "no-cache",
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Accept': 'application/json',
+        }
       });
 
       clearTimeout(timeoutId);
