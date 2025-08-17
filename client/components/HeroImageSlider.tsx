@@ -20,19 +20,22 @@ const HeroImageSlider: React.FC = () => {
   // Default fallback images
   const defaultImages: SliderImage[] = [
     {
-      imageUrl: "https://cdn.builder.io/api/v1/image/assets%2F4993b79b8ae445d4ae5618117571cced%2Ffa2e9286339c496d856e6de8806ef00c?format=webp&width=800",
+      imageUrl:
+        "https://cdn.builder.io/api/v1/image/assets%2F4993b79b8ae445d4ae5618117571cced%2Ffa2e9286339c496d856e6de8806ef00c?format=webp&width=800",
       alt: "Property showcase 1",
       title: "Find Your Perfect Property",
       subtitle: "Discover amazing properties in your area",
     },
     {
-      imageUrl: "https://cdn.builder.io/api/v1/image/assets%2F4993b79b8ae445d4ae5618117571cced%2Feb795a9f70554d888ddf9669d4b3441d?format=webp&width=800",
+      imageUrl:
+        "https://cdn.builder.io/api/v1/image/assets%2F4993b79b8ae445d4ae5618117571cced%2Feb795a9f70554d888ddf9669d4b3441d?format=webp&width=800",
       alt: "Property showcase 3",
       title: "Your Dream Home Awaits",
       subtitle: "Browse verified listings with expert guidance",
     },
     {
-      imageUrl: "https://cdn.builder.io/api/v1/image/assets%2F4993b79b8ae445d4ae5618117571cced%2F817b72ff3e4f40ee830c7ab0fcd5d25a?format=webp&width=800",
+      imageUrl:
+        "https://cdn.builder.io/api/v1/image/assets%2F4993b79b8ae445d4ae5618117571cced%2F817b72ff3e4f40ee830c7ab0fcd5d25a?format=webp&width=800",
       alt: "Property showcase 4",
       title: "Trusted Property Partner",
       subtitle: "Professional service you can rely on",
@@ -67,10 +70,7 @@ const HeroImageSlider: React.FC = () => {
             );
 
             setImages(activeBanners);
-            console.log(
-              "✅ Banners loaded from API:",
-              activeBanners.length,
-            );
+            console.log("✅ Banners loaded from API:", activeBanners.length);
           } else {
             console.log("📂 No banners found, using defaults");
             setImages(defaultImages);
