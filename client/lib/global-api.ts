@@ -9,20 +9,33 @@ function api(p: string, o: any = {}) {
   // Use the existing API URL logic to construct the proper URL
   const url = createApiUrl(p);
 
+  // Handle body - if it's already a string, use it as-is, otherwise stringify
+  let bodyContent;
+  if (o.body) {
+    if (typeof o.body === 'string') {
+      bodyContent = o.body;
+    } else {
+      bodyContent = JSON.stringify(o.body);
+    }
+  }
+
   return fetch(url, {
     method: o.method || "GET",
     headers: {
       "Content-Type": "application/json",
+      ...(o.headers || {}), // Use headers from options first
       ...(t ? { Authorization: `Bearer ${t}` } : {}),
     },
-    body: o.body ? JSON.stringify(o.body) : undefined,
+    body: bodyContent,
   }).then(async (r) => {
     const { ok, status, data } = await safeReadResponse(r);
 
     return {
       ok,
       status,
-      json: data,
+      success: ok,
+      data: data,
+      json: data, // Keep for compatibility
     };
   });
 }
