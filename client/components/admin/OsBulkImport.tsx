@@ -200,7 +200,7 @@ repairs,electrician,City Electrical Works,9876543210,Model Town Rohtak,28.8955,7
           <CardContent className="space-y-4">
             <div className="bg-green-50 border border-green-200 rounded-md p-4">
               <p className="text-green-600 font-medium">
-                Successfully imported {uploadResult.created} service listings!
+                Import completed: {uploadResult.created} created, {uploadResult.updated || 0} updated!
               </p>
             </div>
 
@@ -211,8 +211,8 @@ repairs,electrician,City Electrical Works,9876543210,Model Town Rohtak,28.8955,7
                   Errors during import:
                 </h4>
                 <ul className="text-red-600 text-sm space-y-1">
-                  {uploadResult.errors.map((error: string, index: number) => (
-                    <li key={index}>• {error}</li>
+                  {uploadResult.errors.map((error: any, index: number) => (
+                    <li key={index}>• {typeof error === 'string' ? error : error.error}</li>
                   ))}
                 </ul>
               </div>
@@ -222,6 +222,7 @@ repairs,electrician,City Electrical Works,9876543210,Model Town Rohtak,28.8955,7
               <p><strong>Summary:</strong></p>
               <ul className="list-disc list-inside">
                 <li>Created: {uploadResult.created} listings</li>
+                <li>Updated: {uploadResult.updated || 0} listings</li>
                 <li>Errors: {uploadResult.errors?.length || 0}</li>
               </ul>
             </div>
