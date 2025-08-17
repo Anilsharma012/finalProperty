@@ -158,9 +158,11 @@ export default function PropertyDetail() {
 
   const trackView = async () => {
     try {
+      console.log("📊 Tracking view for property:", id);
       await (window as any).api(`analytics/view/${id}`, {
         method: "POST",
       });
+      console.log("✅ View tracked successfully");
     } catch (error) {
       console.error("Error tracking view:", error);
     }
