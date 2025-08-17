@@ -204,9 +204,16 @@ export default function PropertyDetail() {
 
       // Use global API helper to find or create conversation
       const response = await (window as any).api(
-        `/conversations/find-or-create?propertyId=${property._id}`,
+        `/conversations/find-or-create`,
         {
           method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            propertyId: property._id,
+          }),
         },
       );
 
