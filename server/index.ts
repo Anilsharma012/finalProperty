@@ -3,7 +3,7 @@ import cors from "cors";
 
 import { connectToDatabase, getDatabase } from "./db/mongodb";
 import { authenticateToken, requireAdmin } from "./middleware/auth";
-import { ChatWebSocketServer } from "./websocket";
+import { ChatSocketServer } from "./socketio";
 
 // Property routes
 import {
