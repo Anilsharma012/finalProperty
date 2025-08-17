@@ -673,6 +673,17 @@ export default function PropertyDetail() {
           enableHumanHandoff={true}
         />
       )}
+
+      {/* Enquiry Modal */}
+      {property && (
+        <EnquiryModal
+          isOpen={enquiryModalOpen}
+          onClose={() => setEnquiryModalOpen(false)}
+          propertyId={property._id}
+          propertyTitle={property.title}
+          ownerName={property.contactInfo.name}
+        />
+      )}
     </div>
   );
 }
