@@ -400,9 +400,11 @@ export default function PropertyManagement() {
   };
 
   const filteredProperties = properties.filter(property => {
-    const matchesSearch = property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         property.location.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         property.contactInfo.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const searchLower = searchTerm.toLowerCase();
+    const matchesSearch =
+      (property.title?.toLowerCase() || '').includes(searchLower) ||
+      (property.location?.address?.toLowerCase() || '').includes(searchLower) ||
+      (property.contactInfo?.name?.toLowerCase() || '').includes(searchLower);
 
     let matchesPromotion = true;
     if (selectedPromotion === "paid") {
