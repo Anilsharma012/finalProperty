@@ -98,7 +98,14 @@ export default function ReportsManagement() {
         if (data.success) {
           // Handle nested data structure from API: data.data.reports
           const reportsData = data.data?.reports || data.data || [];
-          setReports(Array.isArray(reportsData) ? reportsData : []);
+          const transformedReports = Array.isArray(reportsData)
+            ? reportsData.map((report: any) => ({
+                ...report,
+                reason: report.reasonTitle || report.reason || 'Unknown', // Map reasonTitle to reason for backward compatibility
+                reportedUserEmail: report.reportedUserEmail || '', // Ensure email field exists
+              }))
+            : [];
+          setReports(transformedReports);
         } else {
           setError(data.error || 'Failed to fetch reports');
         }
