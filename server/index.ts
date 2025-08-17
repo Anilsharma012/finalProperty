@@ -929,6 +929,17 @@ export function createServer() {
   app.delete("/api/admin/os-listings/:listingId", authenticateToken, requireAdmin, deleteOsListing);
   app.post("/api/admin/os-listings/import", authenticateToken, requireAdmin, upload.single("file"), bulkImportOsListings);
 
+  // Test route for Other Services
+  app.post("/api/test/other-services", async (req, res) => {
+    try {
+      const { createTestData } = await import("./scripts/test-other-services");
+      const result = await createTestData();
+      res.json({ success: result, message: result ? "Test data created successfully" : "Failed to create test data" });
+    } catch (error: any) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
   // App routes
   app.get("/api/app/info", getAppInfo);
   app.get("/api/app/download", downloadAPK);
