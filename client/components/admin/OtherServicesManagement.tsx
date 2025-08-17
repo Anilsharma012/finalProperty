@@ -5,8 +5,17 @@ import ServiceListings from "./ServiceListings";
 import BulkImportServices from "./BulkImportServices";
 import { Layers, List, MapPin, Plus } from "lucide-react";
 
-export default function OtherServicesManagement() {
-  const [activeTab, setActiveTab] = useState("categories");
+interface OtherServicesManagementProps {
+  activeTab?: string;
+}
+
+export default function OtherServicesManagement({ activeTab: initialActiveTab = "categories" }: OtherServicesManagementProps) {
+  const [activeTab, setActiveTab] = useState(initialActiveTab);
+
+  // Update active tab when prop changes
+  React.useEffect(() => {
+    setActiveTab(initialActiveTab);
+  }, [initialActiveTab]);
 
   return (
     <div className="space-y-6">
