@@ -68,6 +68,8 @@ import {
   getOsListings,
 } from "./routes/os-public";
 
+import osImportRoutes from "./routes/osImport";
+
 // Authentication routes
 import {
   registerUser,
