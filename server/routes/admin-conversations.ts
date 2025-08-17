@@ -227,6 +227,18 @@ export const adminReplyToConversation: RequestHandler = async (req, res) => {
       },
     );
 
+    // Emit real-time message via Socket.io
+    const socketServer = getSocketServer();
+    if (socketServer) {
+      const messageWithId = {
+        ...newMessage,
+        _id: messageResult.insertedId,
+        text: newMessage.message,
+        sender: newMessage.senderId,
+      };
+      socketServer.emitNewMessage(conversation, messageWithId);
+    }
+
     const response: ApiResponse<any> = {
       success: true,
       data: {
