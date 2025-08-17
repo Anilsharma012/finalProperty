@@ -104,12 +104,14 @@ export const getAdminConversations: RequestHandler = async (req, res) => {
         },
         {
           $project: {
-            propertyId: 1,
-            participants: 1,
+            buyer: 1,
+            seller: 1,
+            property: 1,
             createdAt: 1,
             lastMessageAt: 1,
-            property: { $arrayElemAt: ["$property", 0] },
-            participantDetails: 1,
+            propertyData: { $arrayElemAt: ["$propertyData", 0] },
+            buyerData: { $arrayElemAt: ["$buyerData", 0] },
+            sellerData: { $arrayElemAt: ["$sellerData", 0] },
             lastMessage: 1,
             messageCount: 1,
             hasUnreadAdminMessages: 1,
