@@ -13,10 +13,10 @@ export const getAdminConversations: RequestHandler = async (req, res) => {
     const limitNum = parseInt(limit as string);
     const skip = (pageNum - 1) * limitNum;
 
-    // Build filter
+    // Build filter for new schema
     const filter: any = {};
     if (propertyId) {
-      filter.propertyId = propertyId;
+      filter.property = new ObjectId(propertyId as string);
     }
 
     const conversations = await db
@@ -26,17 +26,25 @@ export const getAdminConversations: RequestHandler = async (req, res) => {
         {
           $lookup: {
             from: "properties",
-            localField: "propertyId",
+            localField: "property",
             foreignField: "_id",
-            as: "property",
+            as: "propertyData",
           },
         },
         {
           $lookup: {
             from: "users",
-            localField: "participants",
+            localField: "buyer",
             foreignField: "_id",
-            as: "participantDetails",
+            as: "buyerData",
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "seller",
+            foreignField: "_id",
+            as: "sellerData",
           },
         },
         {
