@@ -436,10 +436,12 @@ export const sendMessageToConversation: RequestHandler = async (req, res) => {
     // Create message
     const newMessage = {
       conversationId: id,
-      senderId: userId,
+      sender: userId,
+      senderId: userId,  // for backward compatibility
       senderName: user.name,
       senderType: user.userType || "buyer",
-      message: text || "",
+      text: text || "",
+      message: text || "",  // for backward compatibility
       imageUrl: imageUrl || null,
       messageType: imageUrl ? "image" : "text",
       readBy: [
