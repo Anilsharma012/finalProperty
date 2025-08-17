@@ -38,6 +38,36 @@ import {
   bulkImportServiceListings,
 } from "./routes/service-listings";
 
+// Other Services admin routes
+import {
+  getOsCategories as getAdminOsCategories,
+  createOsCategory,
+  updateOsCategory,
+  deleteOsCategory,
+} from "./routes/admin-os-categories";
+
+import {
+  getOsSubcategories as getAdminOsSubcategories,
+  createOsSubcategory,
+  updateOsSubcategory,
+  deleteOsSubcategory,
+} from "./routes/admin-os-subcategories";
+
+import {
+  getOsListings as getAdminOsListings,
+  createOsListing,
+  updateOsListing,
+  deleteOsListing,
+  bulkImportOsListings,
+} from "./routes/admin-os-listings";
+
+// Other Services public routes
+import {
+  getOsCategories,
+  getOsSubcategories,
+  getOsListings,
+} from "./routes/os-public";
+
 // Authentication routes
 import {
   registerUser,
