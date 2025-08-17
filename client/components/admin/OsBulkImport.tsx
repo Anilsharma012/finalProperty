@@ -35,17 +35,46 @@ export default function OsBulkImport() {
 
       // Read CSV file content
       const csvContent = await file.text();
-      
-      // Parse CSV to JSON
+
+      // Parse CSV to JSON with better handling of quoted values
       const lines = csvContent.split('\n').filter(line => line.trim());
-      const headers = lines[0].split(',').map(h => h.trim());
-      const csvData = lines.slice(1).map(line => {
-        const values = line.split(',').map(v => v.trim().replace(/"/g, ''));
-        const obj: any = {};
-        headers.forEach((header, index) => {
-          obj[header] = values[index] || '';
-        });
-        return obj;
+      if (lines.length < 2) {
+        throw new Error("CSV file must have at least a header row and one data row");
+      }
+
+      const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+      const csvData = lines.slice(1).map((line, lineIndex) => {
+        try {
+          // Simple CSV parser that handles quoted values
+          const values: string[] = [];
+          let current = '';
+          let inQuotes = false;
+
+          for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            if (char === '"') {
+              inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+              values.push(current.trim());
+              current = '';
+            } else {
+              current += char;
+            }
+          }
+          values.push(current.trim()); // Push the last value
+
+          const obj: any = {};
+          headers.forEach((header, index) => {
+            obj[header] = values[index] || '';
+          });
+          return obj;
+        } catch (error) {
+          console.error(`Error parsing line ${lineIndex + 2}:`, line);
+          throw new Error(`Invalid CSV format at line ${lineIndex + 2}`);
+        }
+      }).filter(row => {
+        // Filter out empty rows
+        return Object.values(row).some(value => String(value).trim() !== '');
       });
 
       const response = await fetch("/api/admin/os-listings/import", {
