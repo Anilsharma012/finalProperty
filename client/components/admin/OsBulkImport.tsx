@@ -27,143 +27,51 @@ export default function OsBulkImport() {
     }
   };
 
-  const handleUpload = async () => {
-    if (!file || !token) return;
+  async function uploadCsv(file: File) {
+    setErr("");
+    setError("");
+    setUploading(true);
 
     try {
-      setUploading(true);
-      setError("");
+      const fd = new FormData();
+      fd.append("file", file);
 
-      // Read CSV file content
-      const csvContent = await file.text();
-
-      // Parse CSV to JSON with better handling of quoted values
-      const lines = csvContent.split(/\r?\n/).filter(line => line.trim());
-      if (lines.length < 2) {
-        throw new Error("CSV file must have at least a header row and one data row");
-      }
-
-      console.log('CSV Lines:', lines);
-
-      // Parse headers
-      const headerLine = lines[0].trim();
-      const headers = headerLine.split(',').map(h => h.trim().replace(/^["']|["']$/g, ''));
-      console.log('Headers:', headers);
-
-      // Parse data rows
-      const csvData = lines.slice(1).map((line, lineIndex) => {
-        const trimmedLine = line.trim();
-        if (!trimmedLine) return null; // Skip empty lines
-
-        try {
-          // Improved CSV parser that handles quoted values better
-          const values: string[] = [];
-          let current = '';
-          let inQuotes = false;
-          let quoteChar = '';
-
-          for (let i = 0; i < trimmedLine.length; i++) {
-            const char = trimmedLine[i];
-
-            if ((char === '"' || char === "'") && !inQuotes) {
-              inQuotes = true;
-              quoteChar = char;
-            } else if (char === quoteChar && inQuotes) {
-              inQuotes = false;
-              quoteChar = '';
-            } else if (char === ',' && !inQuotes) {
-              values.push(current.trim().replace(/^["']|["']$/g, ''));
-              current = '';
-            } else {
-              current += char;
-            }
-          }
-          values.push(current.trim().replace(/^["']|["']$/g, '')); // Push the last value
-
-          const obj: any = {};
-          headers.forEach((header, index) => {
-            obj[header] = values[index] || '';
-          });
-
-          console.log(`Row ${lineIndex + 2}:`, obj);
-          return obj;
-        } catch (error) {
-          console.error(`Error parsing line ${lineIndex + 2}:`, trimmedLine);
-          throw new Error(`Invalid CSV format at line ${lineIndex + 2}: ${error}`);
-        }
-      }).filter(row => {
-        // Filter out null and empty rows
-        if (!row) return false;
-        return Object.values(row).some(value => String(value).trim() !== '');
-      });
-
-      console.log('Final CSV data for validation:', csvData);
-
-      if (csvData.length === 0) {
-        throw new Error("No valid data rows found in CSV file. Please check the file format.");
-      }
-
-      // Normalize field names - handle both catSlug and categorySlug
-      const normalizedCsvData = csvData.map(row => {
-        const normalizedRow = { ...row };
-
-        // Convert categorySlug to catSlug if present
-        if (row.categorySlug && !row.catSlug) {
-          normalizedRow.catSlug = row.categorySlug;
-          delete normalizedRow.categorySlug;
-        }
-
-        return normalizedRow;
-      });
-
-      // Validate required fields
-      const requiredFields = ['catSlug', 'subSlug', 'name', 'phone', 'address'];
-      const validationErrors: string[] = [];
-
-      normalizedCsvData.forEach((row, index) => {
-        console.log(`Validating row ${index + 2}:`, row);
-        requiredFields.forEach(field => {
-          if (!row[field] || String(row[field]).trim() === '') {
-            validationErrors.push(`Row ${index + 2}: Missing required field '${field}' (found: '${row[field] || 'undefined'}')`);
-          }
-        });
-      });
-
-      if (validationErrors.length > 0) {
-        console.error('Validation errors:', validationErrors);
-        console.error('Available fields in first row:', Object.keys(csvData[0] || {}));
-        throw new Error(`Validation errors:\n${validationErrors.slice(0, 5).join('\n')}${validationErrors.length > 5 ? `\n... and ${validationErrors.length - 5} more errors` : ''}\n\nAvailable fields: ${Object.keys(csvData[0] || {}).join(', ')}`);
-      }
-
-      // Use normalized data for the API call
-      console.log('Normalized CSV data:', normalizedCsvData);
-
-      const response = await fetch("/api/admin/os-listings/import", {
+      const r = await fetch(`/api/admin/os-listings/import`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ csvData: normalizedCsvData }),
+        headers: { Authorization: `Bearer ${token}` },
+        body: fd
       });
 
-      const { ok, status, data } = await safeReadResponse(response);
+      const data = await r.json().catch(() => ({}));
 
-      if (ok && data.success) {
-        setUploadResult(data.data);
-        setFile(null);
-        // Reset file input
-        const fileInput = document.getElementById('csv-file') as HTMLInputElement;
-        if (fileInput) fileInput.value = '';
-      } else {
-        setError(getApiErrorMessage(data, status, "bulk import"));
+      if (!r.ok) {
+        setErr(data?.error || "Import failed");
+        setError(data?.error || `Import failed (${r.status})`);
+        return;
       }
+
+      setUploadResult({
+        created: data.created,
+        updated: data.updated,
+        errors: data.errors
+      });
+
+      setFile(null);
+      // Reset file input
+      const fileInput = document.getElementById('csv-file') as HTMLInputElement;
+      if (fileInput) fileInput.value = '';
+
     } catch (error: any) {
-      console.error("Error uploading file:", error);
+      setErr("Network error");
       setError(`Failed to upload file: ${error.message}`);
     } finally {
       setUploading(false);
     }
+  }
+
+  const handleUpload = async () => {
+    if (!file || !token) return;
+    await uploadCsv(file);
   };
 
   const downloadTemplate = () => {
