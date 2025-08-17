@@ -67,20 +67,12 @@ const freshRecommendations = [
 ];
 
 export default function PropertyListings() {
-  const [chatModalOpen, setChatModalOpen] = useState(false);
+  const [enquiryModalOpen, setEnquiryModalOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<any>(null);
 
-  const handleStartChat = (property: any) => {
-    // Check if user is logged in
-    const token = localStorage.getItem("auth_token");
-    if (!token) {
-      // Redirect to login
-      window.location.href = "/login";
-      return;
-    }
-
+  const handleEnquiry = (property: any) => {
     setSelectedProperty(property);
-    setChatModalOpen(true);
+    setEnquiryModalOpen(true);
   };
 
   return (
