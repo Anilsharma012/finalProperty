@@ -930,9 +930,6 @@ export function createServer() {
   app.put("/api/admin/os-listings/:listingId", authenticateToken, requireAdmin, updateOsListing);
   app.delete("/api/admin/os-listings/:listingId", authenticateToken, requireAdmin, deleteOsListing);
 
-  // Use osImport routes
-  app.use("/api", authenticateToken, requireAdmin, osImportRoutes);
-
   // Test route for Other Services
   app.post("/api/test/other-services", async (req, res) => {
     try {
