@@ -444,7 +444,7 @@ export function createServer() {
   app.use(express.urlencoded({ extended: true, limit: "1gb" }));
 
   // Mount CSV import routes under protected admin path
-  app.use("/api", authenticateToken, requireAdmin, osImportRoutes);
+  app.use("/api/admin", authenticateToken, requireAdmin, osImportRoutes);
 
   // Initialize MongoDB connection
   connectToDatabase()
