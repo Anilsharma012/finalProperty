@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   MapPin,
@@ -9,8 +9,10 @@ import {
   Instagram,
   Youtube,
   Calendar,
+  Grid3X3,
 } from "lucide-react";
 import FooterPackages from "./FooterPackages";
+import CategoryDrawer from "./CategoryDrawer";
 
 export default function StaticFooter() {
   return (
