@@ -201,23 +201,35 @@ export const getMyConversations: RequestHandler = async (req, res) => {
       .aggregate([
         {
           $match: {
-            participants: userId,
+            $or: [
+              { buyer: userId },
+              { seller: userId },
+              { participants: userId }  // fallback for old format
+            ],
           },
         },
         {
           $lookup: {
             from: "properties",
-            localField: "propertyId",
+            localField: "property",
             foreignField: "_id",
-            as: "property",
+            as: "propertyData",
           },
         },
         {
           $lookup: {
             from: "users",
-            localField: "participants",
+            localField: "buyer",
             foreignField: "_id",
-            as: "participantDetails",
+            as: "buyerData",
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "seller",
+            foreignField: "_id",
+            as: "sellerData",
           },
         },
         {
@@ -247,6 +259,7 @@ export const getMyConversations: RequestHandler = async (req, res) => {
                   input: "$messages",
                   cond: {
                     $and: [
+                      { $ne: ["$$this.sender", userId] },
                       { $ne: ["$$this.senderId", userId] },
                       {
                         $not: {
@@ -271,12 +284,14 @@ export const getMyConversations: RequestHandler = async (req, res) => {
         },
         {
           $project: {
-            propertyId: 1,
+            buyer: 1,
+            seller: 1,
             participants: 1,
             createdAt: 1,
             lastMessageAt: 1,
-            property: { $arrayElemAt: ["$property", 0] },
-            participantDetails: 1,
+            property: { $arrayElemAt: ["$propertyData", 0] },
+            buyerData: { $arrayElemAt: ["$buyerData", 0] },
+            sellerData: { $arrayElemAt: ["$sellerData", 0] },
             lastMessage: 1,
             unreadCount: 1,
           },
