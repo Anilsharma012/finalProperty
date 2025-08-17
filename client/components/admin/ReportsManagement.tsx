@@ -168,9 +168,12 @@ export default function ReportsManagement() {
 
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
 
+    const displayStatus = status === 'under_review' ? 'Under Review' :
+                        (status || 'pending').charAt(0).toUpperCase() + (status || 'pending').slice(1);
+
     return (
       <Badge variant={config.variant} className={config.className}>
-        {(status || 'pending').charAt(0).toUpperCase() + (status || 'pending').slice(1)}
+        {displayStatus}
       </Badge>
     );
   };
