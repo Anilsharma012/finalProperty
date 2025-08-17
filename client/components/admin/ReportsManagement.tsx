@@ -356,9 +356,15 @@ export default function ReportsManagement() {
                   <p className="text-sm text-gray-600">{selectedReport.reporterEmail}</p>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-700">Reported User</h4>
-                  <p className="font-medium">{selectedReport.reportedUserName}</p>
-                  <p className="text-sm text-gray-600">{selectedReport.reportedUserEmail}</p>
+                  <h4 className="font-semibold text-gray-700">
+                    {selectedReport.reportedUserName ? 'Reported User' : 'Reported Item'}
+                  </h4>
+                  <p className="font-medium">
+                    {selectedReport.reportedUserName || selectedReport.reportedPropertyTitle || 'N/A'}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {selectedReport.reportedUserEmail || 'N/A'}
+                  </p>
                 </div>
               </div>
 
