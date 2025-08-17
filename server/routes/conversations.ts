@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import { getDatabase } from "../db/mongodb";
 import { ObjectId } from "mongodb";
 import { ApiResponse } from "@shared/types";
+import { getSocketServer } from "../index";
 
 // POST /conversations/find-or-create - Find existing or create new conversation
 export const findOrCreateConversation: RequestHandler = async (req, res) => {
