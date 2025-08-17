@@ -201,7 +201,7 @@ repairs,electrician,City Electrical Works,9876543210,Model Town Rohtak,28.8955,7
           <div>
             <h4 className="font-medium text-gray-900 mb-2">Required Columns:</h4>
             <ul className="text-sm text-gray-600 space-y-1">
-              <li><code className="bg-gray-100 px-2 py-1 rounded">catSlug</code> - Category slug (will be auto-created if missing)</li>
+              <li><code className="bg-gray-100 px-2 py-1 rounded">catSlug</code> or <code className="bg-gray-100 px-2 py-1 rounded">categorySlug</code> - Category slug (will be auto-created if missing)</li>
               <li><code className="bg-gray-100 px-2 py-1 rounded">subSlug</code> - Subcategory slug (will be auto-created if missing)</li>
               <li><code className="bg-gray-100 px-2 py-1 rounded">name</code> - Business name</li>
               <li><code className="bg-gray-100 px-2 py-1 rounded">phone</code> - Contact phone number</li>
