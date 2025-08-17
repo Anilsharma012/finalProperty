@@ -40,8 +40,17 @@ r.post("/admin/os-listings/import", upload.single("file"), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: "file required" });
     const csv = req.file.buffer.toString("utf8");
     const rows = parseCSV(csv);
+
+    // Normalize field names (categorySlug -> catSlug, etc.)
+    const normalizedRows = rows.map(row => {
+      const normalized = { ...row };
+      if (row.categorySlug && !row.catSlug) normalized.catSlug = row.categorySlug;
+      if (row.subcategorySlug && !row.subSlug) normalized.subSlug = row.subcategorySlug;
+      return normalized;
+    });
+
     const required = ["catSlug","subSlug","name","phone","address"];
-    const miss = required.filter(k => !(k in (rows[0]||{})));
+    const miss = required.filter(k => !(k in (normalizedRows[0]||{})));
     if (miss.length) return res.status(400).json({ error:`missing columns: ${miss.join(",")}` });
 
     let created = 0, updated = 0; const errors: any[] = [];
