@@ -9,6 +9,7 @@ import BottomNavigation from "../components/BottomNavigation";
 import HomepageBanner from "../components/HomepageBanner";
 import StaticFooter from "../components/StaticFooter";
 import HeroImageSlider from "../components/HeroImageSlider";
+import PropertyAdsSlider from "../components/PropertyAdsSlider";
 
 export default function Index() {
   return (
@@ -18,6 +19,9 @@ export default function Index() {
       <main className="pb-16 bg-gradient-to-b from-red-50 to-white">
         {/* Hero Image Slider */}
         <HeroImageSlider />
+
+        {/* Property Ads Slider */}
+        <PropertyAdsSlider />
 
         <CategoryBar />
 
