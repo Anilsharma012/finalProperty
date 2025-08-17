@@ -84,17 +84,19 @@ export default function OLXStyleListings() {
       // Load mock data as fallback
       loadMockProperties();
     } catch (error: any) {
-      console.error("Error fetching properties:", {
+      console.error("❌ Error fetching properties:", {
         error: error.message || error,
         name: error.name,
-        stack: error.stack,
+        type: typeof error,
       });
 
       // Provide appropriate fallback based on error type
       if (error.name === "AbortError") {
-        console.log("🔄 Request timed out, using mock data");
-      } else if (error.message?.includes("Failed to fetch")) {
-        console.log("🌐 Network connectivity issue, using mock data");
+        console.log("⏰ Request timed out, using mock data");
+      } else if (error.message?.includes("Failed to fetch") || error.name === "TypeError") {
+        console.log("🌐 Network connectivity issue detected, using mock data");
+      } else {
+        console.log("🔄 Unknown error occurred, using mock data");
       }
 
       // Load mock data as fallback
