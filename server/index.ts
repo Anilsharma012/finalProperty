@@ -418,6 +418,8 @@ import {
   getServiceCategories,
 } from "./routes/other-services";
 
+let socketServer: ChatSocketServer;
+
 export function createServer() {
   const app = express();
 
