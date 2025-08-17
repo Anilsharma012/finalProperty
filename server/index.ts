@@ -871,6 +871,7 @@ export function createServer() {
   app.get("/api/payments/methods", getPaymentMethods);
 
   // Banner routes
+  app.get("/api/banners", getActiveBanners);
   app.get("/api/banners/:position", getBannersByPosition);
   app.get("/api/admin/banners", authenticateToken, requireAdmin, getAllBanners);
   app.post("/api/admin/banners", authenticateToken, requireAdmin, createBanner);
