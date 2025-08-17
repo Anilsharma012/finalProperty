@@ -185,6 +185,10 @@ export default function PropertyDetail() {
     window.open(url, "_blank");
   };
 
+  const handleEnquiry = () => {
+    setEnquiryModalOpen(true);
+  };
+
   const handleStartChat = async () => {
     try {
       // Check if user is logged in
