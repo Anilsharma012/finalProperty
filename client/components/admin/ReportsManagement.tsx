@@ -179,11 +179,15 @@ export default function ReportsManagement() {
   };
 
   const filteredReports = Array.isArray(reports)
-    ? reports.filter(report =>
-        report.reporterName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        report.reportedUserName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        report.reason?.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+    ? reports.filter(report => {
+        const searchLower = searchTerm.toLowerCase();
+        return (
+          (report.reporterName || '').toLowerCase().includes(searchLower) ||
+          (report.reportedUserName || '').toLowerCase().includes(searchLower) ||
+          (report.reportedPropertyTitle || '').toLowerCase().includes(searchLower) ||
+          (report.reason || '').toLowerCase().includes(searchLower)
+        );
+      })
     : [];
 
   const pendingCount = Array.isArray(reports)
