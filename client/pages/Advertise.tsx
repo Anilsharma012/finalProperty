@@ -33,7 +33,7 @@ export default function Advertise() {
       setError(null);
 
       // Use the global API function as specified by user - get ALL packages for advertise page
-      const response = await (window as any).api("/plans?isActive=true");
+      const response = await (window as any).api("/plans?isActive=1");
       const data = response.ok
         ? response.json
         : { success: false, error: "Failed to fetch plans" };
