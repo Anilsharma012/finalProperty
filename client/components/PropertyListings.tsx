@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Heart, MapPin, Phone, Calendar, MessageCircle } from "lucide-react";
+import { Heart, MapPin, Phone, Calendar, MessageCircle, Send } from "lucide-react";
 import { Button } from "./ui/button";
 import ChatModal from "./ChatModal";
+import EnquiryModal from "./EnquiryModal";
 
 const featuredProperties = [
   {
