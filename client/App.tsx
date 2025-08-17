@@ -20,6 +20,7 @@ import Services from "./pages/Services";
 import Advertise from "./pages/Advertise";
 import Chat from "./pages/Chat";
 import ChatPage from "./pages/ChatPage";
+import ChatConversation from "./pages/ChatConversation";
 import MyAccount from "./pages/MyAccount";
 import User from "./pages/User";
 import Seller from "./pages/Seller";
