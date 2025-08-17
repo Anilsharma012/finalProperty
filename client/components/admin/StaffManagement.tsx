@@ -396,8 +396,8 @@ export default function StaffManagement() {
   };
 
   const filteredStaff = staff.filter(member => {
-    const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         member.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (member.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+                         (member.email?.toLowerCase() || '').includes(searchTerm.toLowerCase());
     const matchesRole = selectedRole === "all" || member.role === selectedRole;
     const matchesStatus = selectedStatus === "all" || member.status === selectedStatus;
     
