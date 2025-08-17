@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Heart, MapPin, Clock, MessageCircle } from "lucide-react";
+import { Heart, MapPin, Clock, MessageCircle, Send } from "lucide-react";
 import PropertyLoadingSkeleton from "./PropertyLoadingSkeleton";
+import EnquiryModal from "./EnquiryModal";
 
 interface Property {
   _id: string;
@@ -306,7 +307,7 @@ export default function OLXStyleListings() {
 
         {properties.length === 0 && (
           <div className="text-center py-8 text-gray-500">
-            <div className="text-4xl mb-2">����</div>
+            <div className="text-4xl mb-2">�����</div>
             <p>No properties available</p>
           </div>
         )}
