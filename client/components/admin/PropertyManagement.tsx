@@ -598,7 +598,7 @@ export default function PropertyManagement() {
                     <div className="flex items-center space-x-1">
                       <MapPin className="h-4 w-4 text-gray-400" />
                       <span className="text-sm">
-                        {property.location.city}, {property.location.state}
+                        {property.location?.city || 'N/A'}, {property.location?.state || 'N/A'}
                       </span>
                     </div>
                   </TableCell>
