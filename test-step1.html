@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>STEP 1 Test - Banner Click</title>
+</head>
+<body>
+    <h1>STEP 1 Test: Banner Click Functionality</h1>
+    
+    <script>
+        // Test STEP 1: Banner click functionality
+        async function testStep1() {
+            console.log("🧪 Testing STEP 1: Banner click functionality");
+            
+            try {
+                // 1. Check if hero slides exist
+                const heroSlides = document.querySelectorAll('.hero-slide');
+                console.log(`Found ${heroSlides.length} hero slides`);
+                
+                if (heroSlides.length >= 1) {
+                    console.log("✅ PASS: At least 1 .hero-slide found");
+                    
+                    // 2. Test banner API
+                    const response = await fetch('/api/banners?active=1');
+                    console.log(`Banner API response status: ${response.status}`);
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log("Banner API data:", data);
+                        
+                        if (data.success && data.data && data.data.length > 0) {
+                            console.log("✅ PASS: Banner API returned data");
+                            
+                            // 3. Test banner click (simulate)
+                            const firstBanner = data.data[0];
+                            if (firstBanner.linkUrl) {
+                                console.log(`✅ PASS: First banner has linkUrl: ${firstBanner.linkUrl}`);
+                                console.log("✅ PASS: STEP1 - Banner functionality working");
+                                return true;
+                            } else {
+                                console.log("❌ FAIL: First banner has no linkUrl");
+                                return false;
+                            }
+                        } else {
+                            console.log("❌ FAIL: Banner API returned no data");
+                            return false;
+                        }
+                    } else {
+                        console.log("❌ FAIL: Banner API request failed");
+                        return false;
+                    }
+                } else {
+                    console.log("❌ FAIL: No .hero-slide elements found");
+                    return false;
+                }
+            } catch (error) {
+                console.error("❌ FAIL: Error testing STEP 1:", error);
+                return false;
+            }
+        }
+        
+        // Wait for page load then test
+        window.addEventListener('load', async () => {
+            await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds for components to load
+            const result = await testStep1();
+            if (result) {
+                console.log("🎉 PASS: STEP1");
+            } else {
+                console.log("💥 FAIL: STEP1");
+            }
+        });
+        
+        // Also run test when called directly
+        window.testStep1 = testStep1;
+    </script>
+</body>
+</html>
