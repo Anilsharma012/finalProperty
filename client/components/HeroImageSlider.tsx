@@ -157,12 +157,13 @@ const HeroImageSlider: React.FC = () => {
         {images.map((image, index) => (
           <div
             key={image._id || index}
-            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+            className={`hero-slide absolute inset-0 transition-opacity duration-1000 ease-in-out ${
               index === currentSlide ? "opacity-100" : "opacity-0"
-            }`}
+            } ${image.linkUrl ? "cursor-pointer" : ""}`}
+            onClick={() => handleSlideClick(image)}
           >
             <img
-              src={image.url}
+              src={image.imageUrl}
               alt={image.alt}
               className="w-full h-full object-cover object-top"
               style={{
