@@ -20,13 +20,14 @@ interface EnquiryDocument extends EnquiryData {
 // POST /api/enquiries - Submit a new enquiry
 export const submitEnquiry: RequestHandler = async (req, res) => {
   try {
-    const { propertyId, name, phone, message, timestamp } = req.body as EnquiryData;
+    const { propertyId, name, phone, message, timestamp } =
+      req.body as EnquiryData;
 
     // Validate required fields
     if (!propertyId || !name || !phone || !message) {
       return res.status(400).json({
         success: false,
-        message: "Missing required fields: propertyId, name, phone, message"
+        message: "Missing required fields: propertyId, name, phone, message",
       });
     }
 
@@ -34,7 +35,7 @@ export const submitEnquiry: RequestHandler = async (req, res) => {
     if (!ObjectId.isValid(propertyId)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid property ID format"
+        message: "Invalid property ID format",
       });
     }
 
@@ -43,7 +44,7 @@ export const submitEnquiry: RequestHandler = async (req, res) => {
     if (!phoneRegex.test(phone.trim())) {
       return res.status(400).json({
         success: false,
-        message: "Invalid phone number format"
+        message: "Invalid phone number format",
       });
     }
 
@@ -51,7 +52,7 @@ export const submitEnquiry: RequestHandler = async (req, res) => {
     if (!name.trim() || name.trim().length < 2) {
       return res.status(400).json({
         success: false,
-        message: "Name must be at least 2 characters long"
+        message: "Name must be at least 2 characters long",
       });
     }
 
@@ -59,23 +60,23 @@ export const submitEnquiry: RequestHandler = async (req, res) => {
     if (!message.trim() || message.trim().length < 10) {
       return res.status(400).json({
         success: false,
-        message: "Message must be at least 10 characters long"
+        message: "Message must be at least 10 characters long",
       });
     }
 
     const db = await getDb();
-    
+
     // Verify property exists and is active
     const property = await db.collection("properties").findOne({
       _id: new ObjectId(propertyId),
       status: "active",
-      approvalStatus: "approved"
+      approvalStatus: "approved",
     });
 
     if (!property) {
       return res.status(404).json({
         success: false,
-        message: "Property not found or not available"
+        message: "Property not found or not available",
       });
     }
 
@@ -88,7 +89,7 @@ export const submitEnquiry: RequestHandler = async (req, res) => {
       timestamp: timestamp || new Date().toISOString(),
       createdAt: new Date(),
       updatedAt: new Date(),
-      status: "new"
+      status: "new",
     };
 
     // Insert enquiry
@@ -97,17 +98,17 @@ export const submitEnquiry: RequestHandler = async (req, res) => {
     if (!result.acknowledged) {
       return res.status(500).json({
         success: false,
-        message: "Failed to save enquiry"
+        message: "Failed to save enquiry",
       });
     }
 
     // Update property inquiries count (analytics)
     await db.collection("properties").updateOne(
       { _id: new ObjectId(propertyId) },
-      { 
+      {
         $inc: { inquiries: 1 },
-        $set: { updatedAt: new Date() }
-      }
+        $set: { updatedAt: new Date() },
+      },
     );
 
     // Log the enquiry for analytics
@@ -121,11 +122,13 @@ export const submitEnquiry: RequestHandler = async (req, res) => {
       metadata: {
         propertyTitle: property.title,
         propertyType: property.propertyType,
-        location: property.location
-      }
+        location: property.location,
+      },
     });
 
-    console.log(`✅ New enquiry received for property ${propertyId} from ${name} (${phone})`);
+    console.log(
+      `✅ New enquiry received for property ${propertyId} from ${name} (${phone})`,
+    );
 
     res.status(201).json({
       success: true,
@@ -134,15 +137,14 @@ export const submitEnquiry: RequestHandler = async (req, res) => {
         enquiryId: result.insertedId,
         propertyId: propertyId,
         propertyTitle: property.title,
-        submittedAt: enquiryDoc.createdAt
-      }
+        submittedAt: enquiryDoc.createdAt,
+      },
     });
-
   } catch (error) {
     console.error("❌ Error submitting enquiry:", error);
     res.status(500).json({
       success: false,
-      message: "Internal server error"
+      message: "Internal server error",
     });
   }
 };
@@ -151,24 +153,29 @@ export const submitEnquiry: RequestHandler = async (req, res) => {
 export const getEnquiries: RequestHandler = async (req, res) => {
   try {
     const { page = "1", limit = "20", status, propertyId } = req.query;
-    
+
     const pageNum = parseInt(page as string);
     const limitNum = parseInt(limit as string);
     const skip = (pageNum - 1) * limitNum;
 
     const db = await getDb();
-    
+
     // Build filter
     const filter: any = {};
-    if (status && typeof status === 'string') {
+    if (status && typeof status === "string") {
       filter.status = status;
     }
-    if (propertyId && typeof propertyId === 'string' && ObjectId.isValid(propertyId)) {
+    if (
+      propertyId &&
+      typeof propertyId === "string" &&
+      ObjectId.isValid(propertyId)
+    ) {
       filter.propertyId = propertyId;
     }
 
     // Get enquiries with property details
-    const enquiries = await db.collection("enquiries")
+    const enquiries = await db
+      .collection("enquiries")
       .aggregate([
         { $match: filter },
         { $sort: { createdAt: -1 } },
@@ -187,18 +194,18 @@ export const getEnquiries: RequestHandler = async (req, res) => {
                   propertyType: 1,
                   location: 1,
                   price: 1,
-                  images: { $arrayElemAt: ["$images", 0] }
-                }
-              }
-            ]
-          }
+                  images: { $arrayElemAt: ["$images", 0] },
+                },
+              },
+            ],
+          },
         },
         {
           $unwind: {
             path: "$property",
-            preserveNullAndEmptyArrays: true
-          }
-        }
+            preserveNullAndEmptyArrays: true,
+          },
+        },
       ])
       .toArray();
 
@@ -212,15 +219,14 @@ export const getEnquiries: RequestHandler = async (req, res) => {
         page: pageNum,
         limit: limitNum,
         total,
-        pages: Math.ceil(total / limitNum)
-      }
+        pages: Math.ceil(total / limitNum),
+      },
     });
-
   } catch (error) {
     console.error("❌ Error fetching enquiries:", error);
     res.status(500).json({
       success: false,
-      message: "Internal server error"
+      message: "Internal server error",
     });
   }
 };
@@ -234,46 +240,45 @@ export const updateEnquiryStatus: RequestHandler = async (req, res) => {
     if (!ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid enquiry ID"
+        message: "Invalid enquiry ID",
       });
     }
 
     if (!["new", "contacted", "closed"].includes(status)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid status. Must be 'new', 'contacted', or 'closed'"
+        message: "Invalid status. Must be 'new', 'contacted', or 'closed'",
       });
     }
 
     const db = await getDb();
-    
+
     const result = await db.collection("enquiries").updateOne(
       { _id: new ObjectId(id) },
-      { 
-        $set: { 
+      {
+        $set: {
           status,
-          updatedAt: new Date()
-        }
-      }
+          updatedAt: new Date(),
+        },
+      },
     );
 
     if (result.matchedCount === 0) {
       return res.status(404).json({
         success: false,
-        message: "Enquiry not found"
+        message: "Enquiry not found",
       });
     }
 
     res.json({
       success: true,
-      message: "Enquiry status updated successfully"
+      message: "Enquiry status updated successfully",
     });
-
   } catch (error) {
     console.error("❌ Error updating enquiry status:", error);
     res.status(500).json({
       success: false,
-      message: "Internal server error"
+      message: "Internal server error",
     });
   }
 };

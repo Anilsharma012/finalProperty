@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { X, ChevronDown, ChevronRight, Home, Briefcase, Grid3X3 } from "lucide-react";
+import {
+  X,
+  ChevronDown,
+  ChevronRight,
+  Home,
+  Briefcase,
+  Grid3X3,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface Subcategory {
@@ -32,8 +39,12 @@ const CategoryDrawer: React.FC<CategoryDrawerProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
-  const [selectedTab, setSelectedTab] = useState<"property" | "service">("property");
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
+    new Set(),
+  );
+  const [selectedTab, setSelectedTab] = useState<"property" | "service">(
+    "property",
+  );
 
   // Fetch categories when drawer opens
   useEffect(() => {
@@ -45,11 +56,11 @@ const CategoryDrawer: React.FC<CategoryDrawerProps> = ({ isOpen, onClose }) => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      
+
       // Fetch both property and service categories
       const [propertyResponse, serviceResponse] = await Promise.all([
-        fetch('/api/categories?active=1&type=property'),
-        fetch('/api/categories?active=1&type=service')
+        fetch("/api/categories?active=1&type=property"),
+        fetch("/api/categories?active=1&type=service"),
       ]);
 
       const allCategories: Category[] = [];
@@ -75,9 +86,9 @@ const CategoryDrawer: React.FC<CategoryDrawerProps> = ({ isOpen, onClose }) => {
       });
 
       setCategories(allCategories);
-      console.log('✅ Fetched categories:', allCategories.length);
+      console.log("✅ Fetched categories:", allCategories.length);
     } catch (error) {
-      console.error('❌ Error fetching categories:', error);
+      console.error("❌ Error fetching categories:", error);
     } finally {
       setLoading(false);
     }
@@ -86,7 +97,7 @@ const CategoryDrawer: React.FC<CategoryDrawerProps> = ({ isOpen, onClose }) => {
   const handleCategoryClick = (category: Category) => {
     if (category.subcategories && category.subcategories.length > 0) {
       // Toggle expansion if has subcategories
-      setExpandedCategories(prev => {
+      setExpandedCategories((prev) => {
         const newSet = new Set(prev);
         if (newSet.has(category._id)) {
           newSet.delete(category._id);
@@ -101,14 +112,17 @@ const CategoryDrawer: React.FC<CategoryDrawerProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  const handleSubcategoryClick = (category: Category, subcategory: Subcategory) => {
+  const handleSubcategoryClick = (
+    category: Category,
+    subcategory: Subcategory,
+  ) => {
     handleNavigation(category, subcategory);
   };
 
   const handleNavigation = (category: Category, subcategory?: Subcategory) => {
-    let path = '';
-    
-    if (category.type === 'property') {
+    let path = "";
+
+    if (category.type === "property") {
       if (subcategory) {
         // Navigate to subcategory page
         path = `/categories/${category.slug}/${subcategory.slug}`;
@@ -116,7 +130,7 @@ const CategoryDrawer: React.FC<CategoryDrawerProps> = ({ isOpen, onClose }) => {
         // Navigate to category page
         path = `/categories/${category.slug}`;
       }
-    } else if (category.type === 'service') {
+    } else if (category.type === "service") {
       if (subcategory) {
         path = `/services/${category.slug}/${subcategory.slug}`;
       } else {
@@ -130,22 +144,24 @@ const CategoryDrawer: React.FC<CategoryDrawerProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  const filteredCategories = categories.filter(cat => cat.type === selectedTab);
+  const filteredCategories = categories.filter(
+    (cat) => cat.type === selectedTab,
+  );
 
   const getCategoryIcon = (category: Category) => {
-    if (category.type === 'service') {
+    if (category.type === "service") {
       return <Briefcase className="w-5 h-5" />;
     }
-    
+
     // Property category icons
     switch (category.slug) {
-      case 'residential':
-      case 'flat':
-      case 'pg':
+      case "residential":
+      case "flat":
+      case "pg":
         return <Home className="w-5 h-5" />;
-      case 'commercial':
-      case 'showroom':
-      case 'industrial-property':
+      case "commercial":
+      case "showroom":
+      case "industrial-property":
         return <Briefcase className="w-5 h-5" />;
       default:
         return <Grid3X3 className="w-5 h-5" />;
@@ -157,7 +173,7 @@ const CategoryDrawer: React.FC<CategoryDrawerProps> = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 flex">
       {/* Backdrop */}
-      <div 
+      <div
         className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
         onClick={onClose}
       />
@@ -179,22 +195,22 @@ const CategoryDrawer: React.FC<CategoryDrawerProps> = ({ isOpen, onClose }) => {
         {/* Tabs */}
         <div className="flex border-b">
           <button
-            onClick={() => setSelectedTab('property')}
+            onClick={() => setSelectedTab("property")}
             className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
-              selectedTab === 'property'
-                ? 'text-[#C70000] border-b-2 border-[#C70000] bg-red-50'
-                : 'text-gray-600 hover:text-gray-900'
+              selectedTab === "property"
+                ? "text-[#C70000] border-b-2 border-[#C70000] bg-red-50"
+                : "text-gray-600 hover:text-gray-900"
             }`}
           >
             <Home className="w-4 h-4 inline mr-2" />
             Properties
           </button>
           <button
-            onClick={() => setSelectedTab('service')}
+            onClick={() => setSelectedTab("service")}
             className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
-              selectedTab === 'service'
-                ? 'text-[#C70000] border-b-2 border-[#C70000] bg-red-50'
-                : 'text-gray-600 hover:text-gray-900'
+              selectedTab === "service"
+                ? "text-[#C70000] border-b-2 border-[#C70000] bg-red-50"
+                : "text-gray-600 hover:text-gray-900"
             }`}
           >
             <Briefcase className="w-4 h-4 inline mr-2" />
@@ -206,7 +222,7 @@ const CategoryDrawer: React.FC<CategoryDrawerProps> = ({ isOpen, onClose }) => {
         <div className="flex-1 overflow-y-auto">
           {loading ? (
             <div className="p-4 space-y-3">
-              {[1, 2, 3, 4, 5].map(i => (
+              {[1, 2, 3, 4, 5].map((i) => (
                 <div key={i} className="animate-pulse">
                   <div className="h-12 bg-gray-200 rounded"></div>
                 </div>
@@ -243,38 +259,48 @@ const CategoryDrawer: React.FC<CategoryDrawerProps> = ({ isOpen, onClose }) => {
                             )}
                           </div>
                         </div>
-                        
-                        {category.subcategories && category.subcategories.length > 0 && (
-                          <div className="text-gray-400">
-                            {expandedCategories.has(category._id) ? (
-                              <ChevronDown className="w-4 h-4" />
-                            ) : (
-                              <ChevronRight className="w-4 h-4" />
-                            )}
-                          </div>
-                        )}
+
+                        {category.subcategories &&
+                          category.subcategories.length > 0 && (
+                            <div className="text-gray-400">
+                              {expandedCategories.has(category._id) ? (
+                                <ChevronDown className="w-4 h-4" />
+                              ) : (
+                                <ChevronRight className="w-4 h-4" />
+                              )}
+                            </div>
+                          )}
                       </button>
 
                       {/* Subcategories */}
-                      {expandedCategories.has(category._id) && 
-                       category.subcategories && 
-                       category.subcategories.length > 0 && (
-                        <div className="ml-8 space-y-1 pb-2">
-                          {category.subcategories
-                            .filter(sub => sub.active)
-                            .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name))
-                            .map((subcategory) => (
-                              <button
-                                key={subcategory._id || subcategory.slug}
-                                onClick={() => handleSubcategoryClick(category, subcategory)}
-                                data-testid="footer-cat-item"
-                                className="block w-full text-left p-2 rounded text-sm text-gray-600 hover:text-[#C70000] hover:bg-red-50 transition-colors capitalize"
-                              >
-                                {subcategory.name}
-                              </button>
-                            ))}
-                        </div>
-                      )}
+                      {expandedCategories.has(category._id) &&
+                        category.subcategories &&
+                        category.subcategories.length > 0 && (
+                          <div className="ml-8 space-y-1 pb-2">
+                            {category.subcategories
+                              .filter((sub) => sub.active)
+                              .sort(
+                                (a, b) =>
+                                  a.order - b.order ||
+                                  a.name.localeCompare(b.name),
+                              )
+                              .map((subcategory) => (
+                                <button
+                                  key={subcategory._id || subcategory.slug}
+                                  onClick={() =>
+                                    handleSubcategoryClick(
+                                      category,
+                                      subcategory,
+                                    )
+                                  }
+                                  data-testid="footer-cat-item"
+                                  className="block w-full text-left p-2 rounded text-sm text-gray-600 hover:text-[#C70000] hover:bg-red-50 transition-colors capitalize"
+                                >
+                                  {subcategory.name}
+                                </button>
+                              ))}
+                          </div>
+                        )}
                     </div>
                   ))}
                 </div>
@@ -291,7 +317,9 @@ const CategoryDrawer: React.FC<CategoryDrawerProps> = ({ isOpen, onClose }) => {
             </p>
             <button
               onClick={() => {
-                navigate(selectedTab === 'property' ? '/categories' : '/services');
+                navigate(
+                  selectedTab === "property" ? "/categories" : "/services",
+                );
                 onClose();
               }}
               className="mt-2 text-sm text-[#C70000] font-medium hover:underline"

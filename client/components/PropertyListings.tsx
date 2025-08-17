@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Heart, MapPin, Phone, Calendar, MessageCircle, Send } from "lucide-react";
+import {
+  Heart,
+  MapPin,
+  Phone,
+  Calendar,
+  MessageCircle,
+  Send,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import ChatModal from "./ChatModal";
 import EnquiryModal from "./EnquiryModal";
@@ -185,11 +192,13 @@ export default function PropertyListings() {
                   <button className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md">
                     <Heart className="h-4 w-4 text-gray-600" />
                   </button>
-                  <div className={`absolute top-3 left-3 text-white px-2 py-1 rounded-md text-xs font-bold ${
-                    property.premium
-                      ? "bg-gradient-to-r from-orange-500 to-red-600"
-                      : "bg-[#C70000]"
-                  }`}>
+                  <div
+                    className={`absolute top-3 left-3 text-white px-2 py-1 rounded-md text-xs font-bold ${
+                      property.premium
+                        ? "bg-gradient-to-r from-orange-500 to-red-600"
+                        : "bg-[#C70000]"
+                    }`}
+                  >
                     {property.premium ? "AP Premium" : "Featured"}
                   </div>
                 </div>

@@ -29,12 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 interface User {
   _id: string;
@@ -118,9 +113,11 @@ export default function UserManagement() {
       });
 
       if (response.ok) {
-        setUsers(users.map(user => 
-          user._id === userId ? { ...user, status } : user
-        ));
+        setUsers(
+          users.map((user) =>
+            user._id === userId ? { ...user, status } : user,
+          ),
+        );
       } else {
         const data = await response.json();
         setError(data.error || "Failed to update user status");
@@ -142,7 +139,7 @@ export default function UserManagement() {
       });
 
       if (response.ok) {
-        setUsers(users.filter(user => user._id !== userId));
+        setUsers(users.filter((user) => user._id !== userId));
         setConfirmDeleteUser(null);
       } else {
         const data = await response.json();
@@ -161,10 +158,11 @@ export default function UserManagement() {
     fetchUsers();
   };
 
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = (user.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-                         (user.email?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-                         (user.phone || '').includes(searchTerm);
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch =
+      (user.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+      (user.email?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+      (user.phone || "").includes(searchTerm);
     return matchesSearch;
   });
 
@@ -200,7 +198,9 @@ export default function UserManagement() {
       <div className="flex justify-between items-center">
         <div>
           <h3 className="text-2xl font-bold text-gray-900">User Management</h3>
-          <p className="text-gray-600">Manage all registered users and their accounts</p>
+          <p className="text-gray-600">
+            Manage all registered users and their accounts
+          </p>
         </div>
         <Button className="bg-[#C70000] hover:bg-[#A60000]">
           <Plus className="h-4 w-4 mr-2" />
@@ -227,7 +227,7 @@ export default function UserManagement() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {users.filter(u => u.status === "active").length}
+              {users.filter((u) => u.status === "active").length}
             </div>
             <p className="text-xs text-muted-foreground">Active accounts</p>
           </CardContent>
@@ -239,7 +239,7 @@ export default function UserManagement() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {users.filter(u => u.userType === "seller").length}
+              {users.filter((u) => u.userType === "seller").length}
             </div>
             <p className="text-xs text-muted-foreground">Seller accounts</p>
           </CardContent>
@@ -251,7 +251,7 @@ export default function UserManagement() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {users.filter(u => u.userType === "buyer").length}
+              {users.filter((u) => u.userType === "buyer").length}
             </div>
             <p className="text-xs text-muted-foreground">Buyer accounts</p>
           </CardContent>
@@ -327,7 +327,9 @@ export default function UserManagement() {
                   </TableCell>
                   <TableCell>
                     <Badge
-                      variant={user.status === "active" ? "default" : "secondary"}
+                      variant={
+                        user.status === "active" ? "default" : "secondary"
+                      }
                       className={
                         user.status === "active"
                           ? "bg-green-100 text-green-800"
@@ -352,13 +354,23 @@ export default function UserManagement() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => updateUserStatus(
-                          user._id, 
-                          user.status === "active" ? "inactive" : "active"
-                        )}
-                        className={user.status === "active" ? "text-red-600" : "text-green-600"}
+                        onClick={() =>
+                          updateUserStatus(
+                            user._id,
+                            user.status === "active" ? "inactive" : "active",
+                          )
+                        }
+                        className={
+                          user.status === "active"
+                            ? "text-red-600"
+                            : "text-green-600"
+                        }
                       >
-                        {user.status === "active" ? <UserX className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />}
+                        {user.status === "active" ? (
+                          <UserX className="h-4 w-4" />
+                        ) : (
+                          <UserCheck className="h-4 w-4" />
+                        )}
                       </Button>
                       <Button
                         size="sm"
@@ -374,7 +386,10 @@ export default function UserManagement() {
               ))}
               {filteredUsers.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center text-gray-500 py-8">
+                  <TableCell
+                    colSpan={6}
+                    className="text-center text-gray-500 py-8"
+                  >
                     No users found
                   </TableCell>
                 </TableRow>
@@ -388,7 +403,7 @@ export default function UserManagement() {
       {pagination.pages > 1 && (
         <div className="flex justify-between items-center">
           <p className="text-sm text-gray-700">
-            Showing {((pagination.page - 1) * pagination.limit) + 1} to{" "}
+            Showing {(pagination.page - 1) * pagination.limit + 1} to{" "}
             {Math.min(pagination.page * pagination.limit, pagination.total)} of{" "}
             {pagination.total} results
           </p>
@@ -396,7 +411,9 @@ export default function UserManagement() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setPagination({ ...pagination, page: pagination.page - 1 })}
+              onClick={() =>
+                setPagination({ ...pagination, page: pagination.page - 1 })
+              }
               disabled={pagination.page === 1}
             >
               Previous
@@ -404,7 +421,9 @@ export default function UserManagement() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setPagination({ ...pagination, page: pagination.page + 1 })}
+              onClick={() =>
+                setPagination({ ...pagination, page: pagination.page + 1 })
+              }
               disabled={pagination.page === pagination.pages}
             >
               Next
@@ -418,7 +437,9 @@ export default function UserManagement() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Delete User</h3>
+              <h3 className="text-lg font-semibold text-gray-900">
+                Delete User
+              </h3>
               <Button
                 variant="ghost"
                 size="sm"
@@ -431,9 +452,12 @@ export default function UserManagement() {
 
             <div className="space-y-4">
               <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-700 font-medium">Warning: This action cannot be undone!</p>
+                <p className="text-red-700 font-medium">
+                  Warning: This action cannot be undone!
+                </p>
                 <p className="text-red-600 text-sm mt-1">
-                  Deleting this user will also remove all their properties and associated data.
+                  Deleting this user will also remove all their properties and
+                  associated data.
                 </p>
               </div>
 
@@ -441,17 +465,23 @@ export default function UserManagement() {
                 <p className="font-medium text-gray-900">User to be deleted:</p>
                 <div className="mt-2">
                   <p className="font-semibold">{confirmDeleteUser.name}</p>
-                  <p className="text-sm text-gray-500">{confirmDeleteUser.email}</p>
-                  <p className="text-sm text-gray-500">{confirmDeleteUser.phone}</p>
+                  <p className="text-sm text-gray-500">
+                    {confirmDeleteUser.email}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {confirmDeleteUser.phone}
+                  </p>
                   <div className="flex items-center space-x-2 mt-1">
                     <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800 capitalize">
                       {confirmDeleteUser.userType}
                     </span>
-                    <span className={`text-xs px-2 py-1 rounded-full capitalize ${
-                      confirmDeleteUser.status === 'active'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}>
+                    <span
+                      className={`text-xs px-2 py-1 rounded-full capitalize ${
+                        confirmDeleteUser.status === "active"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
+                    >
                       {confirmDeleteUser.status}
                     </span>
                   </div>

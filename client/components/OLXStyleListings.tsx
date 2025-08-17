@@ -27,7 +27,9 @@ export default function OLXStyleListings() {
   const [loading, setLoading] = useState(true);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [enquiryModalOpen, setEnquiryModalOpen] = useState(false);
-  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(
+    null,
+  );
 
   useEffect(() => {
     fetchProperties();

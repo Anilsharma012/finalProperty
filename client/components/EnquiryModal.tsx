@@ -21,40 +21,40 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({
   onClose,
   propertyId,
   propertyTitle,
-  ownerName = "Property Owner"
+  ownerName = "Property Owner",
 }) => {
   const [formData, setFormData] = useState<EnquiryFormData>({
     name: "",
     phone: "",
-    message: `Hi, I'm interested in "${propertyTitle}". Could you please provide more details?`
+    message: `Hi, I'm interested in "${propertyTitle}". Could you please provide more details?`,
   });
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Basic validation
     if (!formData.name.trim()) {
       toast.error("Please enter your name");
       return;
     }
-    
+
     if (!formData.phone.trim()) {
       toast.error("Please enter your phone number");
       return;
     }
-    
+
     if (!formData.message.trim()) {
       toast.error("Please enter your message");
       return;
@@ -70,44 +70,48 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/enquiries', {
-        method: 'POST',
+      const response = await fetch("/api/enquiries", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           propertyId,
           name: formData.name.trim(),
           phone: formData.phone.trim(),
           message: formData.message.trim(),
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         }),
       });
 
       if (response.ok) {
         const result = await response.json();
-        toast.success("Enquiry sent successfully! The owner will contact you soon.");
-        
+        toast.success(
+          "Enquiry sent successfully! The owner will contact you soon.",
+        );
+
         // Reset form
         setFormData({
           name: "",
           phone: "",
-          message: `Hi, I'm interested in "${propertyTitle}". Could you please provide more details?`
+          message: `Hi, I'm interested in "${propertyTitle}". Could you please provide more details?`,
         });
-        
+
         // Close modal after a short delay
         setTimeout(() => {
           onClose();
         }, 1500);
-        
-        console.log('✅ Enquiry sent successfully:', result);
+
+        console.log("✅ Enquiry sent successfully:", result);
       } else {
         const errorData = await response.json();
-        toast.error(errorData.message || "Failed to send enquiry. Please try again.");
-        console.error('❌ Enquiry submission failed:', errorData);
+        toast.error(
+          errorData.message || "Failed to send enquiry. Please try again.",
+        );
+        console.error("❌ Enquiry submission failed:", errorData);
       }
     } catch (error) {
-      console.error('❌ Error submitting enquiry:', error);
+      console.error("❌ Error submitting enquiry:", error);
       toast.error("Network error. Please check your connection and try again.");
     } finally {
       setIsSubmitting(false);
@@ -115,9 +119,9 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({
   };
 
   const handleQuickMessage = (message: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      message
+      message,
     }));
   };
 
@@ -125,7 +129,7 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({
     `Hi, I'm interested in "${propertyTitle}". Is it still available?`,
     `Can you please share more details about "${propertyTitle}"?`,
     `I would like to schedule a visit for "${propertyTitle}".`,
-    `What is the best price you can offer for "${propertyTitle}"?`
+    `What is the best price you can offer for "${propertyTitle}"?`,
   ];
 
   if (!isOpen) return null;
@@ -136,7 +140,9 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Send Enquiry</h2>
+            <h2 className="text-lg font-semibold text-gray-900">
+              Send Enquiry
+            </h2>
             <p className="text-sm text-gray-600">Contact {ownerName}</p>
           </div>
           <button
@@ -159,7 +165,10 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
           {/* Name Field */}
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Your Name *
             </label>
             <div className="relative">
@@ -179,7 +188,10 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({
 
           {/* Phone Field */}
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="phone"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Phone Number *
             </label>
             <div className="relative">
@@ -218,7 +230,10 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({
 
           {/* Message Field */}
           <div>
-            <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="message"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Your Message *
             </label>
             <div className="relative">
@@ -243,8 +258,8 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({
             data-testid="enquiry-btn"
             className={`w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-lg text-white font-medium transition-colors ${
               isSubmitting
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-red-600 hover:bg-red-700 active:bg-red-800'
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-red-600 hover:bg-red-700 active:bg-red-800"
             }`}
           >
             {isSubmitting ? (
@@ -264,7 +279,8 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({
         {/* Footer */}
         <div className="p-4 border-t bg-gray-50 text-center">
           <p className="text-xs text-gray-500">
-            Your contact information will only be shared with the property owner.
+            Your contact information will only be shared with the property
+            owner.
           </p>
         </div>
       </div>

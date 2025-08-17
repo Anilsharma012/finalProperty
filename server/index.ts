@@ -1590,8 +1590,18 @@ export function createServer() {
 
   // Enquiries routes
   app.post("/api/enquiries", submitEnquiry); // Public endpoint for submitting enquiries
-  app.get("/api/admin/enquiries", authenticateToken, requireAdmin, getEnquiries);
-  app.put("/api/admin/enquiries/:id/status", authenticateToken, requireAdmin, updateEnquiryStatus);
+  app.get(
+    "/api/admin/enquiries",
+    authenticateToken,
+    requireAdmin,
+    getEnquiries,
+  );
+  app.put(
+    "/api/admin/enquiries/:id/status",
+    authenticateToken,
+    requireAdmin,
+    updateEnquiryStatus,
+  );
 
   // Tickets (support) routes
   app.post("/api/tickets", authenticateToken, createTicket);

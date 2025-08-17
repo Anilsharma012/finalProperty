@@ -225,9 +225,11 @@ export default function AdminSupportInbox() {
 
   const filteredConversations = conversations.filter((conv) => {
     const matchesSearch =
-      (conv.property?.title?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+      (conv.property?.title?.toLowerCase() || "").includes(
+        searchQuery.toLowerCase(),
+      ) ||
       (conv.participantDetails || []).some((p) =>
-        (p.name?.toLowerCase() || '').includes(searchQuery.toLowerCase()),
+        (p.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()),
       );
 
     return matchesSearch;

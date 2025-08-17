@@ -15,7 +15,6 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-white">
       <OLXStyleHeader />
-
       <main className="pb-16 bg-gradient-to-b from-red-50 to-white">
         {/* Hero Image Slider */}
         <HeroImageSlider />
@@ -38,10 +37,10 @@ export default function Index() {
           <PackagesShowcase />
         </div>
       </main>
-
       <BottomNavigation />
       <PWAInstallPrompt />
-      {/* <PWAInstallButton /> */} {/* Removed red Install App button as requested */}
+      {/* <PWAInstallButton /> */}{" "}
+      {/* Removed red Install App button as requested */}
       <StaticFooter />
     </div>
   );

@@ -39,12 +39,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import {
   Dialog,
   DialogContent,
@@ -59,7 +54,12 @@ interface StaffMember {
   name: string;
   email: string;
   phone?: string;
-  role: "super_admin" | "content_manager" | "sales_manager" | "support_executive" | "admin";
+  role:
+    | "super_admin"
+    | "content_manager"
+    | "sales_manager"
+    | "support_executive"
+    | "admin";
   permissions: string[];
   status: "active" | "inactive" | "suspended";
   lastLogin?: string;
@@ -89,7 +89,7 @@ const availableRoles: Role[] = [
   },
   {
     id: "content_manager",
-    name: "content_manager", 
+    name: "content_manager",
     displayName: "Content Manager",
     description: "Manage pages, blogs, and content",
     permissions: [
@@ -125,7 +125,7 @@ const availableRoles: Role[] = [
   {
     id: "support_executive",
     name: "support_executive",
-    displayName: "Support Executive", 
+    displayName: "Support Executive",
     description: "Handle user queries and support",
     permissions: [
       "users.view",
@@ -209,7 +209,9 @@ export default function StaffManagement() {
           setError(data.error || "Failed to fetch staff");
         }
       } else {
-        setError(`Failed to fetch staff: ${response.status} ${response.statusText}`);
+        setError(
+          `Failed to fetch staff: ${response.status} ${response.statusText}`,
+        );
       }
     } catch (error) {
       console.error("Error fetching staff:", error);
@@ -296,7 +298,11 @@ export default function StaffManagement() {
   };
 
   const handleDelete = async (staffId: string) => {
-    if (!token || !confirm("Are you sure you want to delete this staff member?")) return;
+    if (
+      !token ||
+      !confirm("Are you sure you want to delete this staff member?")
+    )
+      return;
 
     try {
       const response = await fetch(`/api/admin/staff/${staffId}`, {
@@ -305,7 +311,7 @@ export default function StaffManagement() {
       });
 
       if (response.ok) {
-        setStaff(staff.filter(s => s._id !== staffId));
+        setStaff(staff.filter((s) => s._id !== staffId));
       } else {
         const data = await response.json();
         setError(data.error || "Failed to delete staff member");
@@ -366,7 +372,9 @@ export default function StaffManagement() {
   };
 
   const getRoleInfo = (roleName: string) => {
-    return availableRoles.find(role => role.name === roleName) || availableRoles[4]; // Default to admin
+    return (
+      availableRoles.find((role) => role.name === roleName) || availableRoles[4]
+    ); // Default to admin
   };
 
   const getStatusBadge = (status: string) => {
@@ -375,13 +383,13 @@ export default function StaffManagement() {
       inactive: { className: "bg-gray-100 text-gray-800", icon: X },
       suspended: { className: "bg-red-100 text-red-800", icon: Lock },
     };
-    
+
     const { className, icon: Icon } = config[status] || config.active;
-    
+
     return (
       <Badge className={className}>
         <Icon className="h-3 w-3 mr-1" />
-        {status ? status.charAt(0).toUpperCase() + status.slice(1) : 'Unknown'}
+        {status ? status.charAt(0).toUpperCase() + status.slice(1) : "Unknown"}
       </Badge>
     );
   };
@@ -395,20 +403,22 @@ export default function StaffManagement() {
     });
   };
 
-  const filteredStaff = staff.filter(member => {
-    const matchesSearch = (member.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-                         (member.email?.toLowerCase() || '').includes(searchTerm.toLowerCase());
+  const filteredStaff = staff.filter((member) => {
+    const matchesSearch =
+      (member.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+      (member.email?.toLowerCase() || "").includes(searchTerm.toLowerCase());
     const matchesRole = selectedRole === "all" || member.role === selectedRole;
-    const matchesStatus = selectedStatus === "all" || member.status === selectedStatus;
-    
+    const matchesStatus =
+      selectedStatus === "all" || member.status === selectedStatus;
+
     return matchesSearch && matchesRole && matchesStatus;
   });
 
   const stats = {
     total: staff.length,
-    active: staff.filter(s => s.status === "active").length,
-    superAdmins: staff.filter(s => s.role === "super_admin").length,
-    contentManagers: staff.filter(s => s.role === "content_manager").length,
+    active: staff.filter((s) => s.status === "active").length,
+    superAdmins: staff.filter((s) => s.role === "super_admin").length,
+    contentManagers: staff.filter((s) => s.role === "content_manager").length,
   };
 
   if (loading) {
@@ -455,7 +465,10 @@ export default function StaffManagement() {
 
       {/* Generated Credentials Dialog */}
       {generatedCredentials && (
-        <Dialog open={!!generatedCredentials} onOpenChange={() => setGeneratedCredentials(null)}>
+        <Dialog
+          open={!!generatedCredentials}
+          onOpenChange={() => setGeneratedCredentials(null)}
+        >
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle className="flex items-center space-x-2">
@@ -466,35 +479,53 @@ export default function StaffManagement() {
             <div className="space-y-4">
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <p className="text-green-800 text-sm mb-3">
-                  Staff member has been created successfully! Here are the login credentials:
+                  Staff member has been created successfully! Here are the login
+                  credentials:
                 </p>
 
                 <div className="space-y-3">
                   <div className="bg-white rounded p-3 border">
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Username</label>
-                    <code className="text-sm font-mono text-gray-900">{generatedCredentials.username}</code>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                      Username
+                    </label>
+                    <code className="text-sm font-mono text-gray-900">
+                      {generatedCredentials.username}
+                    </code>
                   </div>
 
                   <div className="bg-white rounded p-3 border">
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Password</label>
-                    <code className="text-sm font-mono text-gray-900">{generatedCredentials.password}</code>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                      Password
+                    </label>
+                    <code className="text-sm font-mono text-gray-900">
+                      {generatedCredentials.password}
+                    </code>
                   </div>
 
                   <div className="bg-white rounded p-3 border">
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Role</label>
-                    <span className="text-sm capitalize">{generatedCredentials.role.replace('_', ' ')}</span>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                      Role
+                    </label>
+                    <span className="text-sm capitalize">
+                      {generatedCredentials.role.replace("_", " ")}
+                    </span>
                   </div>
 
                   <div className="bg-white rounded p-3 border">
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Staff Login URL</label>
-                    <code className="text-sm font-mono text-blue-600">/staff/login</code>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                      Staff Login URL
+                    </label>
+                    <code className="text-sm font-mono text-blue-600">
+                      /staff/login
+                    </code>
                   </div>
                 </div>
 
                 <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
                   <p className="text-yellow-800 text-xs">
-                    ⚠️ <strong>Important:</strong> Please share these credentials securely with the staff member.
-                    They will be required to change their password on first login.
+                    ⚠️ <strong>Important:</strong> Please share these
+                    credentials securely with the staff member. They will be
+                    required to change their password on first login.
                   </p>
                 </div>
               </div>
@@ -503,7 +534,7 @@ export default function StaffManagement() {
                 <Button
                   onClick={() => {
                     navigator.clipboard.writeText(
-                      `POSTTRR Staff Login Credentials\n\nUsername: ${generatedCredentials.username}\nPassword: ${generatedCredentials.password}\nRole: ${generatedCredentials.role}\nLogin URL: ${window.location.origin}/staff/login\n\nPlease change your password after first login.`
+                      `POSTTRR Staff Login Credentials\n\nUsername: ${generatedCredentials.username}\nPassword: ${generatedCredentials.password}\nRole: ${generatedCredentials.role}\nLogin URL: ${window.location.origin}/staff/login\n\nPlease change your password after first login.`,
                     );
                     setSuccess("Credentials copied to clipboard!");
                   }}
@@ -528,9 +559,11 @@ export default function StaffManagement() {
       <div className="flex justify-between items-center">
         <div>
           <h3 className="text-2xl font-bold text-gray-900">Staff Management</h3>
-          <p className="text-gray-600">Manage staff members, roles, and permissions</p>
+          <p className="text-gray-600">
+            Manage staff members, roles, and permissions
+          </p>
         </div>
-        <Button 
+        <Button
           onClick={() => setShowCreateDialog(true)}
           className="bg-[#C70000] hover:bg-[#A60000]"
         >
@@ -557,7 +590,9 @@ export default function StaffManagement() {
             <UserCheck className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{stats.active}</div>
+            <div className="text-2xl font-bold text-green-600">
+              {stats.active}
+            </div>
             <p className="text-xs text-muted-foreground">Currently active</p>
           </CardContent>
         </Card>
@@ -567,17 +602,23 @@ export default function StaffManagement() {
             <Crown className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-purple-600">{stats.superAdmins}</div>
+            <div className="text-2xl font-bold text-purple-600">
+              {stats.superAdmins}
+            </div>
             <p className="text-xs text-muted-foreground">Full access</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Content Managers</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Content Managers
+            </CardTitle>
             <Edit className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{stats.contentManagers}</div>
+            <div className="text-2xl font-bold text-blue-600">
+              {stats.contentManagers}
+            </div>
             <p className="text-xs text-muted-foreground">Content access</p>
           </CardContent>
         </Card>
@@ -640,14 +681,18 @@ export default function StaffManagement() {
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-[#C70000] rounded-full flex items-center justify-center">
                           <span className="text-sm font-medium text-white">
-                            {member.name ? member.name.charAt(0) : 'U'}
+                            {member.name ? member.name.charAt(0) : "U"}
                           </span>
                         </div>
                         <div>
                           <p className="font-medium">{member.name}</p>
-                          <p className="text-sm text-gray-500">{member.email}</p>
+                          <p className="text-sm text-gray-500">
+                            {member.email}
+                          </p>
                           {member.phone && (
-                            <p className="text-xs text-gray-400">{member.phone}</p>
+                            <p className="text-xs text-gray-400">
+                              {member.phone}
+                            </p>
                           )}
                         </div>
                       </div>
@@ -664,7 +709,7 @@ export default function StaffManagement() {
                     <TableCell>
                       {member.lastLogin
                         ? new Date(member.lastLogin).toLocaleDateString()
-                        : 'Never'}
+                        : "Never"}
                     </TableCell>
                     <TableCell>
                       {new Date(member.createdAt).toLocaleDateString()}
@@ -685,12 +730,16 @@ export default function StaffManagement() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => handleStatusChange(
-                            member._id, 
-                            member.status === 'active' ? 'suspended' : 'active'
-                          )}
+                          onClick={() =>
+                            handleStatusChange(
+                              member._id,
+                              member.status === "active"
+                                ? "suspended"
+                                : "active",
+                            )
+                          }
                         >
-                          {member.status === 'active' ? (
+                          {member.status === "active" ? (
                             <Lock className="h-4 w-4" />
                           ) : (
                             <Unlock className="h-4 w-4" />
@@ -711,7 +760,10 @@ export default function StaffManagement() {
               })}
               {filteredStaff.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center text-gray-500 py-8">
+                  <TableCell
+                    colSpan={6}
+                    className="text-center text-gray-500 py-8"
+                  >
                     No staff members found
                   </TableCell>
                 </TableRow>
@@ -730,19 +782,27 @@ export default function StaffManagement() {
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Full Name *</label>
+                <label className="block text-sm font-medium mb-2">
+                  Full Name *
+                </label>
                 <Input
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   placeholder="Enter full name..."
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">Email Address *</label>
+                <label className="block text-sm font-medium mb-2">
+                  Email Address *
+                </label>
                 <Input
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   placeholder="Enter email address..."
                 />
               </div>
@@ -750,19 +810,27 @@ export default function StaffManagement() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Phone Number</label>
+                <label className="block text-sm font-medium mb-2">
+                  Phone Number
+                </label>
                 <Input
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
                   placeholder="Enter phone number..."
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">Password *</label>
+                <label className="block text-sm font-medium mb-2">
+                  Password *
+                </label>
                 <Input
                   type="password"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                   placeholder="Enter password..."
                 />
               </div>
@@ -793,13 +861,21 @@ export default function StaffManagement() {
             </div>
 
             <div className="flex justify-end space-x-2 pt-6 border-t">
-              <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setShowCreateDialog(false)}
+              >
                 Cancel
               </Button>
-              <Button 
-                onClick={handleCreate} 
+              <Button
+                onClick={handleCreate}
                 className="bg-[#C70000] hover:bg-[#A60000]"
-                disabled={saving || !formData.name || !formData.email || !formData.password}
+                disabled={
+                  saving ||
+                  !formData.name ||
+                  !formData.email ||
+                  !formData.password
+                }
               >
                 {saving ? (
                   <>
@@ -828,19 +904,27 @@ export default function StaffManagement() {
             {/* Same form fields as create dialog but for editing */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Full Name *</label>
+                <label className="block text-sm font-medium mb-2">
+                  Full Name *
+                </label>
                 <Input
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   placeholder="Enter full name..."
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">Email Address *</label>
+                <label className="block text-sm font-medium mb-2">
+                  Email Address *
+                </label>
                 <Input
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   placeholder="Enter email address..."
                 />
               </div>
@@ -866,11 +950,14 @@ export default function StaffManagement() {
             </div>
 
             <div className="flex justify-end space-x-2 pt-6 border-t">
-              <Button variant="outline" onClick={() => setShowEditDialog(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setShowEditDialog(false)}
+              >
                 Cancel
               </Button>
-              <Button 
-                onClick={handleUpdate} 
+              <Button
+                onClick={handleUpdate}
                 className="bg-[#C70000] hover:bg-[#A60000]"
                 disabled={saving}
               >

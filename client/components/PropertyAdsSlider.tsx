@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ChevronLeft, ChevronRight, MapPin, Home, Bed, Bath } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  MapPin,
+  Home,
+  Bed,
+  Bath,
+} from "lucide-react";
 
 interface Advertisement {
   _id: string;
@@ -42,14 +49,19 @@ const PropertyAdsSlider: React.FC = () => {
 
   // Combine advertisements and properties into a single display list
   const slides = React.useMemo(() => {
-    const items: Array<{type: 'ad' | 'property'; data: Advertisement | Property}> = [];
-    
+    const items: Array<{
+      type: "ad" | "property";
+      data: Advertisement | Property;
+    }> = [];
+
     // Add advertisements first
-    ads.forEach(ad => items.push({ type: 'ad', data: ad }));
-    
+    ads.forEach((ad) => items.push({ type: "ad", data: ad }));
+
     // Add featured properties if no ads or as fallback
-    properties.forEach(property => items.push({ type: 'property', data: property }));
-    
+    properties.forEach((property) =>
+      items.push({ type: "property", data: property }),
+    );
+
     return items;
   }, [ads, properties]);
 
@@ -58,39 +70,54 @@ const PropertyAdsSlider: React.FC = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        
+
         // Try to fetch advertisements first (using banners with home position)
         try {
-          const adsResponse = await fetch('/api/banners?position=homepage_middle');
+          const adsResponse = await fetch(
+            "/api/banners?position=homepage_middle",
+          );
           if (adsResponse.ok) {
             const adsData = await adsResponse.json();
-            if (adsData.success && adsData.data && Array.isArray(adsData.data)) {
-              const homeAds = adsData.data.filter((ad: Advertisement) => 
-                ad.active && ad.position === 'homepage_middle'
+            if (
+              adsData.success &&
+              adsData.data &&
+              Array.isArray(adsData.data)
+            ) {
+              const homeAds = adsData.data.filter(
+                (ad: Advertisement) =>
+                  ad.active && ad.position === "homepage_middle",
               );
               setAds(homeAds);
-              console.log('✅ Loaded', homeAds.length, 'home advertisements');
+              console.log("✅ Loaded", homeAds.length, "home advertisements");
             }
           }
         } catch (error) {
-          console.warn('⚠️ Failed to fetch advertisements:', error);
+          console.warn("⚠️ Failed to fetch advertisements:", error);
         }
 
         // Fetch featured properties as fallback
         try {
-          const propertiesResponse = await fetch('/api/properties/featured');
+          const propertiesResponse = await fetch("/api/properties/featured");
           if (propertiesResponse.ok) {
             const propertiesData = await propertiesResponse.json();
-            if (propertiesData.success && propertiesData.data && Array.isArray(propertiesData.data)) {
+            if (
+              propertiesData.success &&
+              propertiesData.data &&
+              Array.isArray(propertiesData.data)
+            ) {
               setProperties(propertiesData.data);
-              console.log('✅ Loaded', propertiesData.data.length, 'featured properties');
+              console.log(
+                "✅ Loaded",
+                propertiesData.data.length,
+                "featured properties",
+              );
             }
           }
         } catch (error) {
-          console.warn('⚠️ Failed to fetch featured properties:', error);
+          console.warn("⚠️ Failed to fetch featured properties:", error);
         }
       } catch (error) {
-        console.error('❌ Error fetching data:', error);
+        console.error("❌ Error fetching data:", error);
       } finally {
         setLoading(false);
       }
@@ -104,7 +131,7 @@ const PropertyAdsSlider: React.FC = () => {
     if (!isAutoPlaying || slides.length <= 1) return;
 
     intervalRef.current = setInterval(() => {
-      setCurrentSlide(prev => (prev + 1) % slides.length);
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 4000);
 
     return () => {
@@ -115,15 +142,18 @@ const PropertyAdsSlider: React.FC = () => {
   }, [slides.length, isAutoPlaying]);
 
   const nextSlide = () => {
-    setCurrentSlide(prev => (prev + 1) % slides.length);
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
   };
 
   const prevSlide = () => {
-    setCurrentSlide(prev => (prev - 1 + slides.length) % slides.length);
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
-  const handleCardClick = (item: {type: 'ad' | 'property'; data: Advertisement | Property}) => {
-    if (item.type === 'ad') {
+  const handleCardClick = (item: {
+    type: "ad" | "property";
+    data: Advertisement | Property;
+  }) => {
+    if (item.type === "ad") {
       const ad = item.data as Advertisement;
       if (ad.link) {
         window.location.href = ad.link;
@@ -135,8 +165,8 @@ const PropertyAdsSlider: React.FC = () => {
   };
 
   const formatPrice = (price: number, priceType: string) => {
-    const formatted = price.toLocaleString('en-IN');
-    return priceType === 'rent' ? `₹${formatted}/month` : `₹${formatted}`;
+    const formatted = price.toLocaleString("en-IN");
+    return priceType === "rent" ? `₹${formatted}/month` : `₹${formatted}`;
   };
 
   if (loading) {
@@ -145,8 +175,11 @@ const PropertyAdsSlider: React.FC = () => {
         <div className="animate-pulse">
           <div className="h-6 bg-gray-200 rounded w-48 mb-4"></div>
           <div className="flex space-x-4 overflow-hidden">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="flex-shrink-0 w-80 h-48 bg-gray-200 rounded-lg"></div>
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="flex-shrink-0 w-80 h-48 bg-gray-200 rounded-lg"
+              ></div>
             ))}
           </div>
         </div>
@@ -162,15 +195,19 @@ const PropertyAdsSlider: React.FC = () => {
     <div className="px-4 py-6 bg-gray-50">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-900">Featured Properties & Ads</h2>
+          <h2 className="text-xl font-bold text-gray-900">
+            Featured Properties & Ads
+          </h2>
           <div className="flex items-center space-x-2">
             <button
               onClick={() => setIsAutoPlaying(!isAutoPlaying)}
               className={`px-3 py-1 text-sm rounded ${
-                isAutoPlaying ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'
+                isAutoPlaying
+                  ? "bg-red-100 text-red-600"
+                  : "bg-gray-100 text-gray-600"
               }`}
             >
-              {isAutoPlaying ? 'Pause' : 'Play'}
+              {isAutoPlaying ? "Pause" : "Play"}
             </button>
           </div>
         </div>
@@ -178,12 +215,12 @@ const PropertyAdsSlider: React.FC = () => {
         <div className="relative">
           {/* Carousel Container */}
           <div className="overflow-hidden rounded-lg">
-            <div 
+            <div
               className="flex transition-transform duration-500 ease-in-out"
               style={{ transform: `translateX(-${currentSlide * 100}%)` }}
             >
               {slides.map((item, index) => {
-                const isAd = item.type === 'ad';
+                const isAd = item.type === "ad";
                 const data = item.data;
 
                 return (
@@ -204,13 +241,18 @@ const PropertyAdsSlider: React.FC = () => {
                             alt={(data as Advertisement).title}
                             className="w-full h-full object-cover"
                             onError={(e) => {
-                              (e.target as HTMLImageElement).src = '/placeholder.svg';
+                              (e.target as HTMLImageElement).src =
+                                "/placeholder.svg";
                             }}
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent">
                             <div className="absolute bottom-4 left-4 right-4 text-white">
-                              <h3 className="text-lg font-bold mb-2">{(data as Advertisement).title}</h3>
-                              <p className="text-sm opacity-90 line-clamp-2">{(data as Advertisement).description}</p>
+                              <h3 className="text-lg font-bold mb-2">
+                                {(data as Advertisement).title}
+                              </h3>
+                              <p className="text-sm opacity-90 line-clamp-2">
+                                {(data as Advertisement).description}
+                              </p>
                             </div>
                           </div>
                           <div className="absolute top-4 right-4">
@@ -224,11 +266,15 @@ const PropertyAdsSlider: React.FC = () => {
                         <div>
                           <div className="relative h-64">
                             <img
-                              src={(data as Property).images[0] || '/placeholder.svg'}
+                              src={
+                                (data as Property).images[0] ||
+                                "/placeholder.svg"
+                              }
                               alt={(data as Property).title}
                               className="w-full h-full object-cover"
                               onError={(e) => {
-                                (e.target as HTMLImageElement).src = '/placeholder.svg';
+                                (e.target as HTMLImageElement).src =
+                                  "/placeholder.svg";
                               }}
                             />
                             <div className="absolute top-4 left-4">
@@ -238,7 +284,10 @@ const PropertyAdsSlider: React.FC = () => {
                             </div>
                             <div className="absolute top-4 right-4">
                               <span className="bg-white/90 text-gray-900 px-2 py-1 rounded text-sm font-semibold">
-                                {formatPrice((data as Property).price, (data as Property).priceType)}
+                                {formatPrice(
+                                  (data as Property).price,
+                                  (data as Property).priceType,
+                                )}
                               </span>
                             </div>
                           </div>
@@ -249,7 +298,9 @@ const PropertyAdsSlider: React.FC = () => {
                             <div className="flex items-center text-gray-600 mb-2">
                               <MapPin className="w-4 h-4 mr-1" />
                               <span className="text-sm">
-                                {(data as Property).location.sector || (data as Property).location.mohalla || (data as Property).location.city}
+                                {(data as Property).location.sector ||
+                                  (data as Property).location.mohalla ||
+                                  (data as Property).location.city}
                               </span>
                             </div>
                             <div className="flex items-center space-x-4 text-sm text-gray-600">
@@ -260,13 +311,22 @@ const PropertyAdsSlider: React.FC = () => {
                               {(data as Property).specifications.bedrooms && (
                                 <div className="flex items-center">
                                   <Bed className="w-4 h-4 mr-1" />
-                                  <span>{(data as Property).specifications.bedrooms} BD</span>
+                                  <span>
+                                    {(data as Property).specifications.bedrooms}{" "}
+                                    BD
+                                  </span>
                                 </div>
                               )}
                               {(data as Property).specifications.bathrooms && (
                                 <div className="flex items-center">
                                   <Bath className="w-4 h-4 mr-1" />
-                                  <span>{(data as Property).specifications.bathrooms} BA</span>
+                                  <span>
+                                    {
+                                      (data as Property).specifications
+                                        .bathrooms
+                                    }{" "}
+                                    BA
+                                  </span>
                                 </div>
                               )}
                             </div>
@@ -309,8 +369,8 @@ const PropertyAdsSlider: React.FC = () => {
                   onClick={() => setCurrentSlide(index)}
                   className={`w-2 h-2 rounded-full transition-all ${
                     index === currentSlide
-                      ? 'bg-red-600 w-6'
-                      : 'bg-gray-300 hover:bg-gray-400'
+                      ? "bg-red-600 w-6"
+                      : "bg-gray-300 hover:bg-gray-400"
                   }`}
                   aria-label={`Go to slide ${index + 1}`}
                 />

@@ -231,8 +231,8 @@ export default function PackageManagement() {
 
   const filteredPackages = packages.filter((pkg) => {
     const matchesSearch =
-      (pkg.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-      (pkg.description?.toLowerCase() || '').includes(searchTerm.toLowerCase());
+      (pkg.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+      (pkg.description?.toLowerCase() || "").includes(searchTerm.toLowerCase());
     const matchesType = selectedType === "all" || pkg.type === selectedType;
 
     return matchesSearch && matchesType;
