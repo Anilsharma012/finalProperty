@@ -49,14 +49,17 @@ interface UserReport {
   _id: string;
   reporterName: string;
   reporterEmail: string;
-  reportedUserName: string;
-  reportedUserEmail: string;
-  reason: string;
+  reportedUserName?: string;
+  reportedUserEmail?: string;
+  reportedPropertyTitle?: string;
+  reasonTitle: string; // This is the actual field name from server
+  reason?: string; // For backward compatibility
   description?: string;
-  status: 'pending' | 'reviewed' | 'resolved' | 'dismissed';
+  status: 'pending' | 'under_review' | 'resolved' | 'dismissed';
   createdAt: string;
   reviewedAt?: string;
   adminComments?: string;
+  resolution?: string;
 }
 
 export default function ReportsManagement() {
