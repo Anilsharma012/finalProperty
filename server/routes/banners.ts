@@ -37,6 +37,36 @@ export const getBannersByPosition: RequestHandler = async (req, res) => {
   }
 };
 
+// Get active banners (public endpoint)
+export const getActiveBanners: RequestHandler = async (req, res) => {
+  try {
+    const db = getDatabase();
+    const { position } = req.query;
+
+    const filter: any = { active: true };
+    if (position) filter.position = position;
+
+    const banners = await db
+      .collection("banners")
+      .find(filter)
+      .sort({ priority: -1, createdAt: -1 })
+      .toArray();
+
+    const response: ApiResponse<BannerAd[]> = {
+      success: true,
+      data: banners as BannerAd[],
+    };
+
+    res.json(response);
+  } catch (error) {
+    console.error("Error fetching active banners:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch active banners",
+    });
+  }
+};
+
 // Get all banners (admin only)
 export const getAllBanners: RequestHandler = async (req, res) => {
   try {

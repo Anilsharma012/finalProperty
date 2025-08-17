@@ -3,7 +3,7 @@ import cors from "cors";
 
 import { connectToDatabase, getDatabase } from "./db/mongodb";
 import { authenticateToken, requireAdmin } from "./middleware/auth";
-import { ChatWebSocketServer } from "./websocket";
+import { ChatSocketServer } from "./socketio";
 
 // Property routes
 import {
@@ -167,6 +167,7 @@ import {
 // Banner routes
 import {
   getBannersByPosition,
+  getActiveBanners,
   getAllBanners,
   createBanner,
   updateBanner,
@@ -418,6 +419,8 @@ import {
   getServiceCategories,
 } from "./routes/other-services";
 
+let socketServer: ChatSocketServer;
+
 export function createServer() {
   const app = express();
 
@@ -443,8 +446,8 @@ export function createServer() {
   app.use(express.json({ limit: "1gb" }));
   app.use(express.urlencoded({ extended: true, limit: "1gb" }));
 
-  // Mount CSV import BEFORE any global image upload middleware
-  app.use("/api", authenticateToken, requireAdmin, osImportRoutes);
+  // Mount CSV import routes under protected admin path
+  app.use("/api/admin", authenticateToken, requireAdmin, osImportRoutes);
 
   // Initialize MongoDB connection
   connectToDatabase()
@@ -868,6 +871,7 @@ export function createServer() {
   app.get("/api/payments/methods", getPaymentMethods);
 
   // Banner routes
+  app.get("/api/banners", getActiveBanners);
   app.get("/api/banners/:position", getBannersByPosition);
   app.get("/api/admin/banners", authenticateToken, requireAdmin, getAllBanners);
   app.post("/api/admin/banners", authenticateToken, requireAdmin, createBanner);
@@ -1650,6 +1654,15 @@ export function createServer() {
   });
 
   return app;
+}
+
+export function initializeSocket(httpServer: any) {
+  socketServer = new ChatSocketServer(httpServer);
+  return socketServer;
+}
+
+export function getSocketServer() {
+  return socketServer;
 }
 
 // For production

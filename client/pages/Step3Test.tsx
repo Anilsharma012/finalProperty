@@ -63,9 +63,12 @@ export default function Step3Test() {
       // Step 2: Find or create conversation
       setCurrentStep(2);
       const conversationResponse = await (window as any).api(
-        `/conversations/find-or-create?propertyId=${propertyId}`,
+        `/conversations/find-or-create`,
         {
           method: "POST",
+          body: {
+            propertyId: propertyId,
+          },
         },
       );
 

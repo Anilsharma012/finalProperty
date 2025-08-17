@@ -49,14 +49,17 @@ interface UserReport {
   _id: string;
   reporterName: string;
   reporterEmail: string;
-  reportedUserName: string;
-  reportedUserEmail: string;
-  reason: string;
+  reportedUserName?: string;
+  reportedUserEmail?: string;
+  reportedPropertyTitle?: string;
+  reasonTitle: string; // This is the actual field name from server
+  reason?: string; // For backward compatibility
   description?: string;
-  status: 'pending' | 'reviewed' | 'resolved' | 'dismissed';
+  status: 'pending' | 'under_review' | 'resolved' | 'dismissed';
   createdAt: string;
   reviewedAt?: string;
   adminComments?: string;
+  resolution?: string;
 }
 
 export default function ReportsManagement() {
@@ -93,7 +96,16 @@ export default function ReportsManagement() {
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          setReports(data.data || []);
+          // Handle nested data structure from API: data.data.reports
+          const reportsData = data.data?.reports || data.data || [];
+          const transformedReports = Array.isArray(reportsData)
+            ? reportsData.map((report: any) => ({
+                ...report,
+                reason: report.reasonTitle || report.reason || 'Unknown', // Map reasonTitle to reason for backward compatibility
+                reportedUserEmail: report.reportedUserEmail || '', // Ensure email field exists
+              }))
+            : [];
+          setReports(transformedReports);
         } else {
           setError(data.error || 'Failed to fetch reports');
         }
@@ -115,7 +127,7 @@ export default function ReportsManagement() {
       setError('');
 
       const response = await fetch(`/api/admin/reports/${reportId}`, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
@@ -148,27 +160,39 @@ export default function ReportsManagement() {
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       pending: { variant: 'outline' as const, className: 'bg-yellow-100 text-yellow-800' },
-      reviewed: { variant: 'secondary' as const, className: 'bg-blue-100 text-blue-800' },
+      under_review: { variant: 'secondary' as const, className: 'bg-blue-100 text-blue-800' },
+      reviewed: { variant: 'secondary' as const, className: 'bg-blue-100 text-blue-800' }, // fallback
       resolved: { variant: 'default' as const, className: 'bg-green-100 text-green-800' },
       dismissed: { variant: 'destructive' as const, className: 'bg-gray-100 text-gray-800' },
     };
 
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
 
+    const displayStatus = status === 'under_review' ? 'Under Review' :
+                        (status || 'pending').charAt(0).toUpperCase() + (status || 'pending').slice(1);
+
     return (
       <Badge variant={config.variant} className={config.className}>
-        {(status || 'pending').charAt(0).toUpperCase() + (status || 'pending').slice(1)}
+        {displayStatus}
       </Badge>
     );
   };
 
-  const filteredReports = reports.filter(report =>
-    report.reporterName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    report.reportedUserName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    report.reason?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredReports = Array.isArray(reports)
+    ? reports.filter(report => {
+        const searchLower = searchTerm.toLowerCase();
+        return (
+          (report.reporterName || '').toLowerCase().includes(searchLower) ||
+          (report.reportedUserName || '').toLowerCase().includes(searchLower) ||
+          (report.reportedPropertyTitle || '').toLowerCase().includes(searchLower) ||
+          (report.reason || '').toLowerCase().includes(searchLower)
+        );
+      })
+    : [];
 
-  const pendingCount = reports.filter(r => r.status === 'pending').length;
+  const pendingCount = Array.isArray(reports)
+    ? reports.filter(r => r.status === 'pending').length
+    : 0;
 
   return (
     <div className="space-y-6">
@@ -215,7 +239,7 @@ export default function ReportsManagement() {
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
             <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="reviewed">Reviewed</SelectItem>
+            <SelectItem value="under_review">Under Review</SelectItem>
             <SelectItem value="resolved">Resolved</SelectItem>
             <SelectItem value="dismissed">Dismissed</SelectItem>
           </SelectContent>
@@ -258,8 +282,12 @@ export default function ReportsManagement() {
                       </TableCell>
                       <TableCell>
                         <div>
-                          <p className="font-medium">{report.reportedUserName}</p>
-                          <p className="text-sm text-gray-500">{report.reportedUserEmail}</p>
+                          <p className="font-medium">
+                            {report.reportedUserName || report.reportedPropertyTitle || 'N/A'}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {report.reportedUserEmail || 'N/A'}
+                          </p>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -336,9 +364,15 @@ export default function ReportsManagement() {
                   <p className="text-sm text-gray-600">{selectedReport.reporterEmail}</p>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-700">Reported User</h4>
-                  <p className="font-medium">{selectedReport.reportedUserName}</p>
-                  <p className="text-sm text-gray-600">{selectedReport.reportedUserEmail}</p>
+                  <h4 className="font-semibold text-gray-700">
+                    {selectedReport.reportedUserName ? 'Reported User' : 'Reported Item'}
+                  </h4>
+                  <p className="font-medium">
+                    {selectedReport.reportedUserName || selectedReport.reportedPropertyTitle || 'N/A'}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {selectedReport.reportedUserEmail || 'N/A'}
+                  </p>
                 </div>
               </div>
 

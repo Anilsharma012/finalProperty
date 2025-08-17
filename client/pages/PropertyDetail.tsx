@@ -103,7 +103,9 @@ export default function PropertyDetail() {
       }
 
       // Use the global API helper for better error handling and CORS support
+      console.log("🔍 Fetching property:", id);
       const apiResponse = await (window as any).api(`properties/${id}`);
+      console.log("📦 Property API response:", apiResponse);
 
       if (apiResponse.ok) {
         const data = apiResponse.json;
@@ -156,9 +158,11 @@ export default function PropertyDetail() {
 
   const trackView = async () => {
     try {
+      console.log("📊 Tracking view for property:", id);
       await (window as any).api(`analytics/view/${id}`, {
         method: "POST",
       });
+      console.log("✅ View tracked successfully");
     } catch (error) {
       console.error("Error tracking view:", error);
     }
@@ -204,15 +208,22 @@ export default function PropertyDetail() {
 
       // Use global API helper to find or create conversation
       const response = await (window as any).api(
-        `/conversations/find-or-create?propertyId=${property._id}`,
+        `/conversations/find-or-create`,
         {
           method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: {
+            propertyId: property._id,
+          },
         },
       );
 
       if (response.success) {
-        // Navigate to chat page with conversation ID
-        navigate(`/chat/${response.data._id}`);
+        // Navigate to conversation page with conversation ID
+        navigate(`/conversation/${response.data._id}`);
       } else {
         toast({
           title: "Error",

@@ -2,13 +2,14 @@ import { RequestHandler } from "express";
 import { getDatabase } from "../db/mongodb";
 import { ObjectId } from "mongodb";
 import { ApiResponse } from "@shared/types";
+import { getSocketServer } from "../index";
 
 // POST /conversations/find-or-create - Find existing or create new conversation
 export const findOrCreateConversation: RequestHandler = async (req, res) => {
   try {
     const db = getDatabase();
-    const userId = (req as any).userId;
-    const { propertyId } = req.query;
+    const buyerId = (req as any).userId;
+    const { propertyId } = req.body;
 
     if (!propertyId) {
       return res.status(400).json({
@@ -17,16 +18,16 @@ export const findOrCreateConversation: RequestHandler = async (req, res) => {
       });
     }
 
-    if (!ObjectId.isValid(propertyId as string)) {
+    if (!ObjectId.isValid(propertyId)) {
       return res.status(400).json({
         success: false,
         error: "Invalid property ID",
       });
     }
 
-    // Get property to find owner
+    // Get property to find seller/owner
     const property = await db.collection("properties").findOne({
-      _id: new ObjectId(propertyId as string),
+      _id: new ObjectId(propertyId),
     });
 
     if (!property) {
@@ -36,15 +37,20 @@ export const findOrCreateConversation: RequestHandler = async (req, res) => {
       });
     }
 
-    const ownerId = property.ownerId || property.sellerId;
-    if (!ownerId) {
+    // Check multiple fields for seller info as per your spec
+    const sellerId = property.owner || property.seller || property.postedBy || property.user || property.createdBy || property.ownerId || property.sellerId;
+
+    if (!sellerId) {
       return res.status(400).json({
         success: false,
         error: "Property has no owner",
       });
     }
 
-    if (ownerId === userId) {
+    // Convert sellerId to string for comparison if it's ObjectId
+    const sellerIdStr = typeof sellerId === 'object' ? sellerId.toString() : sellerId;
+
+    if (sellerIdStr === buyerId) {
       return res.status(400).json({
         success: false,
         error: "Cannot create conversation with yourself",
@@ -53,8 +59,9 @@ export const findOrCreateConversation: RequestHandler = async (req, res) => {
 
     // Check if conversation already exists
     const existingConversation = await db.collection("conversations").findOne({
-      propertyId: propertyId as string,
-      participants: { $all: [userId, ownerId] },
+      property: new ObjectId(propertyId),
+      buyer: buyerId,
+      seller: sellerIdStr,
     });
 
     if (existingConversation) {
@@ -62,18 +69,16 @@ export const findOrCreateConversation: RequestHandler = async (req, res) => {
         success: true,
         data: {
           _id: existingConversation._id,
-          propertyId: existingConversation.propertyId,
-          participants: existingConversation.participants,
-          createdAt: existingConversation.createdAt,
-          lastMessageAt: existingConversation.lastMessageAt,
         },
       });
     }
 
     // Create new conversation
     const newConversation = {
-      propertyId: propertyId as string,
-      participants: [userId, ownerId],
+      property: new ObjectId(propertyId),
+      buyer: buyerId,
+      seller: sellerIdStr,
+      participants: [buyerId, sellerIdStr],
       createdAt: new Date(),
       lastMessageAt: new Date(),
       updatedAt: new Date(),
@@ -87,7 +92,6 @@ export const findOrCreateConversation: RequestHandler = async (req, res) => {
       success: true,
       data: {
         _id: result.insertedId,
-        ...newConversation,
       },
     };
 
@@ -198,23 +202,35 @@ export const getMyConversations: RequestHandler = async (req, res) => {
       .aggregate([
         {
           $match: {
-            participants: userId,
+            $or: [
+              { buyer: userId },
+              { seller: userId },
+              { participants: userId }  // fallback for old format
+            ],
           },
         },
         {
           $lookup: {
             from: "properties",
-            localField: "propertyId",
+            localField: "property",
             foreignField: "_id",
-            as: "property",
+            as: "propertyData",
           },
         },
         {
           $lookup: {
             from: "users",
-            localField: "participants",
+            localField: "buyer",
             foreignField: "_id",
-            as: "participantDetails",
+            as: "buyerData",
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "seller",
+            foreignField: "_id",
+            as: "sellerData",
           },
         },
         {
@@ -244,6 +260,7 @@ export const getMyConversations: RequestHandler = async (req, res) => {
                   input: "$messages",
                   cond: {
                     $and: [
+                      { $ne: ["$$this.sender", userId] },
                       { $ne: ["$$this.senderId", userId] },
                       {
                         $not: {
@@ -268,12 +285,14 @@ export const getMyConversations: RequestHandler = async (req, res) => {
         },
         {
           $project: {
-            propertyId: 1,
+            buyer: 1,
+            seller: 1,
             participants: 1,
             createdAt: 1,
             lastMessageAt: 1,
-            property: { $arrayElemAt: ["$property", 0] },
-            participantDetails: 1,
+            property: { $arrayElemAt: ["$propertyData", 0] },
+            buyerData: { $arrayElemAt: ["$buyerData", 0] },
+            sellerData: { $arrayElemAt: ["$sellerData", 0] },
             lastMessage: 1,
             unreadCount: 1,
           },
@@ -418,10 +437,12 @@ export const sendMessageToConversation: RequestHandler = async (req, res) => {
     // Create message
     const newMessage = {
       conversationId: id,
-      senderId: userId,
+      sender: userId,
+      senderId: userId,  // for backward compatibility
       senderName: user.name,
       senderType: user.userType || "buyer",
-      message: text || "",
+      text: text || "",
+      message: text || "",  // for backward compatibility
       imageUrl: imageUrl || null,
       messageType: imageUrl ? "image" : "text",
       readBy: [
@@ -445,6 +466,16 @@ export const sendMessageToConversation: RequestHandler = async (req, res) => {
         },
       },
     );
+
+    // Emit real-time message via Socket.io
+    const socketServer = getSocketServer();
+    if (socketServer) {
+      const messageWithId = {
+        ...newMessage,
+        _id: messageResult.insertedId,
+      };
+      socketServer.emitNewMessage(conversation, messageWithId);
+    }
 
     const response: ApiResponse<any> = {
       success: true,

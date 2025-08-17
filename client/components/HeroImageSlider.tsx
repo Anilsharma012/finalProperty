@@ -3,7 +3,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface SliderImage {
   _id?: string;
-  url: string;
+  imageUrl: string;
+  linkUrl?: string;
   alt: string;
   title?: string;
   subtitle?: string;
@@ -19,30 +20,41 @@ const HeroImageSlider: React.FC = () => {
   // Default fallback images
   const defaultImages: SliderImage[] = [
     {
-      url: "https://cdn.builder.io/api/v1/image/assets%2F4993b79b8ae445d4ae5618117571cced%2Ffa2e9286339c496d856e6de8806ef00c?format=webp&width=800",
+      imageUrl:
+        "https://cdn.builder.io/api/v1/image/assets%2F4993b79b8ae445d4ae5618117571cced%2Ffa2e9286339c496d856e6de8806ef00c?format=webp&width=800",
       alt: "Property showcase 1",
       title: "Find Your Perfect Property",
       subtitle: "Discover amazing properties in your area",
     },
     {
-      url: "https://cdn.builder.io/api/v1/image/assets%2F4993b79b8ae445d4ae5618117571cced%2Feb795a9f70554d888ddf9669d4b3441d?format=webp&width=800",
+      imageUrl:
+        "https://cdn.builder.io/api/v1/image/assets%2F4993b79b8ae445d4ae5618117571cced%2Feb795a9f70554d888ddf9669d4b3441d?format=webp&width=800",
       alt: "Property showcase 3",
       title: "Your Dream Home Awaits",
       subtitle: "Browse verified listings with expert guidance",
     },
     {
-      url: "https://cdn.builder.io/api/v1/image/assets%2F4993b79b8ae445d4ae5618117571cced%2F817b72ff3e4f40ee830c7ab0fcd5d25a?format=webp&width=800",
+      imageUrl:
+        "https://cdn.builder.io/api/v1/image/assets%2F4993b79b8ae445d4ae5618117571cced%2F817b72ff3e4f40ee830c7ab0fcd5d25a?format=webp&width=800",
       alt: "Property showcase 4",
       title: "Trusted Property Partner",
       subtitle: "Professional service you can rely on",
     },
   ];
 
-  // Fetch slider images from admin
+  // Handle slide click
+  const handleSlideClick = (image: SliderImage) => {
+    if (image.linkUrl) {
+      console.log("🖱️ Banner clicked:", image.linkUrl);
+      window.location.href = image.linkUrl;
+    }
+  };
+
+  // Fetch banners from API
   useEffect(() => {
-    const fetchSliderImages = async () => {
+    const fetchBanners = async () => {
       try {
-        const response = await fetch("/api/homepage-sliders");
+        const response = await fetch("/api/banners?active=1");
         if (response.ok) {
           const data = await response.json();
           if (
@@ -51,49 +63,44 @@ const HeroImageSlider: React.FC = () => {
             Array.isArray(data.data) &&
             data.data.length > 0
           ) {
-            // Filter active slides and sort by order
-            const activeSlides = data.data
-              .filter((slide: SliderImage) => slide.isActive !== false)
-              .sort(
-                (a: SliderImage, b: SliderImage) =>
-                  (a.order || 0) - (b.order || 0),
-              );
-
-            setImages(activeSlides);
-            console.log(
-              "✅ Slider images loaded from admin:",
-              activeSlides.length,
+            // Sort by order
+            const activeBanners = data.data.sort(
+              (a: SliderImage, b: SliderImage) =>
+                (a.order || 0) - (b.order || 0),
             );
+
+            setImages(activeBanners);
+            console.log("✅ Banners loaded from API:", activeBanners.length);
           } else {
-            console.log("📂 No slider images found, using defaults");
+            console.log("📂 No banners found, using defaults");
             setImages(defaultImages);
           }
         } else {
           throw new Error("API response not ok");
         }
       } catch (error) {
-        console.warn("⚠️ Failed to fetch slider images:", error);
-        console.log("📂 Using default slider images");
+        console.warn("⚠️ Failed to fetch banners:", error);
+        console.log("📂 Using default banner images");
         setImages(defaultImages);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchSliderImages();
+    fetchBanners();
 
     // Listen for admin updates
-    const handleSliderUpdate = () => {
-      console.log("🔄 Slider update event received, refreshing...");
-      fetchSliderImages();
+    const handleBannerUpdate = () => {
+      console.log("🔄 Banner update event received, refreshing...");
+      fetchBanners();
     };
 
-    window.addEventListener("sliderUpdate", handleSliderUpdate);
-    window.addEventListener("sliderRefresh", handleSliderUpdate);
+    window.addEventListener("bannerUpdate", handleBannerUpdate);
+    window.addEventListener("bannerRefresh", handleBannerUpdate);
 
     return () => {
-      window.removeEventListener("sliderUpdate", handleSliderUpdate);
-      window.removeEventListener("sliderRefresh", handleSliderUpdate);
+      window.removeEventListener("bannerUpdate", handleBannerUpdate);
+      window.removeEventListener("bannerRefresh", handleBannerUpdate);
     };
   }, []);
 
@@ -150,12 +157,13 @@ const HeroImageSlider: React.FC = () => {
         {images.map((image, index) => (
           <div
             key={image._id || index}
-            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+            className={`hero-slide absolute inset-0 transition-opacity duration-1000 ease-in-out ${
               index === currentSlide ? "opacity-100" : "opacity-0"
-            }`}
+            } ${image.linkUrl ? "cursor-pointer" : ""}`}
+            onClick={() => handleSlideClick(image)}
           >
             <img
-              src={image.url}
+              src={image.imageUrl}
               alt={image.alt}
               className="w-full h-full object-cover object-top"
               style={{

@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import { getDatabase } from "../db/mongodb";
 import { ObjectId } from "mongodb";
 import { ApiResponse } from "@shared/types";
+import { getSocketServer } from "../index";
 
 // GET /admin/conversations - Admin support inbox to see all conversations
 export const getAdminConversations: RequestHandler = async (req, res) => {
@@ -13,10 +14,10 @@ export const getAdminConversations: RequestHandler = async (req, res) => {
     const limitNum = parseInt(limit as string);
     const skip = (pageNum - 1) * limitNum;
 
-    // Build filter
+    // Build filter for new schema
     const filter: any = {};
     if (propertyId) {
-      filter.propertyId = propertyId;
+      filter.property = new ObjectId(propertyId as string);
     }
 
     const conversations = await db
@@ -26,17 +27,25 @@ export const getAdminConversations: RequestHandler = async (req, res) => {
         {
           $lookup: {
             from: "properties",
-            localField: "propertyId",
+            localField: "property",
             foreignField: "_id",
-            as: "property",
+            as: "propertyData",
           },
         },
         {
           $lookup: {
             from: "users",
-            localField: "participants",
+            localField: "buyer",
             foreignField: "_id",
-            as: "participantDetails",
+            as: "buyerData",
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "seller",
+            foreignField: "_id",
+            as: "sellerData",
           },
         },
         {
@@ -96,12 +105,14 @@ export const getAdminConversations: RequestHandler = async (req, res) => {
         },
         {
           $project: {
-            propertyId: 1,
-            participants: 1,
+            buyer: 1,
+            seller: 1,
+            property: 1,
             createdAt: 1,
             lastMessageAt: 1,
-            property: { $arrayElemAt: ["$property", 0] },
-            participantDetails: 1,
+            propertyData: { $arrayElemAt: ["$propertyData", 0] },
+            buyerData: { $arrayElemAt: ["$buyerData", 0] },
+            sellerData: { $arrayElemAt: ["$sellerData", 0] },
             lastMessage: 1,
             messageCount: 1,
             hasUnreadAdminMessages: 1,
@@ -215,6 +226,18 @@ export const adminReplyToConversation: RequestHandler = async (req, res) => {
         },
       },
     );
+
+    // Emit real-time message via Socket.io
+    const socketServer = getSocketServer();
+    if (socketServer) {
+      const messageWithId = {
+        ...newMessage,
+        _id: messageResult.insertedId,
+        text: newMessage.message,
+        sender: newMessage.senderId,
+      };
+      socketServer.emitNewMessage(conversation, messageWithId);
+    }
 
     const response: ApiResponse<any> = {
       success: true,
