@@ -545,10 +545,11 @@ export default function PropertyDetail() {
                 <div className="space-y-3 hidden md:block">
                   <Button
                     className="w-full bg-[#C70000] hover:bg-[#A60000] text-white flex items-center justify-center space-x-2 py-3"
-                    onClick={handleStartChat}
+                    onClick={handleEnquiry}
+                    data-testid="enquiry-btn"
                   >
-                    <MessageCircle className="h-4 w-4" />
-                    <span>Chat with Owner</span>
+                    <Send className="h-4 w-4" />
+                    <span>Enquiry Now</span>
                   </Button>
 
                   <Button
