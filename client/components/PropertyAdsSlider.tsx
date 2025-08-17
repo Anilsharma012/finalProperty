@@ -109,7 +109,17 @@ const PropertyAdsSlider: React.FC = () => {
 
         // Fetch featured properties as fallback
         try {
-          const propertiesResponse = await fetch("/api/properties/featured");
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+          const propertiesResponse = await fetch("/api/properties/featured", {
+            signal: controller.signal,
+            headers: {
+              'Cache-Control': 'no-cache',
+            }
+          });
+
+          clearTimeout(timeoutId);
           if (propertiesResponse.ok) {
             const propertiesData = await propertiesResponse.json();
             if (
