@@ -137,15 +137,13 @@ export default function OsBulkImport() {
       // Use normalized data for the API call
       console.log('Normalized CSV data:', normalizedCsvData);
 
-      console.log('Parsed CSV data:', csvData);
-
       const response = await fetch("/api/admin/os-listings/import", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ csvData }),
+        body: JSON.stringify({ csvData: normalizedCsvData }),
       });
 
       const { ok, status, data } = await safeReadResponse(response);
