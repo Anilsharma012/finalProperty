@@ -194,6 +194,7 @@ export default function AdminCategories({ token }: AdminCategoriesProps) {
           Categories Management
         </h1>
         <Button
+          data-testid="add-category-btn"
           onClick={() => setShowAddForm(true)}
           className="bg-[#C70000] hover:bg-[#A60000] text-white"
         >
@@ -204,12 +205,16 @@ export default function AdminCategories({ token }: AdminCategoriesProps) {
 
       {/* Add Category Form */}
       {showAddForm && (
-        <div className="bg-white p-6 rounded-lg shadow border">
+        <div
+          data-testid="add-category-form"
+          className="bg-white p-6 rounded-lg shadow border"
+        >
           <h3 className="text-lg font-semibold mb-4">Add New Category</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-2">Name</label>
               <Input
+                data-testid="category-name-input"
                 value={newCategory.name}
                 onChange={(e) => {
                   const name = e.target.value;
@@ -273,6 +278,7 @@ export default function AdminCategories({ token }: AdminCategoriesProps) {
           </div>
           <div className="flex space-x-2 mt-4">
             <Button
+              data-testid="save-category-btn"
               onClick={handleCreateCategory}
               className="bg-[#C70000] hover:bg-[#A60000] text-white"
             >
@@ -288,9 +294,13 @@ export default function AdminCategories({ token }: AdminCategoriesProps) {
       )}
 
       {/* Categories List */}
-      <div className="space-y-4">
+      <div data-testid="categories-list" className="space-y-4">
         {categories.map((category) => (
-          <div key={category._id} className="bg-white rounded-lg shadow border">
+          <div
+            key={category._id}
+            data-testid={`category-item-${category._id}`}
+            className="bg-white rounded-lg shadow border"
+          >
             <div className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
@@ -335,6 +345,7 @@ export default function AdminCategories({ token }: AdminCategoriesProps) {
                     {category.active ? "Active" : "Inactive"}
                   </span>
                   <Button
+                    data-testid={`edit-category-${category._id}`}
                     onClick={() => setEditingCategory(category._id!)}
                     variant="outline"
                     size="sm"
@@ -342,6 +353,7 @@ export default function AdminCategories({ token }: AdminCategoriesProps) {
                     <Edit2 className="h-4 w-4" />
                   </Button>
                   <Button
+                    data-testid={`delete-category-${category._id}`}
                     onClick={() => handleDeleteCategory(category._id!)}
                     variant="outline"
                     size="sm"

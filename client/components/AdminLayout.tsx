@@ -149,6 +149,21 @@ const menuItems: MenuItem[] = [
     ],
   },
   {
+    id: "other-services",
+    label: "Other Services",
+    icon: Wrench,
+    children: [
+      { id: "service-categories", label: "Service Categories", icon: Layers },
+      {
+        id: "service-subcategories",
+        label: "Service Subcategories",
+        icon: List,
+      },
+      { id: "service-listings", label: "Service Listings", icon: MapPin },
+      { id: "bulk-import", label: "Bulk Import", icon: Plus },
+    ],
+  },
+  {
     id: "support",
     label: "Support & Communication",
     icon: MessageSquare,

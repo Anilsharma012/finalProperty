@@ -24,8 +24,51 @@ import {
 import {
   getCategories,
   getCategoryBySlug,
+  getSubcategories,
   initializeCategories,
 } from "./routes/categories";
+
+// Service listings routes
+import {
+  getServiceListings,
+  getAllServiceListings,
+  createServiceListing,
+  updateServiceListing,
+  deleteServiceListing,
+  bulkImportServiceListings,
+} from "./routes/service-listings";
+
+// Other Services admin routes
+import {
+  getOsCategories as getAdminOsCategories,
+  createOsCategory,
+  updateOsCategory,
+  deleteOsCategory,
+} from "./routes/admin-os-categories";
+
+import {
+  getOsSubcategories as getAdminOsSubcategories,
+  createOsSubcategory,
+  updateOsSubcategory,
+  deleteOsSubcategory,
+} from "./routes/admin-os-subcategories";
+
+import {
+  getOsListings as getAdminOsListings,
+  createOsListing,
+  updateOsListing,
+  deleteOsListing,
+  bulkImportOsListings,
+} from "./routes/admin-os-listings";
+
+// Other Services public routes
+import {
+  getOsCategories,
+  getOsSubcategories,
+  getOsListings,
+} from "./routes/os-public";
+
+import osImportRoutes from "./routes/osImport";
 
 // Authentication routes
 import {
@@ -400,6 +443,9 @@ export function createServer() {
   app.use(express.json({ limit: "1gb" }));
   app.use(express.urlencoded({ extended: true, limit: "1gb" }));
 
+  // Mount CSV import BEFORE any global image upload middleware
+  app.use("/api", authenticateToken, requireAdmin, osImportRoutes);
+
   // Initialize MongoDB connection
   connectToDatabase()
     .then(() => {
@@ -560,7 +606,44 @@ export function createServer() {
   // Category routes
   app.get("/api/categories", getCategories);
   app.get("/api/categories/:slug", getCategoryBySlug);
+  app.get("/api/subcategories", getSubcategories);
   app.post("/api/categories/initialize", initializeCategories);
+
+  // Service listings routes (public)
+  app.get("/api/other-services/listings", getServiceListings);
+
+  // Admin service listings routes
+  app.get(
+    "/api/admin/service-listings",
+    authenticateToken,
+    requireAdmin,
+    getAllServiceListings,
+  );
+  app.post(
+    "/api/admin/service-listings",
+    authenticateToken,
+    requireAdmin,
+    createServiceListing,
+  );
+  app.put(
+    "/api/admin/service-listings/:listingId",
+    authenticateToken,
+    requireAdmin,
+    updateServiceListing,
+  );
+  app.delete(
+    "/api/admin/service-listings/:listingId",
+    authenticateToken,
+    requireAdmin,
+    deleteServiceListing,
+  );
+  app.post(
+    "/api/admin/os-listings/import",
+    authenticateToken,
+    requireAdmin,
+    upload.single("file"),
+    bulkImportServiceListings,
+  );
 
   // Homepage slider routes
   app.get("/api/homepage-sliders", getHomepageSliders);
@@ -828,6 +911,103 @@ export function createServer() {
     requireAdmin,
     getAdminAnalytics,
   );
+
+  // Other Services - Public APIs
+  app.get("/api/os/categories", getOsCategories);
+  app.get("/api/os/subcategories", getOsSubcategories);
+  app.get("/api/os/listings", getOsListings);
+
+  // Other Services - Admin APIs
+  app.get(
+    "/api/admin/os-categories",
+    authenticateToken,
+    requireAdmin,
+    getAdminOsCategories,
+  );
+  app.post(
+    "/api/admin/os-categories",
+    authenticateToken,
+    requireAdmin,
+    createOsCategory,
+  );
+  app.put(
+    "/api/admin/os-categories/:categoryId",
+    authenticateToken,
+    requireAdmin,
+    updateOsCategory,
+  );
+  app.delete(
+    "/api/admin/os-categories/:categoryId",
+    authenticateToken,
+    requireAdmin,
+    deleteOsCategory,
+  );
+
+  app.get(
+    "/api/admin/os-subcategories",
+    authenticateToken,
+    requireAdmin,
+    getAdminOsSubcategories,
+  );
+  app.post(
+    "/api/admin/os-subcategories",
+    authenticateToken,
+    requireAdmin,
+    createOsSubcategory,
+  );
+  app.put(
+    "/api/admin/os-subcategories/:subcategoryId",
+    authenticateToken,
+    requireAdmin,
+    updateOsSubcategory,
+  );
+  app.delete(
+    "/api/admin/os-subcategories/:subcategoryId",
+    authenticateToken,
+    requireAdmin,
+    deleteOsSubcategory,
+  );
+
+  app.get(
+    "/api/admin/os-listings",
+    authenticateToken,
+    requireAdmin,
+    getAdminOsListings,
+  );
+  app.post(
+    "/api/admin/os-listings",
+    authenticateToken,
+    requireAdmin,
+    createOsListing,
+  );
+  app.put(
+    "/api/admin/os-listings/:listingId",
+    authenticateToken,
+    requireAdmin,
+    updateOsListing,
+  );
+  app.delete(
+    "/api/admin/os-listings/:listingId",
+    authenticateToken,
+    requireAdmin,
+    deleteOsListing,
+  );
+
+  // Test route for Other Services
+  app.post("/api/test/other-services", async (req, res) => {
+    try {
+      const { createTestData } = await import("./scripts/test-other-services");
+      const result = await createTestData();
+      res.json({
+        success: result,
+        message: result
+          ? "Test data created successfully"
+          : "Failed to create test data",
+      });
+    } catch (error: any) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
 
   // App routes
   app.get("/api/app/info", getAppInfo);

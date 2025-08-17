@@ -12,13 +12,30 @@ export const getCategories: RequestHandler = async (req, res) => {
       // Database not initialized yet
       return res.status(503).json({
         success: false,
-        error: "Database connection is being established. Please try again in a moment.",
+        error:
+          "Database connection is being established. Please try again in a moment.",
       });
+    }
+
+    // Build query filter
+    const filter: any = {};
+
+    // Filter by type if specified
+    if (req.query.type) {
+      filter.type = req.query.type;
+    } else {
+      // Default to property type for backward compatibility
+      filter.type = { $in: ["property", null, undefined] };
+    }
+
+    // Filter by active status
+    if (req.query.active !== undefined) {
+      filter.active = req.query.active === "true";
     }
 
     const categories = await db
       .collection("categories")
-      .find({ active: true })
+      .find(filter)
       .sort({ order: 1 })
       .toArray();
 
@@ -65,6 +82,52 @@ export const getCategoryBySlug: RequestHandler = async (req, res) => {
     res.status(500).json({
       success: false,
       error: "Failed to fetch category",
+    });
+  }
+};
+
+// Get subcategories by category slug
+export const getSubcategories: RequestHandler = async (req, res) => {
+  try {
+    const db = getDatabase();
+    const { categorySlug } = req.query;
+
+    if (!categorySlug) {
+      return res.status(400).json({
+        success: false,
+        error: "categorySlug parameter is required",
+      });
+    }
+
+    // Find the category first
+    const category = await db
+      .collection("categories")
+      .findOne({ slug: categorySlug });
+
+    if (!category) {
+      return res.status(404).json({
+        success: false,
+        error: "Category not found",
+      });
+    }
+
+    // Filter subcategories by active status if specified
+    let subcategories = category.subcategories || [];
+    if (req.query.active === "true") {
+      subcategories = subcategories.filter((sub: any) => sub.active !== false);
+    }
+
+    const response: ApiResponse<any[]> = {
+      success: true,
+      data: subcategories,
+    };
+
+    res.json(response);
+  } catch (error) {
+    console.error("Error fetching subcategories:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch subcategories",
     });
   }
 };

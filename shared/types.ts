@@ -96,11 +96,31 @@ export interface Category {
   _id?: string;
   name: string;
   slug: string;
+  type: "property" | "service"; // default 'property'
   icon: string;
   description?: string;
   subcategories: Subcategory[];
   order: number;
   active: boolean;
+}
+
+export interface ServiceListing {
+  _id?: string;
+  category: string; // Category slug
+  subcategory: string; // Subcategory slug
+  name: string;
+  phone: string;
+  address: string;
+  photos: string[]; // Max 4 photos
+  geo: {
+    lat: number;
+    lng: number;
+  };
+  open: string; // Opening time
+  close: string; // Closing time
+  active: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface Subcategory {
@@ -109,6 +129,7 @@ export interface Subcategory {
   slug: string;
   description?: string;
   image?: string;
+  categoryId?: string; // Reference to parent category for services
   filters?: {
     bedroomOptions?: number[];
     priceRanges?: Array<{
@@ -117,6 +138,25 @@ export interface Subcategory {
       max: number;
     }>;
   };
+}
+
+export interface ServiceListing {
+  _id?: string;
+  category: string; // Category slug
+  subcategory: string; // Subcategory slug
+  name: string;
+  phone: string;
+  address: string;
+  photos: string[]; // Max 4 photos
+  geo: {
+    lat: number;
+    lng: number;
+  };
+  open: string; // Opening time
+  close: string; // Closing time
+  active: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface SearchFilters {
@@ -149,12 +189,58 @@ export interface ApiResponse<T> {
   error?: string;
 }
 
+// Other Services Models
+export interface OsCategory {
+  _id?: string;
+  slug: string;
+  name: string;
+  active: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface OsSubcategory {
+  _id?: string;
+  category: string; // slug reference to OsCategory
+  slug: string;
+  name: string;
+  active: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface OsListing {
+  _id?: string;
+  category: string; // slug reference to OsCategory
+  subcategory: string; // slug reference to OsSubcategory
+  name: string;
+  phone: string;
+  address: string;
+  photos: string[]; // array of up to 4 photo URLs
+  geo: {
+    lat: number;
+    lng: number;
+  };
+  open: string; // opening time (e.g., "09:00")
+  close: string; // closing time (e.g., "18:00")
+  active: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
 // Custom Field Types
 export interface CustomField {
   _id?: string;
   name: string;
   slug: string;
-  type: "text" | "number" | "select" | "multiselect" | "checkbox" | "date" | "textarea";
+  type:
+    | "text"
+    | "number"
+    | "select"
+    | "multiselect"
+    | "checkbox"
+    | "date"
+    | "textarea";
   label: string;
   placeholder?: string;
   required: boolean;

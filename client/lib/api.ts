@@ -98,13 +98,20 @@ export const createApiUrl = (endpoint: string): string => {
 
   // If we have a base URL, use it
   if (API_CONFIG.baseUrl) {
-    const fullUrl = `${API_CONFIG.baseUrl}/api/${cleanEndpoint.replace("api/", "")}`;
-    console.log("🌐 Full API URL:", fullUrl);
-    return fullUrl;
+    // Handle case where baseUrl already contains '/api'
+    if (API_CONFIG.baseUrl.endsWith("/api")) {
+      const fullUrl = `${API_CONFIG.baseUrl}/${cleanEndpoint}`;
+      console.log("🌐 Full API URL (baseUrl has /api):", fullUrl);
+      return fullUrl;
+    } else {
+      const fullUrl = `${API_CONFIG.baseUrl}/api/${cleanEndpoint}`;
+      console.log("🌐 Full API URL:", fullUrl);
+      return fullUrl;
+    }
   }
 
   // For development or same-domain, use relative URLs
-  const relativeUrl = `/api/${cleanEndpoint.replace("api/", "")}`;
+  const relativeUrl = `/api/${cleanEndpoint}`;
   console.log("🏠 Relative API URL:", relativeUrl);
   console.log("🌍 Environment:", environment);
   return relativeUrl;
@@ -114,7 +121,7 @@ export const createApiUrl = (endpoint: string): string => {
 export const apiRequest = async (
   endpoint: string,
   options: RequestInit = {},
-  retryCount = 0
+  retryCount = 0,
 ): Promise<{ data: any; status: number; ok: boolean }> => {
   const url = createApiUrl(endpoint);
   const controller = new AbortController();
@@ -124,12 +131,12 @@ export const apiRequest = async (
 
   try {
     console.log(`���� Making API request to: ${url}`, {
-      method: options.method || 'GET',
+      method: options.method || "GET",
       headers: {
         "Content-Type": "application/json",
         ...options.headers,
       },
-      body: options.body
+      body: options.body,
     });
 
     const response = await fetch(url, {
@@ -144,7 +151,7 @@ export const apiRequest = async (
     clearTimeout(timeoutId);
     console.log(
       `✅ API request completed: ${response.status} ${response.statusText}`,
-      { url, ok: response.ok }
+      { url, ok: response.ok },
     );
 
     // Handle response body reading with proper error handling
@@ -152,35 +159,38 @@ export const apiRequest = async (
 
     try {
       // Use response.json() directly instead of text() + JSON.parse()
-      if (response.headers.get('content-type')?.includes('application/json')) {
+      if (response.headers.get("content-type")?.includes("application/json")) {
         responseData = await response.json();
-        console.log('📄 JSON response:', responseData);
+        console.log("📄 JSON response:", responseData);
       } else {
         // For non-JSON responses, try to read as text
         const responseText = await response.text();
-        console.log('📄 Text response:', responseText);
+        console.log("📄 Text response:", responseText);
 
         if (responseText && responseText.trim()) {
           try {
             responseData = JSON.parse(responseText);
           } catch (jsonError) {
-            responseData = { error: 'Invalid JSON format', raw: responseText };
+            responseData = { error: "Invalid JSON format", raw: responseText };
           }
         } else {
-          responseData = { message: 'Empty response' };
+          responseData = { message: "Empty response" };
         }
       }
     } catch (readError) {
-      console.error('❌ Response reading failed:', readError);
+      console.error("❌ Response reading failed:", readError);
 
       // Create a fallback response based on status
       if (response.ok) {
-        responseData = { success: true, message: 'Operation completed successfully' };
+        responseData = {
+          success: true,
+          message: "Operation completed successfully",
+        };
       } else {
         responseData = {
           success: false,
           error: `HTTP ${response.status}: ${response.statusText}`,
-          details: readError.message
+          details: readError.message,
         };
       }
     }
@@ -189,7 +199,7 @@ export const apiRequest = async (
     return {
       data: responseData,
       status: response.status,
-      ok: response.ok
+      ok: response.ok,
     };
   } catch (error: any) {
     clearTimeout(timeoutId);
@@ -224,7 +234,8 @@ export const adminApi = {
     });
 
     if (!response.ok) {
-      const errorMessage = response.data.error || response.data.message || 'Request failed';
+      const errorMessage =
+        response.data.error || response.data.message || "Request failed";
       throw new Error(errorMessage);
     }
 
@@ -240,7 +251,8 @@ export const adminApi = {
     });
 
     if (!response.ok) {
-      const errorMessage = response.data.error || response.data.message || 'Request failed';
+      const errorMessage =
+        response.data.error || response.data.message || "Request failed";
       throw new Error(errorMessage);
     }
 
@@ -256,7 +268,8 @@ export const adminApi = {
     });
 
     if (!response.ok) {
-      const errorMessage = response.data.error || response.data.message || 'Request failed';
+      const errorMessage =
+        response.data.error || response.data.message || "Request failed";
       throw new Error(errorMessage);
     }
 
@@ -273,7 +286,8 @@ export const authApi = {
     });
 
     if (!response.ok) {
-      const errorMessage = response.data.error || response.data.message || 'Login failed';
+      const errorMessage =
+        response.data.error || response.data.message || "Login failed";
       throw new Error(errorMessage);
     }
 
@@ -287,7 +301,8 @@ export const authApi = {
     });
 
     if (!response.ok) {
-      const errorMessage = response.data.error || response.data.message || 'Failed to send OTP';
+      const errorMessage =
+        response.data.error || response.data.message || "Failed to send OTP";
       throw new Error(errorMessage);
     }
 
@@ -301,7 +316,10 @@ export const authApi = {
     });
 
     if (!response.ok) {
-      const errorMessage = response.data.error || response.data.message || 'OTP verification failed';
+      const errorMessage =
+        response.data.error ||
+        response.data.message ||
+        "OTP verification failed";
       throw new Error(errorMessage);
     }
 
@@ -323,7 +341,8 @@ export const api = {
     });
 
     if (!response.ok) {
-      const errorMessage = response.data.error || response.data.message || 'Request failed';
+      const errorMessage =
+        response.data.error || response.data.message || "Request failed";
       throw new Error(errorMessage);
     }
 
@@ -336,7 +355,7 @@ export const api = {
       headers.Authorization = `Bearer ${token}`;
     }
 
-    console.log('📡 API POST request starting for:', endpoint);
+    console.log("📡 API POST request starting for:", endpoint);
 
     const response = await apiRequest(endpoint, {
       method: "POST",
@@ -344,19 +363,20 @@ export const api = {
       headers,
     });
 
-    console.log('📡 API POST response received:', {
+    console.log("📡 API POST response received:", {
       status: response.status,
       ok: response.ok,
-      data: response.data
+      data: response.data,
     });
 
     if (!response.ok) {
-      console.log('❌ Response not OK, throwing error...');
-      const errorMessage = response.data.error || response.data.message || 'Request failed';
+      console.log("❌ Response not OK, throwing error...");
+      const errorMessage =
+        response.data.error || response.data.message || "Request failed";
       throw new Error(errorMessage);
     }
 
-    console.log('✅ Request successful, returning data');
+    console.log("✅ Request successful, returning data");
     return { data: response.data };
   },
 
@@ -373,7 +393,8 @@ export const api = {
     });
 
     if (!response.ok) {
-      const errorMessage = response.data.error || response.data.message || 'Request failed';
+      const errorMessage =
+        response.data.error || response.data.message || "Request failed";
       throw new Error(errorMessage);
     }
 
@@ -392,7 +413,8 @@ export const api = {
     });
 
     if (!response.ok) {
-      const errorMessage = response.data.error || response.data.message || 'Request failed';
+      const errorMessage =
+        response.data.error || response.data.message || "Request failed";
       throw new Error(errorMessage);
     }
 

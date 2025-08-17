@@ -32,12 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import {
   Dialog,
   DialogContent,
@@ -102,17 +97,22 @@ export default function AdvertisementListingPackage() {
         const data = await response.json();
         if (data.success) {
           // Filter for listing-type packages (basic, standard, premium that are not featured packages)
-          const listingPackages = data.data.filter((pkg: any) =>
-            pkg.category === "property" &&
-            (pkg.type === "basic" || pkg.type === "standard" || pkg.type === "premium") &&
-            !pkg.featureLevel // Exclude featured advertisement packages
+          const listingPackages = data.data.filter(
+            (pkg: any) =>
+              pkg.category === "property" &&
+              (pkg.type === "basic" ||
+                pkg.type === "standard" ||
+                pkg.type === "premium") &&
+              !pkg.featureLevel, // Exclude featured advertisement packages
           );
           setPackages(listingPackages);
         } else {
           setError(data.error || "Failed to fetch listing packages");
         }
       } else {
-        setError(`Failed to fetch listing packages: ${response.status} ${response.statusText}`);
+        setError(
+          `Failed to fetch listing packages: ${response.status} ${response.statusText}`,
+        );
       }
     } catch (error) {
       console.error("Error fetching listing packages:", error);
@@ -129,7 +129,7 @@ export default function AdvertisementListingPackage() {
       const packageData = {
         ...newPackage,
         type: newPackage.listingType,
-        features: newPackage.features.filter(f => f.trim() !== ""),
+        features: newPackage.features.filter((f) => f.trim() !== ""),
       };
 
       const response = await fetch("/api/packages", {
@@ -170,7 +170,11 @@ export default function AdvertisementListingPackage() {
   };
 
   const deletePackage = async (packageId: string) => {
-    if (!token || !confirm("Are you sure you want to delete this listing package?")) return;
+    if (
+      !token ||
+      !confirm("Are you sure you want to delete this listing package?")
+    )
+      return;
 
     try {
       const response = await fetch(`/api/packages/${packageId}`, {
@@ -178,11 +182,20 @@ export default function AdvertisementListingPackage() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      // Read response body once to avoid stream already read error
+      let data;
+      try {
+        const responseText = await response.text();
+        data = responseText ? JSON.parse(responseText) : {};
+      } catch (parseError) {
+        console.warn("Could not parse response as JSON");
+        data = {};
+      }
+
       if (response.ok) {
-        setPackages(packages.filter(pkg => pkg._id !== packageId));
+        setPackages(packages.filter((pkg) => pkg._id !== packageId));
       } else {
-        const data = await response.json();
-        setError(data.error || "Failed to delete package");
+        setError(data.error || `Failed to delete package (${response.status})`);
       }
     } catch (error) {
       console.error("Error deleting package:", error);
@@ -193,7 +206,7 @@ export default function AdvertisementListingPackage() {
   const addFeature = () => {
     setNewPackage({
       ...newPackage,
-      features: [...newPackage.features, ""]
+      features: [...newPackage.features, ""],
     });
   };
 
@@ -206,15 +219,17 @@ export default function AdvertisementListingPackage() {
   const removeFeature = (index: number) => {
     setNewPackage({
       ...newPackage,
-      features: newPackage.features.filter((_, i) => i !== index)
+      features: newPackage.features.filter((_, i) => i !== index),
     });
   };
 
-  const filteredPackages = packages.filter(pkg => {
-    const matchesSearch = pkg.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         pkg.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = selectedType === "all" || pkg.listingType === selectedType;
-    
+  const filteredPackages = packages.filter((pkg) => {
+    const matchesSearch =
+      pkg.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      pkg.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType =
+      selectedType === "all" || pkg.listingType === selectedType;
+
     return matchesSearch && matchesType;
   });
 
@@ -222,7 +237,9 @@ export default function AdvertisementListingPackage() {
     return (
       <div className="text-center py-8">
         <div className="animate-spin w-8 h-8 border-2 border-[#C70000] border-t-transparent rounded-full mx-auto mb-4"></div>
-        <p className="text-gray-600">Loading advertisement listing packages...</p>
+        <p className="text-gray-600">
+          Loading advertisement listing packages...
+        </p>
       </div>
     );
   }
@@ -249,8 +266,12 @@ export default function AdvertisementListingPackage() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-2xl font-bold text-gray-900">Advertisement Listing Packages</h3>
-          <p className="text-gray-600">Manage packages for property listing advertisements</p>
+          <h3 className="text-2xl font-bold text-gray-900">
+            Advertisement Listing Packages
+          </h3>
+          <p className="text-gray-600">
+            Manage packages for property listing advertisements
+          </p>
         </div>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
@@ -266,16 +287,27 @@ export default function AdvertisementListingPackage() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Package Name</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Package Name
+                  </label>
                   <Input
                     value={newPackage.name}
-                    onChange={(e) => setNewPackage({ ...newPackage, name: e.target.value })}
+                    onChange={(e) =>
+                      setNewPackage({ ...newPackage, name: e.target.value })
+                    }
                     placeholder="e.g., Basic Listing Package"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Package Type</label>
-                  <Select value={newPackage.listingType} onValueChange={(value: any) => setNewPackage({ ...newPackage, listingType: value })}>
+                  <label className="block text-sm font-medium mb-2">
+                    Package Type
+                  </label>
+                  <Select
+                    value={newPackage.listingType}
+                    onValueChange={(value: any) =>
+                      setNewPackage({ ...newPackage, listingType: value })
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
@@ -287,12 +319,19 @@ export default function AdvertisementListingPackage() {
                   </Select>
                 </div>
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium mb-2">Description</label>
+                <label className="block text-sm font-medium mb-2">
+                  Description
+                </label>
                 <Textarea
                   value={newPackage.description}
-                  onChange={(e) => setNewPackage({ ...newPackage, description: e.target.value })}
+                  onChange={(e) =>
+                    setNewPackage({
+                      ...newPackage,
+                      description: e.target.value,
+                    })
+                  }
                   placeholder="Describe the package benefits..."
                   rows={3}
                 />
@@ -300,29 +339,50 @@ export default function AdvertisementListingPackage() {
 
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Price (₹)</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Price (₹)
+                  </label>
                   <Input
                     type="number"
                     value={newPackage.price}
-                    onChange={(e) => setNewPackage({ ...newPackage, price: parseInt(e.target.value) || 0 })}
+                    onChange={(e) =>
+                      setNewPackage({
+                        ...newPackage,
+                        price: parseInt(e.target.value) || 0,
+                      })
+                    }
                     placeholder="299"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Duration (Days)</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Duration (Days)
+                  </label>
                   <Input
                     type="number"
                     value={newPackage.duration}
-                    onChange={(e) => setNewPackage({ ...newPackage, duration: parseInt(e.target.value) || 30 })}
+                    onChange={(e) =>
+                      setNewPackage({
+                        ...newPackage,
+                        duration: parseInt(e.target.value) || 30,
+                      })
+                    }
                     placeholder="30"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Max Listings</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Max Listings
+                  </label>
                   <Input
                     type="number"
                     value={newPackage.maxListings}
-                    onChange={(e) => setNewPackage({ ...newPackage, maxListings: parseInt(e.target.value) || 1 })}
+                    onChange={(e) =>
+                      setNewPackage({
+                        ...newPackage,
+                        maxListings: parseInt(e.target.value) || 1,
+                      })
+                    }
                     placeholder="5"
                   />
                 </div>
@@ -331,10 +391,12 @@ export default function AdvertisementListingPackage() {
               {/* Features */}
               <div>
                 <div className="flex justify-between items-center mb-3">
-                  <label className="block text-sm font-medium">Package Features</label>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
+                  <label className="block text-sm font-medium">
+                    Package Features
+                  </label>
+                  <Button
+                    type="button"
+                    variant="outline"
                     size="sm"
                     onClick={addFeature}
                   >
@@ -364,10 +426,16 @@ export default function AdvertisementListingPackage() {
               </div>
 
               <div className="flex justify-end space-x-2 pt-4">
-                <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsCreateDialogOpen(false)}
+                >
                   Cancel
                 </Button>
-                <Button onClick={createPackage} className="bg-[#C70000] hover:bg-[#A60000]">
+                <Button
+                  onClick={createPackage}
+                  className="bg-[#C70000] hover:bg-[#A60000]"
+                >
                   Create Package
                 </Button>
               </div>
@@ -380,7 +448,9 @@ export default function AdvertisementListingPackage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Packages</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Packages
+            </CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -395,14 +465,24 @@ export default function AdvertisementListingPackage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ₹{packages.reduce((sum, pkg) => sum + (pkg.price * (pkg.subscribers || 0)), 0).toLocaleString()}
+              ₹
+              {packages
+                .reduce(
+                  (sum, pkg) => sum + pkg.price * (pkg.subscribers || 0),
+                  0,
+                )
+                .toLocaleString()}
             </div>
-            <p className="text-xs text-muted-foreground">From listing packages</p>
+            <p className="text-xs text-muted-foreground">
+              From listing packages
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Subscribers</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Active Subscribers
+            </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -414,12 +494,19 @@ export default function AdvertisementListingPackage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg. Package Duration</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Avg. Package Duration
+            </CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {packages.length ? Math.round(packages.reduce((sum, pkg) => sum + pkg.duration, 0) / packages.length) : 0}
+              {packages.length
+                ? Math.round(
+                    packages.reduce((sum, pkg) => sum + pkg.duration, 0) /
+                      packages.length,
+                  )
+                : 0}
             </div>
             <p className="text-xs text-muted-foreground">Days average</p>
           </CardContent>
@@ -496,13 +583,17 @@ export default function AdvertisementListingPackage() {
                   <TableCell>
                     <div>
                       <p className="font-medium">{pkg.duration} days</p>
-                      <p className="text-sm text-gray-500">{pkg.maxListings || "Unlimited"} listings</p>
+                      <p className="text-sm text-gray-500">
+                        {pkg.maxListings || "Unlimited"} listings
+                      </p>
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-1">
                       <Users className="h-4 w-4 text-gray-400" />
-                      <span className="font-medium">{pkg.subscribers || 0}</span>
+                      <span className="font-medium">
+                        {pkg.subscribers || 0}
+                      </span>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -539,7 +630,10 @@ export default function AdvertisementListingPackage() {
               ))}
               {filteredPackages.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center text-gray-500 py-8">
+                  <TableCell
+                    colSpan={6}
+                    className="text-center text-gray-500 py-8"
+                  >
                     No listing packages found
                   </TableCell>
                 </TableRow>
@@ -557,7 +651,8 @@ export default function AdvertisementListingPackage() {
             <span>Custom Field Options</span>
           </CardTitle>
           <p className="text-sm text-gray-600">
-            Manage custom fields available for property listings in different packages
+            Manage custom fields available for property listings in different
+            packages
           </p>
         </CardHeader>
         <CardContent>
@@ -565,7 +660,9 @@ export default function AdvertisementListingPackage() {
             {/* Basic Package Fields */}
             <div className="border border-gray-200 rounded-lg p-4">
               <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
-                <Badge variant="outline" className="mr-2">Basic</Badge>
+                <Badge variant="outline" className="mr-2">
+                  Basic
+                </Badge>
                 Standard Fields
               </h4>
               <div className="space-y-2 text-sm">
@@ -595,7 +692,12 @@ export default function AdvertisementListingPackage() {
             {/* Standard Package Fields */}
             <div className="border border-blue-200 rounded-lg p-4 bg-blue-50">
               <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
-                <Badge variant="outline" className="mr-2 bg-blue-100 text-blue-800">Standard</Badge>
+                <Badge
+                  variant="outline"
+                  className="mr-2 bg-blue-100 text-blue-800"
+                >
+                  Standard
+                </Badge>
                 Enhanced Fields
               </h4>
               <div className="space-y-2 text-sm">
@@ -629,7 +731,12 @@ export default function AdvertisementListingPackage() {
             {/* Premium Package Fields */}
             <div className="border border-purple-200 rounded-lg p-4 bg-purple-50">
               <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
-                <Badge variant="outline" className="mr-2 bg-purple-100 text-purple-800">Premium</Badge>
+                <Badge
+                  variant="outline"
+                  className="mr-2 bg-purple-100 text-purple-800"
+                >
+                  Premium
+                </Badge>
                 Premium Fields
               </h4>
               <div className="space-y-2 text-sm">
@@ -673,7 +780,8 @@ export default function AdvertisementListingPackage() {
               </span>
             </div>
             <p className="text-sm text-green-700 mt-1">
-              All custom field options are functioning properly. Users can access fields based on their package tier.
+              All custom field options are functioning properly. Users can
+              access fields based on their package tier.
             </p>
           </div>
         </CardContent>

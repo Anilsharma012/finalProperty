@@ -37,7 +37,7 @@ export const getSubcategories: RequestHandler = async (req, res) => {
       const propertyFilter: any = {
         status: "active",
         approvalStatus: "approved",
-        subCategory: { $ne: null, $ne: "" },
+        subCategory: { $nin: [null, ""] },
       };
 
       // Map category to appropriate property field filter
@@ -94,7 +94,7 @@ export const getSubcategories: RequestHandler = async (req, res) => {
             $match: {
               status: "active",
               approvalStatus: "approved",
-              subCategory: { $ne: null, $ne: "" },
+              subCategory: { $nin: [null, ""] },
             },
           },
           {
@@ -212,7 +212,7 @@ export const getSubcategoriesWithCounts: RequestHandler = async (req, res) => {
           },
           {
             $match: {
-              _id: { $ne: null, $ne: "" }, // Only include subcategories that exist
+              _id: { $nin: [null, ""] }, // Only include subcategories that exist
             },
           },
         ])
