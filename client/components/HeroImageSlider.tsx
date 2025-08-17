@@ -39,11 +39,19 @@ const HeroImageSlider: React.FC = () => {
     },
   ];
 
-  // Fetch slider images from admin
+  // Handle slide click
+  const handleSlideClick = (image: SliderImage) => {
+    if (image.linkUrl) {
+      console.log("🖱️ Banner clicked:", image.linkUrl);
+      window.location.href = image.linkUrl;
+    }
+  };
+
+  // Fetch banners from API
   useEffect(() => {
-    const fetchSliderImages = async () => {
+    const fetchBanners = async () => {
       try {
-        const response = await fetch("/api/homepage-sliders");
+        const response = await fetch("/api/banners?active=1");
         if (response.ok) {
           const data = await response.json();
           if (
@@ -52,29 +60,27 @@ const HeroImageSlider: React.FC = () => {
             Array.isArray(data.data) &&
             data.data.length > 0
           ) {
-            // Filter active slides and sort by order
-            const activeSlides = data.data
-              .filter((slide: SliderImage) => slide.isActive !== false)
-              .sort(
-                (a: SliderImage, b: SliderImage) =>
-                  (a.order || 0) - (b.order || 0),
-              );
+            // Sort by order
+            const activeBanners = data.data.sort(
+              (a: SliderImage, b: SliderImage) =>
+                (a.order || 0) - (b.order || 0),
+            );
 
-            setImages(activeSlides);
+            setImages(activeBanners);
             console.log(
-              "✅ Slider images loaded from admin:",
-              activeSlides.length,
+              "✅ Banners loaded from API:",
+              activeBanners.length,
             );
           } else {
-            console.log("📂 No slider images found, using defaults");
+            console.log("📂 No banners found, using defaults");
             setImages(defaultImages);
           }
         } else {
           throw new Error("API response not ok");
         }
       } catch (error) {
-        console.warn("⚠️ Failed to fetch slider images:", error);
-        console.log("📂 Using default slider images");
+        console.warn("⚠️ Failed to fetch banners:", error);
+        console.log("📂 Using default banner images");
         setImages(defaultImages);
       } finally {
         setLoading(false);
