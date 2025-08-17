@@ -33,9 +33,16 @@ function expressPlugin(): Plugin {
   return {
     name: "express-plugin",
     apply: "serve",
-    configureServer(server) {
+    configureServer(viteServer) {
       const app = createServer();
-      server.middlewares.use(app);
+
+      // Initialize Socket.io with the Vite HTTP server
+      if (viteServer.httpServer) {
+        initializeSocket(viteServer.httpServer);
+        console.log('🔌 Socket.io initialized in Vite dev server');
+      }
+
+      viteServer.middlewares.use(app);
     },
   };
 }
