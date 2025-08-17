@@ -407,6 +407,13 @@ import {
   updateTicketStatus,
 } from "./routes/tickets";
 
+// Enquiries routes
+import {
+  submitEnquiry,
+  getEnquiries,
+  updateEnquiryStatus,
+} from "./routes/enquiries";
+
 // Other Services routes
 import {
   getAllOtherServices,
