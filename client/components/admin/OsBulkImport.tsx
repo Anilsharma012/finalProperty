@@ -166,6 +166,8 @@ repairs,electrician,City Electrical Works,9876543210,Model Town Rohtak,28.8955,7
             </div>
           )}
 
+          {err && <div className="text-red-600 text-sm mt-2">{err}</div>}
+
           <Button
             onClick={handleUpload}
             disabled={!file || uploading}
