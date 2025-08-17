@@ -77,6 +77,24 @@ export default function OsBulkImport() {
         return Object.values(row).some(value => String(value).trim() !== '');
       });
 
+      // Validate required fields
+      const requiredFields = ['catSlug', 'subSlug', 'name', 'phone', 'address'];
+      const validationErrors: string[] = [];
+
+      csvData.forEach((row, index) => {
+        requiredFields.forEach(field => {
+          if (!row[field] || String(row[field]).trim() === '') {
+            validationErrors.push(`Row ${index + 2}: Missing required field '${field}'`);
+          }
+        });
+      });
+
+      if (validationErrors.length > 0) {
+        throw new Error(`Validation errors:\n${validationErrors.slice(0, 5).join('\n')}${validationErrors.length > 5 ? `\n... and ${validationErrors.length - 5} more errors` : ''}`);
+      }
+
+      console.log('Parsed CSV data:', csvData);
+
       const response = await fetch("/api/admin/os-listings/import", {
         method: "POST",
         headers: {
