@@ -3,9 +3,9 @@ import { getDatabase } from "../db/mongodb";
 export async function createTestData() {
   try {
     const db = getDatabase();
-    
+
     console.log("🧪 Creating test data for Other Services...");
-    
+
     // Create repairs category
     await db.collection("os_categories").insertOne({
       slug: "repairs",
@@ -15,7 +15,7 @@ export async function createTestData() {
       updatedAt: new Date(),
     });
     console.log("✅ Created category: repairs");
-    
+
     // Create plumber subcategory
     await db.collection("os_subcategories").insertOne({
       category: "repairs",
@@ -26,7 +26,7 @@ export async function createTestData() {
       updatedAt: new Date(),
     });
     console.log("✅ Created subcategory: plumber");
-    
+
     // Create plumber listing
     await db.collection("os_listings").insertOne({
       category: "repairs",
@@ -46,7 +46,7 @@ export async function createTestData() {
       updatedAt: new Date(),
     });
     console.log("✅ Created listing: Rohtak Plumbing Services");
-    
+
     console.log("\n🎉 PASS: OTHER SERVICES");
     console.log("Test data created successfully!");
     console.log("📋 Summary:");
@@ -58,8 +58,10 @@ export async function createTestData() {
     console.log("   📂 Categories: /other-services");
     console.log("   📁 Subcategories: /other-services/repairs");
     console.log("   📋 Listings: /other-services/repairs/plumber");
-    console.log("\n✅ Expected: ≥1 [data-testid=\"service-card\"] at /other-services/repairs/plumber");
-    
+    console.log(
+      '\n✅ Expected: ≥1 [data-testid="service-card"] at /other-services/repairs/plumber',
+    );
+
     return true;
   } catch (error) {
     console.error("❌ Error creating test data:", error);

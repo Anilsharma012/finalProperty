@@ -4,7 +4,13 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Badge } from "../ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 import { Plus, Edit2, Trash2, Save, X } from "lucide-react";
 import { OsCategory, OsSubcategory } from "@shared/types";
 import { safeReadResponse, getApiErrorMessage } from "../../lib/response-utils";
@@ -16,7 +22,8 @@ export default function OsSubcategoriesManagement() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [editingSubcategory, setEditingSubcategory] = useState<OsSubcategory | null>(null);
+  const [editingSubcategory, setEditingSubcategory] =
+    useState<OsSubcategory | null>(null);
   const [formData, setFormData] = useState({
     category: "",
     name: "",
@@ -72,7 +79,8 @@ export default function OsSubcategoriesManagement() {
   };
 
   const handleCreate = async () => {
-    if (!token || !formData.name || !formData.slug || !formData.category) return;
+    if (!token || !formData.name || !formData.slug || !formData.category)
+      return;
 
     try {
       const response = await fetch("/api/admin/os-subcategories", {
@@ -101,17 +109,27 @@ export default function OsSubcategoriesManagement() {
   };
 
   const handleUpdate = async () => {
-    if (!token || !editingSubcategory || !formData.name || !formData.slug || !formData.category) return;
+    if (
+      !token ||
+      !editingSubcategory ||
+      !formData.name ||
+      !formData.slug ||
+      !formData.category
+    )
+      return;
 
     try {
-      const response = await fetch(`/api/admin/os-subcategories/${editingSubcategory._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        `/api/admin/os-subcategories/${editingSubcategory._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(formData),
         },
-        body: JSON.stringify(formData),
-      });
+      );
 
       const { ok, status, data } = await safeReadResponse(response);
 
@@ -130,13 +148,17 @@ export default function OsSubcategoriesManagement() {
   };
 
   const handleDelete = async (subcategoryId: string) => {
-    if (!token || !confirm("Are you sure you want to delete this subcategory?")) return;
+    if (!token || !confirm("Are you sure you want to delete this subcategory?"))
+      return;
 
     try {
-      const response = await fetch(`/api/admin/os-subcategories/${subcategoryId}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch(
+        `/api/admin/os-subcategories/${subcategoryId}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
 
       const { ok, status, data } = await safeReadResponse(response);
 
@@ -177,7 +199,7 @@ export default function OsSubcategoriesManagement() {
   };
 
   const getCategoryName = (categorySlug: string) => {
-    const category = categories.find(cat => cat.slug === categorySlug);
+    const category = categories.find((cat) => cat.slug === categorySlug);
     return category ? category.name : categorySlug;
   };
 
@@ -196,8 +218,12 @@ export default function OsSubcategoriesManagement() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Service Subcategories</h2>
-          <p className="text-gray-600">Manage subcategories for service categories</p>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Service Subcategories
+          </h2>
+          <p className="text-gray-600">
+            Manage subcategories for service categories
+          </p>
         </div>
         <Button
           onClick={() => setShowCreateForm(true)}
@@ -227,17 +253,21 @@ export default function OsSubcategoriesManagement() {
               </label>
               <Select
                 value={formData.category}
-                onValueChange={(value) => setFormData({ ...formData, category: value })}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, category: value })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.filter(cat => cat.active).map((category) => (
-                    <SelectItem key={category.slug} value={category.slug}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
+                  {categories
+                    .filter((cat) => cat.active)
+                    .map((category) => (
+                      <SelectItem key={category.slug} value={category.slug}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>
@@ -288,7 +318,10 @@ export default function OsSubcategoriesManagement() {
                 <Save className="h-4 w-4 mr-2" />
                 Save Subcategory
               </Button>
-              <Button variant="outline" onClick={() => setShowCreateForm(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setShowCreateForm(false)}
+              >
                 <X className="h-4 w-4 mr-2" />
                 Cancel
               </Button>
@@ -310,17 +343,24 @@ export default function OsSubcategoriesManagement() {
                     </label>
                     <Select
                       value={formData.category}
-                      onValueChange={(value) => setFormData({ ...formData, category: value })}
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, category: value })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
                       <SelectContent>
-                        {categories.filter(cat => cat.active).map((category) => (
-                          <SelectItem key={category.slug} value={category.slug}>
-                            {category.name}
-                          </SelectItem>
-                        ))}
+                        {categories
+                          .filter((cat) => cat.active)
+                          .map((category) => (
+                            <SelectItem
+                              key={category.slug}
+                              value={category.slug}
+                            >
+                              {category.name}
+                            </SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -355,7 +395,10 @@ export default function OsSubcategoriesManagement() {
                         setFormData({ ...formData, active: e.target.checked })
                       }
                     />
-                    <label htmlFor={`active-${subcategory._id}`} className="text-sm text-gray-700">
+                    <label
+                      htmlFor={`active-${subcategory._id}`}
+                      className="text-sm text-gray-700"
+                    >
                       Active
                     </label>
                   </div>
@@ -377,7 +420,8 @@ export default function OsSubcategoriesManagement() {
                       {subcategory.name}
                     </h3>
                     <p className="text-gray-600">
-                      Category: {getCategoryName(subcategory.category)} | Slug: {subcategory.slug}
+                      Category: {getCategoryName(subcategory.category)} | Slug:{" "}
+                      {subcategory.slug}
                     </p>
                     <Badge
                       variant={subcategory.active ? "default" : "secondary"}
@@ -414,7 +458,9 @@ export default function OsSubcategoriesManagement() {
 
       {subcategories.length === 0 && !loading && (
         <div className="text-center py-12">
-          <p className="text-gray-500">No subcategories found. Create your first subcategory above.</p>
+          <p className="text-gray-500">
+            No subcategories found. Create your first subcategory above.
+          </p>
         </div>
       )}
     </div>

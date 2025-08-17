@@ -23,8 +23,10 @@ export default function OtherServicesCategory() {
     try {
       setLoading(true);
       setError(null);
-      
-      const response = await (window as any).api(`/os/subcategories?cat=${cat}&active=1`);
+
+      const response = await (window as any).api(
+        `/os/subcategories?cat=${cat}&active=1`,
+      );
       const data = response.ok
         ? response.json
         : { success: false, error: "Failed to fetch subcategories" };
@@ -32,7 +34,10 @@ export default function OtherServicesCategory() {
       if (data.success && Array.isArray(data.data)) {
         setSubcategories(data.data);
         // Set category name from slug
-        setCategoryName(cat?.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase()) || "");
+        setCategoryName(
+          cat?.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()) ||
+            "",
+        );
       } else {
         setError("Failed to load subcategories");
         setSubcategories([]);
@@ -69,7 +74,10 @@ export default function OtherServicesCategory() {
             <Button onClick={fetchSubcategories} variant="outline">
               Try Again
             </Button>
-            <Button onClick={() => navigate("/other-services")} variant="outline">
+            <Button
+              onClick={() => navigate("/other-services")}
+              variant="outline"
+            >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Services
             </Button>
@@ -100,7 +108,8 @@ export default function OtherServicesCategory() {
             <h1 className="text-4xl font-bold text-gray-900">{categoryName}</h1>
           </div>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Choose from our range of {categoryName.toLowerCase()} services in Rohtak.
+            Choose from our range of {categoryName.toLowerCase()} services in
+            Rohtak.
           </p>
         </div>
 
@@ -112,7 +121,8 @@ export default function OtherServicesCategory() {
               No Subcategories Available
             </h3>
             <p className="text-gray-500">
-              Subcategories for {categoryName.toLowerCase()} will be available soon.
+              Subcategories for {categoryName.toLowerCase()} will be available
+              soon.
             </p>
             <Button
               onClick={() => navigate("/other-services")}
@@ -131,7 +141,7 @@ export default function OtherServicesCategory() {
                 to={`/other-services/${cat}/${subcategory.slug}`}
                 className="group"
               >
-                <Card 
+                <Card
                   data-testid="os-subcat-card"
                   className="h-full transition-all duration-200 hover:shadow-lg hover:scale-105 hover:border-[#C70000] bg-white"
                 >
@@ -143,7 +153,9 @@ export default function OtherServicesCategory() {
                       {subcategory.name}
                     </h3>
                     <div className="flex items-center justify-center text-[#C70000] opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span className="text-sm font-medium mr-1">View Listings</span>
+                      <span className="text-sm font-medium mr-1">
+                        View Listings
+                      </span>
                       <ArrowRight className="h-4 w-4" />
                     </div>
                   </CardContent>
@@ -160,7 +172,8 @@ export default function OtherServicesCategory() {
               Need {categoryName.toLowerCase()} services?
             </h2>
             <p className="text-lg mb-6 opacity-90">
-              Browse our verified {categoryName.toLowerCase()} professionals in Rohtak.
+              Browse our verified {categoryName.toLowerCase()} professionals in
+              Rohtak.
             </p>
             <Button
               onClick={() => (window.location.href = "/contact")}

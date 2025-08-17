@@ -24,8 +24,10 @@ export default function OtherServicesListings() {
     try {
       setLoading(true);
       setError(null);
-      
-      const response = await (window as any).api(`/os/listings?sub=${sub}&active=1`);
+
+      const response = await (window as any).api(
+        `/os/listings?sub=${sub}&active=1`,
+      );
       const data = response.ok
         ? response.json
         : { success: false, error: "Failed to fetch listings" };
@@ -33,8 +35,14 @@ export default function OtherServicesListings() {
       if (data.success && Array.isArray(data.data)) {
         setListings(data.data);
         // Set names from slugs
-        setSubcategoryName(sub?.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase()) || "");
-        setCategoryName(cat?.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase()) || "");
+        setSubcategoryName(
+          sub?.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()) ||
+            "",
+        );
+        setCategoryName(
+          cat?.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()) ||
+            "",
+        );
       } else {
         setError("Failed to load listings");
         setListings([]);
@@ -81,7 +89,10 @@ export default function OtherServicesListings() {
             <Button onClick={fetchListings} variant="outline">
               Try Again
             </Button>
-            <Button onClick={() => navigate(`/other-services/${cat}`)} variant="outline">
+            <Button
+              onClick={() => navigate(`/other-services/${cat}`)}
+              variant="outline"
+            >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to {categoryName}
             </Button>
@@ -107,9 +118,12 @@ export default function OtherServicesListings() {
         </div>
 
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">{subcategoryName}</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            {subcategoryName}
+          </h1>
           <p className="text-lg text-gray-600">
-            {listings.length} {subcategoryName.toLowerCase()} {listings.length === 1 ? 'service' : 'services'} available in Rohtak
+            {listings.length} {subcategoryName.toLowerCase()}{" "}
+            {listings.length === 1 ? "service" : "services"} available in Rohtak
           </p>
         </div>
 
@@ -134,7 +148,7 @@ export default function OtherServicesListings() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {listings.map((listing) => (
-              <Card 
+              <Card
                 key={listing._id}
                 data-testid="service-card"
                 className="overflow-hidden hover:shadow-lg transition-shadow duration-200"
@@ -149,13 +163,15 @@ export default function OtherServicesListings() {
                           src={photo}
                           alt={`${listing.name} ${index + 1}`}
                           className={`object-cover ${
-                            listing.photos.length === 1 
-                              ? "w-full h-48" 
+                            listing.photos.length === 1
+                              ? "w-full h-48"
                               : listing.photos.length === 2
-                              ? "w-1/2 h-48"
-                              : listing.photos.length === 3
-                              ? index === 0 ? "w-1/2 h-48" : "w-1/4 h-48"
-                              : "w-1/4 h-48"
+                                ? "w-1/2 h-48"
+                                : listing.photos.length === 3
+                                  ? index === 0
+                                    ? "w-1/2 h-48"
+                                    : "w-1/4 h-48"
+                                  : "w-1/4 h-48"
                           }`}
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
@@ -198,7 +214,9 @@ export default function OtherServicesListings() {
                       Call
                     </Button>
                     <Button
-                      onClick={() => handleWhatsApp(listing.phone, listing.name)}
+                      onClick={() =>
+                        handleWhatsApp(listing.phone, listing.name)
+                      }
                       className="bg-green-500 hover:bg-green-600 text-white"
                       size="sm"
                     >

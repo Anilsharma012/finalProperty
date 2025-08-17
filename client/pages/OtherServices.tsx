@@ -18,7 +18,7 @@ export default function OtherServices() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await (window as any).api("/os/categories?active=1");
       const data = response.ok
         ? response.json
@@ -76,7 +76,8 @@ export default function OtherServices() {
             <h1 className="text-4xl font-bold text-gray-900">Other Services</h1>
           </div>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Find trusted service providers in Rohtak for all your needs. From repairs to maintenance, we've got you covered.
+            Find trusted service providers in Rohtak for all your needs. From
+            repairs to maintenance, we've got you covered.
           </p>
         </div>
 
@@ -99,7 +100,7 @@ export default function OtherServices() {
                 to={`/other-services/${category.slug}`}
                 className="group"
               >
-                <Card 
+                <Card
                   data-testid="os-cat-card"
                   className="h-full transition-all duration-200 hover:shadow-lg hover:scale-105 hover:border-[#C70000] bg-white"
                 >
@@ -111,7 +112,9 @@ export default function OtherServices() {
                       {category.name}
                     </h3>
                     <div className="flex items-center justify-center text-[#C70000] opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span className="text-sm font-medium mr-1">View Services</span>
+                      <span className="text-sm font-medium mr-1">
+                        View Services
+                      </span>
                       <ArrowRight className="h-4 w-4" />
                     </div>
                   </CardContent>
@@ -128,7 +131,8 @@ export default function OtherServices() {
               Are you a service provider?
             </h2>
             <p className="text-lg mb-6 opacity-90">
-              Join our platform and connect with customers in Rohtak who need your services.
+              Join our platform and connect with customers in Rohtak who need
+              your services.
             </p>
             <Button
               onClick={() => (window.location.href = "/contact")}

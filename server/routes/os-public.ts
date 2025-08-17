@@ -1,12 +1,17 @@
 import { RequestHandler } from "express";
 import { getDatabase } from "../db/mongodb";
-import { OsCategory, OsSubcategory, OsListing, ApiResponse } from "@shared/types";
+import {
+  OsCategory,
+  OsSubcategory,
+  OsListing,
+  ApiResponse,
+} from "@shared/types";
 
 // Public API: Get active categories
 export const getOsCategories: RequestHandler = async (req, res) => {
   try {
     const db = getDatabase();
-    
+
     const filter: any = {};
     if (req.query.active === "1") {
       filter.active = true;

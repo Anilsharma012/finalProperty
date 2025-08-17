@@ -91,8 +91,14 @@ function App() {
                 <Route path="/pg" element={<PG />} />
                 <Route path="/services" element={<Services />} />
                 <Route path="/other-services" element={<OtherServices />} />
-                <Route path="/other-services/:cat" element={<OtherServicesCategory />} />
-                <Route path="/other-services/:cat/:sub" element={<OtherServicesListings />} />
+                <Route
+                  path="/other-services/:cat"
+                  element={<OtherServicesCategory />}
+                />
+                <Route
+                  path="/other-services/:cat/:sub"
+                  element={<OtherServicesListings />}
+                />
                 <Route path="/advertise" element={<Advertise />} />
                 {/* Category/Subcategory Listings */}
                 <Route path="/buy/:slug" element={<CategoryProperties />} />

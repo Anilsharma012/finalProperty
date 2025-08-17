@@ -918,27 +918,92 @@ export function createServer() {
   app.get("/api/os/listings", getOsListings);
 
   // Other Services - Admin APIs
-  app.get("/api/admin/os-categories", authenticateToken, requireAdmin, getAdminOsCategories);
-  app.post("/api/admin/os-categories", authenticateToken, requireAdmin, createOsCategory);
-  app.put("/api/admin/os-categories/:categoryId", authenticateToken, requireAdmin, updateOsCategory);
-  app.delete("/api/admin/os-categories/:categoryId", authenticateToken, requireAdmin, deleteOsCategory);
+  app.get(
+    "/api/admin/os-categories",
+    authenticateToken,
+    requireAdmin,
+    getAdminOsCategories,
+  );
+  app.post(
+    "/api/admin/os-categories",
+    authenticateToken,
+    requireAdmin,
+    createOsCategory,
+  );
+  app.put(
+    "/api/admin/os-categories/:categoryId",
+    authenticateToken,
+    requireAdmin,
+    updateOsCategory,
+  );
+  app.delete(
+    "/api/admin/os-categories/:categoryId",
+    authenticateToken,
+    requireAdmin,
+    deleteOsCategory,
+  );
 
-  app.get("/api/admin/os-subcategories", authenticateToken, requireAdmin, getAdminOsSubcategories);
-  app.post("/api/admin/os-subcategories", authenticateToken, requireAdmin, createOsSubcategory);
-  app.put("/api/admin/os-subcategories/:subcategoryId", authenticateToken, requireAdmin, updateOsSubcategory);
-  app.delete("/api/admin/os-subcategories/:subcategoryId", authenticateToken, requireAdmin, deleteOsSubcategory);
+  app.get(
+    "/api/admin/os-subcategories",
+    authenticateToken,
+    requireAdmin,
+    getAdminOsSubcategories,
+  );
+  app.post(
+    "/api/admin/os-subcategories",
+    authenticateToken,
+    requireAdmin,
+    createOsSubcategory,
+  );
+  app.put(
+    "/api/admin/os-subcategories/:subcategoryId",
+    authenticateToken,
+    requireAdmin,
+    updateOsSubcategory,
+  );
+  app.delete(
+    "/api/admin/os-subcategories/:subcategoryId",
+    authenticateToken,
+    requireAdmin,
+    deleteOsSubcategory,
+  );
 
-  app.get("/api/admin/os-listings", authenticateToken, requireAdmin, getAdminOsListings);
-  app.post("/api/admin/os-listings", authenticateToken, requireAdmin, createOsListing);
-  app.put("/api/admin/os-listings/:listingId", authenticateToken, requireAdmin, updateOsListing);
-  app.delete("/api/admin/os-listings/:listingId", authenticateToken, requireAdmin, deleteOsListing);
+  app.get(
+    "/api/admin/os-listings",
+    authenticateToken,
+    requireAdmin,
+    getAdminOsListings,
+  );
+  app.post(
+    "/api/admin/os-listings",
+    authenticateToken,
+    requireAdmin,
+    createOsListing,
+  );
+  app.put(
+    "/api/admin/os-listings/:listingId",
+    authenticateToken,
+    requireAdmin,
+    updateOsListing,
+  );
+  app.delete(
+    "/api/admin/os-listings/:listingId",
+    authenticateToken,
+    requireAdmin,
+    deleteOsListing,
+  );
 
   // Test route for Other Services
   app.post("/api/test/other-services", async (req, res) => {
     try {
       const { createTestData } = await import("./scripts/test-other-services");
       const result = await createTestData();
-      res.json({ success: result, message: result ? "Test data created successfully" : "Failed to create test data" });
+      res.json({
+        success: result,
+        message: result
+          ? "Test data created successfully"
+          : "Failed to create test data",
+      });
     } catch (error: any) {
       res.status(500).json({ success: false, error: error.message });
     }

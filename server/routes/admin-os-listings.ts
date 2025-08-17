@@ -14,7 +14,8 @@ export const getOsListings: RequestHandler = async (req, res) => {
     const filter: any = {};
     if (req.query.category) filter.category = req.query.category;
     if (req.query.subcategory) filter.subcategory = req.query.subcategory;
-    if (req.query.active !== undefined) filter.active = req.query.active === "true";
+    if (req.query.active !== undefined)
+      filter.active = req.query.active === "true";
 
     const [listings, total] = await Promise.all([
       db
@@ -134,7 +135,9 @@ export const updateOsListing: RequestHandler = async (req, res) => {
     if (updateData.category || updateData.subcategory) {
       const [categoryExists, subcategoryExists] = await Promise.all([
         updateData.category
-          ? db.collection("os_categories").findOne({ slug: updateData.category })
+          ? db
+              .collection("os_categories")
+              .findOne({ slug: updateData.category })
           : Promise.resolve(true),
         updateData.subcategory && updateData.category
           ? db.collection("os_subcategories").findOne({
@@ -234,7 +237,7 @@ export const deleteOsListing: RequestHandler = async (req, res) => {
 export const bulkImportOsListings: RequestHandler = async (req, res) => {
   try {
     const db = getDatabase();
-    
+
     // Parse CSV data from request body
     const csvData = JSON.parse(req.body.csvData || "[]");
     const results = {
@@ -246,9 +249,11 @@ export const bulkImportOsListings: RequestHandler = async (req, res) => {
       try {
         // Auto-create category if it doesn't exist
         if (row.catSlug) {
-          const existingCategory = await db.collection("os_categories").findOne({
-            slug: row.catSlug,
-          });
+          const existingCategory = await db
+            .collection("os_categories")
+            .findOne({
+              slug: row.catSlug,
+            });
 
           if (!existingCategory) {
             await db.collection("os_categories").insertOne({
@@ -265,10 +270,12 @@ export const bulkImportOsListings: RequestHandler = async (req, res) => {
 
         // Auto-create subcategory if it doesn't exist
         if (row.subSlug && row.catSlug) {
-          const existingSubcategory = await db.collection("os_subcategories").findOne({
-            category: row.catSlug,
-            slug: row.subSlug,
-          });
+          const existingSubcategory = await db
+            .collection("os_subcategories")
+            .findOne({
+              category: row.catSlug,
+              slug: row.subSlug,
+            });
 
           if (!existingSubcategory) {
             await db.collection("os_subcategories").insertOne({
@@ -291,7 +298,9 @@ export const bulkImportOsListings: RequestHandler = async (req, res) => {
           name: row.name,
           phone: row.phone,
           address: row.address,
-          photos: [row.photo1, row.photo2, row.photo3, row.photo4].filter(Boolean),
+          photos: [row.photo1, row.photo2, row.photo3, row.photo4].filter(
+            Boolean,
+          ),
           geo: {
             lat: parseFloat(row.lat) || 0,
             lng: parseFloat(row.lng) || 0,

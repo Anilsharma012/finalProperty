@@ -5,8 +5,23 @@ import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Badge } from "../ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Plus, Edit2, Trash2, Save, X, MapPin, Phone, Clock } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import {
+  Plus,
+  Edit2,
+  Trash2,
+  Save,
+  X,
+  MapPin,
+  Phone,
+  Clock,
+} from "lucide-react";
 import { OsCategory, OsSubcategory, OsListing } from "@shared/types";
 import { safeReadResponse, getApiErrorMessage } from "../../lib/response-utils";
 
@@ -99,12 +114,19 @@ export default function OsListingsManagement() {
   };
 
   const handleCreate = async () => {
-    if (!token || !formData.name || !formData.phone || !formData.category || !formData.subcategory) return;
+    if (
+      !token ||
+      !formData.name ||
+      !formData.phone ||
+      !formData.category ||
+      !formData.subcategory
+    )
+      return;
 
     try {
       const listingData = {
         ...formData,
-        photos: formData.photos.filter(photo => photo.trim() !== ""),
+        photos: formData.photos.filter((photo) => photo.trim() !== ""),
       };
 
       const response = await fetch("/api/admin/os-listings", {
@@ -149,17 +171,20 @@ export default function OsListingsManagement() {
     try {
       const listingData = {
         ...formData,
-        photos: formData.photos.filter(photo => photo.trim() !== ""),
+        photos: formData.photos.filter((photo) => photo.trim() !== ""),
       };
 
-      const response = await fetch(`/api/admin/os-listings/${editingListing._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        `/api/admin/os-listings/${editingListing._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(listingData),
         },
-        body: JSON.stringify(listingData),
-      });
+      );
 
       const { ok, status, data } = await safeReadResponse(response);
 
@@ -189,7 +214,8 @@ export default function OsListingsManagement() {
   };
 
   const handleDelete = async (listingId: string) => {
-    if (!token || !confirm("Are you sure you want to delete this listing?")) return;
+    if (!token || !confirm("Are you sure you want to delete this listing?"))
+      return;
 
     try {
       const response = await fetch(`/api/admin/os-listings/${listingId}`, {
@@ -246,17 +272,21 @@ export default function OsListingsManagement() {
   };
 
   const getCategoryName = (categorySlug: string) => {
-    const category = categories.find(cat => cat.slug === categorySlug);
+    const category = categories.find((cat) => cat.slug === categorySlug);
     return category ? category.name : categorySlug;
   };
 
   const getSubcategoryName = (subcategorySlug: string) => {
-    const subcategory = subcategories.find(sub => sub.slug === subcategorySlug);
+    const subcategory = subcategories.find(
+      (sub) => sub.slug === subcategorySlug,
+    );
     return subcategory ? subcategory.name : subcategorySlug;
   };
 
   const getFilteredSubcategories = () => {
-    return subcategories.filter(sub => sub.category === formData.category && sub.active);
+    return subcategories.filter(
+      (sub) => sub.category === formData.category && sub.active,
+    );
   };
 
   if (loading) {
@@ -306,17 +336,25 @@ export default function OsListingsManagement() {
                 </label>
                 <Select
                   value={formData.category}
-                  onValueChange={(value) => setFormData({ ...formData, category: value, subcategory: "" })}
+                  onValueChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      category: value,
+                      subcategory: "",
+                    })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
                   <SelectContent>
-                    {categories.filter(cat => cat.active).map((category) => (
-                      <SelectItem key={category.slug} value={category.slug}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
+                    {categories
+                      .filter((cat) => cat.active)
+                      .map((category) => (
+                        <SelectItem key={category.slug} value={category.slug}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -326,7 +364,9 @@ export default function OsListingsManagement() {
                 </label>
                 <Select
                   value={formData.subcategory}
-                  onValueChange={(value) => setFormData({ ...formData, subcategory: value })}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, subcategory: value })
+                  }
                   disabled={!formData.category}
                 >
                   <SelectTrigger>
@@ -334,7 +374,10 @@ export default function OsListingsManagement() {
                   </SelectTrigger>
                   <SelectContent>
                     {getFilteredSubcategories().map((subcategory) => (
-                      <SelectItem key={subcategory.slug} value={subcategory.slug}>
+                      <SelectItem
+                        key={subcategory.slug}
+                        value={subcategory.slug}
+                      >
                         {subcategory.name}
                       </SelectItem>
                     ))}
@@ -350,7 +393,9 @@ export default function OsListingsManagement() {
                 </label>
                 <Input
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   placeholder="Business name"
                 />
               </div>
@@ -360,7 +405,9 @@ export default function OsListingsManagement() {
                 </label>
                 <Input
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
                   placeholder="Phone number"
                 />
               </div>
@@ -372,7 +419,9 @@ export default function OsListingsManagement() {
               </label>
               <Textarea
                 value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, address: e.target.value })
+                }
                 placeholder="Full address"
               />
             </div>
@@ -386,10 +435,15 @@ export default function OsListingsManagement() {
                   type="number"
                   step="any"
                   value={formData.geo.lat}
-                  onChange={(e) => setFormData({ 
-                    ...formData, 
-                    geo: { ...formData.geo, lat: parseFloat(e.target.value) || 0 }
-                  })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      geo: {
+                        ...formData.geo,
+                        lat: parseFloat(e.target.value) || 0,
+                      },
+                    })
+                  }
                   placeholder="28.8955"
                 />
               </div>
@@ -401,10 +455,15 @@ export default function OsListingsManagement() {
                   type="number"
                   step="any"
                   value={formData.geo.lng}
-                  onChange={(e) => setFormData({ 
-                    ...formData, 
-                    geo: { ...formData.geo, lng: parseFloat(e.target.value) || 0 }
-                  })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      geo: {
+                        ...formData.geo,
+                        lng: parseFloat(e.target.value) || 0,
+                      },
+                    })
+                  }
                   placeholder="76.6066"
                 />
               </div>
@@ -418,7 +477,9 @@ export default function OsListingsManagement() {
                 <Input
                   type="time"
                   value={formData.open}
-                  onChange={(e) => setFormData({ ...formData, open: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, open: e.target.value })
+                  }
                 />
               </div>
               <div>
@@ -428,7 +489,9 @@ export default function OsListingsManagement() {
                 <Input
                   type="time"
                   value={formData.close}
-                  onChange={(e) => setFormData({ ...formData, close: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, close: e.target.value })
+                  }
                 />
               </div>
             </div>
@@ -472,7 +535,10 @@ export default function OsListingsManagement() {
                 <Save className="h-4 w-4 mr-2" />
                 Save Listing
               </Button>
-              <Button variant="outline" onClick={() => setShowCreateForm(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setShowCreateForm(false)}
+              >
                 <X className="h-4 w-4 mr-2" />
                 Cancel
               </Button>
@@ -496,17 +562,28 @@ export default function OsListingsManagement() {
                       </label>
                       <Select
                         value={formData.category}
-                        onValueChange={(value) => setFormData({ ...formData, category: value, subcategory: "" })}
+                        onValueChange={(value) =>
+                          setFormData({
+                            ...formData,
+                            category: value,
+                            subcategory: "",
+                          })
+                        }
                       >
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {categories.filter(cat => cat.active).map((category) => (
-                            <SelectItem key={category.slug} value={category.slug}>
-                              {category.name}
-                            </SelectItem>
-                          ))}
+                          {categories
+                            .filter((cat) => cat.active)
+                            .map((category) => (
+                              <SelectItem
+                                key={category.slug}
+                                value={category.slug}
+                              >
+                                {category.name}
+                              </SelectItem>
+                            ))}
                         </SelectContent>
                       </Select>
                     </div>
@@ -516,14 +593,19 @@ export default function OsListingsManagement() {
                       </label>
                       <Select
                         value={formData.subcategory}
-                        onValueChange={(value) => setFormData({ ...formData, subcategory: value })}
+                        onValueChange={(value) =>
+                          setFormData({ ...formData, subcategory: value })
+                        }
                       >
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           {getFilteredSubcategories().map((subcategory) => (
-                            <SelectItem key={subcategory.slug} value={subcategory.slug}>
+                            <SelectItem
+                              key={subcategory.slug}
+                              value={subcategory.slug}
+                            >
                               {subcategory.name}
                             </SelectItem>
                           ))}
@@ -533,17 +615,23 @@ export default function OsListingsManagement() {
                   </div>
                   <Input
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
                     placeholder="Business name"
                   />
                   <Input
                     value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, phone: e.target.value })
+                    }
                     placeholder="Phone"
                   />
                   <Textarea
                     value={formData.address}
-                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, address: e.target.value })
+                    }
                     placeholder="Address"
                   />
                   <div className="flex space-x-2">
@@ -565,7 +653,8 @@ export default function OsListingsManagement() {
                     </h3>
                     <div className="mt-2 space-y-1">
                       <p className="text-sm text-gray-600">
-                        {getCategoryName(listing.category)} → {getSubcategoryName(listing.subcategory)}
+                        {getCategoryName(listing.category)} →{" "}
+                        {getSubcategoryName(listing.subcategory)}
                       </p>
                       <div className="flex items-center text-sm text-gray-600">
                         <Phone className="h-4 w-4 mr-1" />
@@ -615,7 +704,9 @@ export default function OsListingsManagement() {
 
       {listings.length === 0 && !loading && (
         <div className="text-center py-12">
-          <p className="text-gray-500">No listings found. Create your first listing above.</p>
+          <p className="text-gray-500">
+            No listings found. Create your first listing above.
+          </p>
         </div>
       )}
     </div>

@@ -10,7 +10,9 @@ interface OtherServicesManagementProps {
   activeTab?: string;
 }
 
-export default function OtherServicesManagement({ activeTab: initialActiveTab = "categories" }: OtherServicesManagementProps) {
+export default function OtherServicesManagement({
+  activeTab: initialActiveTab = "categories",
+}: OtherServicesManagementProps) {
   const [activeTab, setActiveTab] = useState(initialActiveTab);
 
   // Update active tab when prop changes

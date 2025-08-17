@@ -14,7 +14,9 @@ export default function OsCategoriesManagement() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<OsCategory | null>(null);
+  const [editingCategory, setEditingCategory] = useState<OsCategory | null>(
+    null,
+  );
   const [formData, setFormData] = useState({
     name: "",
     slug: "",
@@ -82,14 +84,17 @@ export default function OsCategoriesManagement() {
     if (!token || !editingCategory || !formData.name || !formData.slug) return;
 
     try {
-      const response = await fetch(`/api/admin/os-categories/${editingCategory._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        `/api/admin/os-categories/${editingCategory._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(formData),
         },
-        body: JSON.stringify(formData),
-      });
+      );
 
       const { ok, status, data } = await safeReadResponse(response);
 
@@ -108,7 +113,8 @@ export default function OsCategoriesManagement() {
   };
 
   const handleDelete = async (categoryId: string) => {
-    if (!token || !confirm("Are you sure you want to delete this category?")) return;
+    if (!token || !confirm("Are you sure you want to delete this category?"))
+      return;
 
     try {
       const response = await fetch(`/api/admin/os-categories/${categoryId}`, {
@@ -168,7 +174,9 @@ export default function OsCategoriesManagement() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Service Categories</h2>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Service Categories
+          </h2>
           <p className="text-gray-600">Manage other services categories</p>
         </div>
         <Button
@@ -240,7 +248,10 @@ export default function OsCategoriesManagement() {
                 <Save className="h-4 w-4 mr-2" />
                 Save Category
               </Button>
-              <Button variant="outline" onClick={() => setShowCreateForm(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setShowCreateForm(false)}
+              >
                 <X className="h-4 w-4 mr-2" />
                 Cancel
               </Button>
@@ -287,7 +298,10 @@ export default function OsCategoriesManagement() {
                         setFormData({ ...formData, active: e.target.checked })
                       }
                     />
-                    <label htmlFor={`active-${category._id}`} className="text-sm text-gray-700">
+                    <label
+                      htmlFor={`active-${category._id}`}
+                      className="text-sm text-gray-700"
+                    >
                       Active
                     </label>
                   </div>
@@ -344,7 +358,9 @@ export default function OsCategoriesManagement() {
 
       {categories.length === 0 && !loading && (
         <div className="text-center py-12">
-          <p className="text-gray-500">No categories found. Create your first category above.</p>
+          <p className="text-gray-500">
+            No categories found. Create your first category above.
+          </p>
         </div>
       )}
     </div>
