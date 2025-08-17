@@ -167,6 +167,7 @@ import {
 // Banner routes
 import {
   getBannersByPosition,
+  getActiveBanners,
   getAllBanners,
   createBanner,
   updateBanner,
