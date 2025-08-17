@@ -79,12 +79,12 @@ async function initializePackagesInternal(db: Db) {
 export const getAdPackages: RequestHandler = async (req, res) => {
   try {
     const db = getDatabase();
-    const { category, location, activeOnly = "false" } = req.query;
+    const { category, location, activeOnly = "false", isActive } = req.query;
 
     const filter: any = {};
 
-    // If activeOnly is true (default for public API), only show active packages
-    if (activeOnly === "true") {
+    // Support both activeOnly and isActive parameters for backward compatibility
+    if (activeOnly === "true" || isActive === "1") {
       filter.active = true;
     }
 
