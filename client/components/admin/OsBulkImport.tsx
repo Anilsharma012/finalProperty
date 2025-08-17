@@ -96,20 +96,29 @@ export default function OsBulkImport() {
         return Object.values(row).some(value => String(value).trim() !== '');
       });
 
+      console.log('Final CSV data for validation:', csvData);
+
       // Validate required fields
       const requiredFields = ['catSlug', 'subSlug', 'name', 'phone', 'address'];
       const validationErrors: string[] = [];
 
+      if (csvData.length === 0) {
+        throw new Error("No valid data rows found in CSV file. Please check the file format.");
+      }
+
       csvData.forEach((row, index) => {
+        console.log(`Validating row ${index + 2}:`, row);
         requiredFields.forEach(field => {
           if (!row[field] || String(row[field]).trim() === '') {
-            validationErrors.push(`Row ${index + 2}: Missing required field '${field}'`);
+            validationErrors.push(`Row ${index + 2}: Missing required field '${field}' (found: '${row[field] || 'undefined'}')`);
           }
         });
       });
 
       if (validationErrors.length > 0) {
-        throw new Error(`Validation errors:\n${validationErrors.slice(0, 5).join('\n')}${validationErrors.length > 5 ? `\n... and ${validationErrors.length - 5} more errors` : ''}`);
+        console.error('Validation errors:', validationErrors);
+        console.error('Available fields in first row:', Object.keys(csvData[0] || {}));
+        throw new Error(`Validation errors:\n${validationErrors.slice(0, 5).join('\n')}${validationErrors.length > 5 ? `\n... and ${validationErrors.length - 5} more errors` : ''}\n\nAvailable fields: ${Object.keys(csvData[0] || {}).join(', ')}`);
       }
 
       console.log('Parsed CSV data:', csvData);
