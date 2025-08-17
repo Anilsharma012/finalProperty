@@ -49,6 +49,8 @@ import NotFound from "./pages/NotFound";
 import FooterTest from "./pages/FooterTest";
 import FooterDebugPage from "./pages/FooterDebugPage";
 import OtherServices from "./pages/OtherServices";
+import OtherServicesCategory from "./pages/OtherServicesCategory";
+import OtherServicesListings from "./pages/OtherServicesListings";
 import TestChat from "./pages/TestChat";
 import Step3Test from "./pages/Step3Test";
 import NetworkStatus from "./components/NetworkStatus";
@@ -89,6 +91,8 @@ function App() {
                 <Route path="/pg" element={<PG />} />
                 <Route path="/services" element={<Services />} />
                 <Route path="/other-services" element={<OtherServices />} />
+                <Route path="/other-services/:cat" element={<OtherServicesCategory />} />
+                <Route path="/other-services/:cat/:sub" element={<OtherServicesListings />} />
                 <Route path="/advertise" element={<Advertise />} />
                 {/* Category/Subcategory Listings */}
                 <Route path="/buy/:slug" element={<CategoryProperties />} />
