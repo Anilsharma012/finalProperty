@@ -15,6 +15,8 @@ import FooterPackages from "./FooterPackages";
 import CategoryDrawer from "./CategoryDrawer";
 
 export default function StaticFooter() {
+  const [isCategoryDrawerOpen, setIsCategoryDrawerOpen] = useState(false);
+
   return (
     <footer className="bg-gradient-to-r from-[#C70000] to-red-700 text-white relative overflow-hidden">
       {/* Background Pattern */}
