@@ -274,8 +274,12 @@ export default function ReportsManagement() {
                       </TableCell>
                       <TableCell>
                         <div>
-                          <p className="font-medium">{report.reportedUserName}</p>
-                          <p className="text-sm text-gray-500">{report.reportedUserEmail}</p>
+                          <p className="font-medium">
+                            {report.reportedUserName || report.reportedPropertyTitle || 'N/A'}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {report.reportedUserEmail || 'N/A'}
+                          </p>
                         </div>
                       </TableCell>
                       <TableCell>
