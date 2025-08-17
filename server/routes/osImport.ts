@@ -4,7 +4,20 @@ import { getDatabase } from "../db/mongodb";
 import { ObjectId } from "mongodb";
 
 const r = Router();
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 }});
+// CSV-only multer (bypass global image-only filter)
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    const ok = [
+      "text/csv",
+      "application/vnd.ms-excel",
+      "application/csv",
+      "text/plain",
+    ].includes(file.mimetype) || file.originalname.toLowerCase().endsWith(".csv");
+    return ok ? cb(null, true) : cb(new Error("CSV file required"));
+  },
+});
 
 // tiny CSV parser (quotes + commas)
 function parseCSV(text: string): Record<string,string>[] {
