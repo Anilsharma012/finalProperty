@@ -606,7 +606,7 @@ export function createServer() {
     "/api/admin/os-listings/import",
     authenticateToken,
     requireAdmin,
-    serviceUpload.single("file"),
+    upload.single("file"),
     bulkImportServiceListings,
   );
 
