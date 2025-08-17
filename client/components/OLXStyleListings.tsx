@@ -319,6 +319,20 @@ export default function OLXStyleListings() {
           </div>
         )}
       </div>
+
+      {/* Enquiry Modal */}
+      {selectedProperty && (
+        <EnquiryModal
+          isOpen={enquiryModalOpen}
+          onClose={() => {
+            setEnquiryModalOpen(false);
+            setSelectedProperty(null);
+          }}
+          propertyId={selectedProperty._id}
+          propertyTitle={selectedProperty.title}
+          ownerName={selectedProperty.contactInfo?.name || "Property Owner"}
+        />
+      )}
     </div>
   );
 }
