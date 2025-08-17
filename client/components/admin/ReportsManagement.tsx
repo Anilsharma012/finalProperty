@@ -93,7 +93,9 @@ export default function ReportsManagement() {
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          setReports(data.data || []);
+          // Handle nested data structure from API: data.data.reports
+          const reportsData = data.data?.reports || data.data || [];
+          setReports(Array.isArray(reportsData) ? reportsData : []);
         } else {
           setError(data.error || 'Failed to fetch reports');
         }
