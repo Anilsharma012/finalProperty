@@ -218,8 +218,8 @@ export default function PropertyDetail() {
       );
 
       if (response.success) {
-        // Navigate to chat page with conversation ID
-        navigate(`/chat/${response.data._id}`);
+        // Navigate to conversation page with conversation ID
+        navigate(`/conversation/${response.data._id}`);
       } else {
         toast({
           title: "Error",
