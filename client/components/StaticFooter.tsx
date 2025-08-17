@@ -242,6 +242,24 @@ export default function StaticFooter() {
           </div>
         </div>
       </div>
+
+      {/* Sticky Categories Button */}
+      <div className="fixed bottom-4 right-4 z-40">
+        <button
+          onClick={() => setIsCategoryDrawerOpen(true)}
+          data-testid="footer-cats"
+          className="bg-[#C70000] hover:bg-red-700 text-white px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center space-x-2 text-sm font-medium"
+        >
+          <Grid3X3 className="w-4 h-4" />
+          <span>Categories</span>
+        </button>
+      </div>
+
+      {/* Category Drawer */}
+      <CategoryDrawer
+        isOpen={isCategoryDrawerOpen}
+        onClose={() => setIsCategoryDrawerOpen(false)}
+      />
     </footer>
   );
 }
