@@ -7,8 +7,8 @@ import { ApiResponse } from "@shared/types";
 export const findOrCreateConversation: RequestHandler = async (req, res) => {
   try {
     const db = getDatabase();
-    const userId = (req as any).userId;
-    const { propertyId } = req.query;
+    const buyerId = (req as any).userId;
+    const { propertyId } = req.body;
 
     if (!propertyId) {
       return res.status(400).json({
@@ -17,16 +17,16 @@ export const findOrCreateConversation: RequestHandler = async (req, res) => {
       });
     }
 
-    if (!ObjectId.isValid(propertyId as string)) {
+    if (!ObjectId.isValid(propertyId)) {
       return res.status(400).json({
         success: false,
         error: "Invalid property ID",
       });
     }
 
-    // Get property to find owner
+    // Get property to find seller/owner
     const property = await db.collection("properties").findOne({
-      _id: new ObjectId(propertyId as string),
+      _id: new ObjectId(propertyId),
     });
 
     if (!property) {
@@ -36,15 +36,20 @@ export const findOrCreateConversation: RequestHandler = async (req, res) => {
       });
     }
 
-    const ownerId = property.ownerId || property.sellerId;
-    if (!ownerId) {
+    // Check multiple fields for seller info as per your spec
+    const sellerId = property.owner || property.seller || property.postedBy || property.user || property.createdBy || property.ownerId || property.sellerId;
+
+    if (!sellerId) {
       return res.status(400).json({
         success: false,
         error: "Property has no owner",
       });
     }
 
-    if (ownerId === userId) {
+    // Convert sellerId to string for comparison if it's ObjectId
+    const sellerIdStr = typeof sellerId === 'object' ? sellerId.toString() : sellerId;
+
+    if (sellerIdStr === buyerId) {
       return res.status(400).json({
         success: false,
         error: "Cannot create conversation with yourself",
@@ -53,8 +58,9 @@ export const findOrCreateConversation: RequestHandler = async (req, res) => {
 
     // Check if conversation already exists
     const existingConversation = await db.collection("conversations").findOne({
-      propertyId: propertyId as string,
-      participants: { $all: [userId, ownerId] },
+      property: new ObjectId(propertyId),
+      buyer: buyerId,
+      seller: sellerIdStr,
     });
 
     if (existingConversation) {
@@ -62,18 +68,16 @@ export const findOrCreateConversation: RequestHandler = async (req, res) => {
         success: true,
         data: {
           _id: existingConversation._id,
-          propertyId: existingConversation.propertyId,
-          participants: existingConversation.participants,
-          createdAt: existingConversation.createdAt,
-          lastMessageAt: existingConversation.lastMessageAt,
         },
       });
     }
 
     // Create new conversation
     const newConversation = {
-      propertyId: propertyId as string,
-      participants: [userId, ownerId],
+      property: new ObjectId(propertyId),
+      buyer: buyerId,
+      seller: sellerIdStr,
+      participants: [buyerId, sellerIdStr],
       createdAt: new Date(),
       lastMessageAt: new Date(),
       updatedAt: new Date(),
@@ -87,7 +91,6 @@ export const findOrCreateConversation: RequestHandler = async (req, res) => {
       success: true,
       data: {
         _id: result.insertedId,
-        ...newConversation,
       },
     };
 
