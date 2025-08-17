@@ -73,9 +73,21 @@ const PropertyAdsSlider: React.FC = () => {
 
         // Try to fetch advertisements first (using banners with home position)
         try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000);
+
           const adsResponse = await fetch(
             "/api/banners?position=homepage_middle",
+            {
+              signal: controller.signal,
+              headers: {
+                'Cache-Control': 'no-cache',
+              }
+            }
           );
+
+          clearTimeout(timeoutId);
+
           if (adsResponse.ok) {
             const adsData = await adsResponse.json();
             if (
