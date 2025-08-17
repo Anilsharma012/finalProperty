@@ -103,7 +103,9 @@ export default function PropertyDetail() {
       }
 
       // Use the global API helper for better error handling and CORS support
+      console.log("🔍 Fetching property:", id);
       const apiResponse = await (window as any).api(`properties/${id}`);
+      console.log("📦 Property API response:", apiResponse);
 
       if (apiResponse.ok) {
         const data = apiResponse.json;
