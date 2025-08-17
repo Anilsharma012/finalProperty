@@ -164,13 +164,17 @@ export default function ReportsManagement() {
     );
   };
 
-  const filteredReports = reports.filter(report =>
-    report.reporterName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    report.reportedUserName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    report.reason?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredReports = Array.isArray(reports)
+    ? reports.filter(report =>
+        report.reporterName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        report.reportedUserName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        report.reason?.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : [];
 
-  const pendingCount = reports.filter(r => r.status === 'pending').length;
+  const pendingCount = Array.isArray(reports)
+    ? reports.filter(r => r.status === 'pending').length
+    : 0;
 
   return (
     <div className="space-y-6">
