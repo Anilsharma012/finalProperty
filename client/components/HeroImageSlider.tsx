@@ -87,20 +87,20 @@ const HeroImageSlider: React.FC = () => {
       }
     };
 
-    fetchSliderImages();
+    fetchBanners();
 
     // Listen for admin updates
-    const handleSliderUpdate = () => {
-      console.log("🔄 Slider update event received, refreshing...");
-      fetchSliderImages();
+    const handleBannerUpdate = () => {
+      console.log("🔄 Banner update event received, refreshing...");
+      fetchBanners();
     };
 
-    window.addEventListener("sliderUpdate", handleSliderUpdate);
-    window.addEventListener("sliderRefresh", handleSliderUpdate);
+    window.addEventListener("bannerUpdate", handleBannerUpdate);
+    window.addEventListener("bannerRefresh", handleBannerUpdate);
 
     return () => {
-      window.removeEventListener("sliderUpdate", handleSliderUpdate);
-      window.removeEventListener("sliderRefresh", handleSliderUpdate);
+      window.removeEventListener("bannerUpdate", handleBannerUpdate);
+      window.removeEventListener("bannerRefresh", handleBannerUpdate);
     };
   }, []);
 
