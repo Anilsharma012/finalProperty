@@ -604,8 +604,8 @@ export default function PropertyManagement() {
                   </TableCell>
                   <TableCell>
                     <div>
-                      <p className="font-medium">{property.contactInfo.name}</p>
-                      <p className="text-sm text-gray-500">{property.contactInfo.phone}</p>
+                      <p className="font-medium">{property.contactInfo?.name || 'N/A'}</p>
+                      <p className="text-sm text-gray-500">{property.contactInfo?.phone || 'N/A'}</p>
                     </div>
                   </TableCell>
                   <TableCell>
