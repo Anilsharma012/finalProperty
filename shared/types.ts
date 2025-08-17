@@ -189,6 +189,45 @@ export interface ApiResponse<T> {
   error?: string;
 }
 
+// Other Services Models
+export interface OsCategory {
+  _id?: string;
+  slug: string;
+  name: string;
+  active: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface OsSubcategory {
+  _id?: string;
+  category: string; // slug reference to OsCategory
+  slug: string;
+  name: string;
+  active: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface OsListing {
+  _id?: string;
+  category: string; // slug reference to OsCategory
+  subcategory: string; // slug reference to OsSubcategory
+  name: string;
+  phone: string;
+  address: string;
+  photos: string[]; // array of up to 4 photo URLs
+  geo: {
+    lat: number;
+    lng: number;
+  };
+  open: string; // opening time (e.g., "09:00")
+  close: string; // closing time (e.g., "18:00")
+  active: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
 // Custom Field Types
 export interface CustomField {
   _id?: string;
