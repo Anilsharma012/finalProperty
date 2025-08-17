@@ -621,7 +621,7 @@ export default function PropertyManagement() {
                               : "bg-gray-100 text-gray-800"
                       }
                     >
-                      {property.status}
+                      {property.status || 'unknown'}
                     </Badge>
                   </TableCell>
                   <TableCell>
