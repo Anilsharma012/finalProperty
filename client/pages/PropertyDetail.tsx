@@ -28,6 +28,7 @@ import {
 import { toast } from "../components/ui/use-toast";
 import ChatBot from "../components/ChatBot";
 import ApiDiagnostic from "../components/ApiDiagnostic";
+import EnquiryModal from "../components/EnquiryModal";
 
 interface Property {
   _id: string;
