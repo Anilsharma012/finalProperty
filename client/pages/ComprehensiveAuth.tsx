@@ -576,23 +576,6 @@ const ComprehensiveAuth = () => {
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      I am a
-                    </label>
-                    <select
-                      name="userType"
-                      value={formData.userType}
-                      onChange={handleInputChange}
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#C70000] focus:border-transparent"
-                      required
-                    >
-                      <option value="seller">Property Seller</option>
-                      <option value="buyer">Property Buyer</option>
-                      <option value="agent">Real Estate Agent</option>
-                      <option value="admin">Admin</option>
-                    </select>
-                  </div>
 
                   <Button
                     type="submit"
@@ -720,22 +703,6 @@ const ComprehensiveAuth = () => {
                       Sign in instantly with your Google account
                     </p>
 
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        I am a
-                      </label>
-                      <select
-                        name="userType"
-                        value={formData.userType}
-                        onChange={handleInputChange}
-                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#C70000] focus:border-transparent"
-                      >
-                        <option value="seller">Property Seller</option>
-                        <option value="buyer">Property Buyer</option>
-                        <option value="agent">Real Estate Agent</option>
-                        <option value="admin">Admin</option>
-                      </select>
-                    </div>
 
                     <Button
                       onClick={handleGoogleAuth}
