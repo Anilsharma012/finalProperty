@@ -64,7 +64,7 @@ export const submitEnquiry: RequestHandler = async (req, res) => {
       });
     }
 
-    const db = await getDb();
+    const db = await getDatabase();
 
     // Verify property exists and is active
     const property = await db.collection("properties").findOne({
@@ -158,7 +158,7 @@ export const getEnquiries: RequestHandler = async (req, res) => {
     const limitNum = parseInt(limit as string);
     const skip = (pageNum - 1) * limitNum;
 
-    const db = await getDb();
+    const db = await getDatabase();
 
     // Build filter
     const filter: any = {};
@@ -251,7 +251,7 @@ export const updateEnquiryStatus: RequestHandler = async (req, res) => {
       });
     }
 
-    const db = await getDb();
+    const db = await getDatabase();
 
     const result = await db.collection("enquiries").updateOne(
       { _id: new ObjectId(id) },
