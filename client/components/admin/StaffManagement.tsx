@@ -324,8 +324,10 @@ export default function StaffManagement() {
           fetchStaff();
           resetForm();
           setShowCreateDialog(false);
+          setError(""); // Clear any previous errors
         } else {
           setError(data.error || "Failed to create staff member");
+          // Don't close dialog on error so user can fix the issue
         }
       } else {
         setError("Failed to create staff member");
