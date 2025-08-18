@@ -176,6 +176,8 @@ export default function DynamicFooter() {
       clearTimeout(visibilityTimeout);
       window.removeEventListener("footerUpdate", handleFooterUpdate);
       window.removeEventListener("footerRefresh", handleFooterUpdate);
+      window.removeEventListener("pagePublished", handleFooterUpdate);
+      window.removeEventListener("pageUnpublished", handleFooterUpdate);
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
