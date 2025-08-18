@@ -243,7 +243,18 @@ export const updateStaff: RequestHandler = async (req, res) => {
 
     // Update permissions if role changed
     if (updateData.role) {
-      updateData.permissions = rolePermissions[updateData.role] || rolePermissions.admin;
+      if (updateData.role === "custom_role") {
+        // For custom role, use provided permissions or keep existing
+        if (!updateData.permissions || updateData.permissions.length === 0) {
+          return res.status(400).json({
+            success: false,
+            error: "Custom role requires at least one permission",
+          });
+        }
+      } else {
+        // For predefined roles, use role-based permissions
+        updateData.permissions = rolePermissions[updateData.role] || rolePermissions.admin;
+      }
     }
 
     updateData.updatedAt = new Date();
