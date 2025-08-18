@@ -42,6 +42,7 @@ import CompleteCategoryManagement from "../components/admin/CompleteCategoryMana
 import SellerVerificationManagement from "../components/admin/SellerVerificationManagement";
 import ReportsManagement from "../components/admin/ReportsManagement";
 import AdminSettings from "../components/admin/AdminSettings";
+import AdminTestingDashboard from "../components/admin/AdminTestingDashboard";
 import UserAnalytics from "../components/admin/UserAnalytics";
 import NotificationManagement from "../components/admin/NotificationManagement";
 import SystemUpdate from "../components/admin/SystemUpdate";
