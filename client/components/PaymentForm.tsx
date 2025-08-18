@@ -210,7 +210,22 @@ export default function PaymentForm({
       </div>
 
       {/* Payment Method Selection */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {paymentMethods.phonepe?.enabled && (
+          <button
+            onClick={() => setPaymentMethod("phonepe")}
+            className={`p-4 border-2 rounded-lg transition-all ${
+              paymentMethod === "phonepe"
+                ? "border-[#C70000] bg-red-50"
+                : "border-gray-200 hover:border-gray-300"
+            }`}
+          >
+            <Zap className="h-8 w-8 mx-auto mb-2 text-purple-600" />
+            <div className="text-sm font-semibold">PhonePe</div>
+            <div className="text-xs text-gray-500">Instant payment</div>
+          </button>
+        )}
+
         {paymentMethods.upi.enabled && (
           <button
             onClick={() => setPaymentMethod("upi")}
@@ -440,7 +455,7 @@ export default function PaymentForm({
                 <p className="text-sm font-medium text-green-900">
                   Amount to Transfer:
                 </p>
-                <p className="text-2xl font-bold text-green-800">���{amount}</p>
+                <p className="text-2xl font-bold text-green-800">₹{amount}</p>
               </div>
             </div>
 
