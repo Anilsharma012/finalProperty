@@ -20,30 +20,28 @@ interface StaffMember {
 }
 
 const rolePermissions = {
-  super_admin: [
-    "dashboard.view", "content.manage", "content.create", "content.view",
-    "ads.manage", "ads.view", "ads.approve", "categories.manage",
-    "packages.manage", "payments.manage", "payments.view", "payments.approve",
-    "users.manage", "users.view", "sellers.manage", "sellers.verify", "sellers.view",
-    "locations.manage", "reports.manage", "reports.view", "promotions.manage",
-    "notifications.send", "staff.manage", "roles.manage", "blog.manage", "blog.view",
-    "support.view", "system.manage", "system.view", "system.test", "system.update", "system.debug",
+  super_admin: ["*"], // All permissions
+  content_manager: [
+    "content.view", "content.create", "content.edit", "content.delete", "content.publish",
+    "categories.view", "categories.edit", "faq.view", "faq.edit",
     "analytics.view"
   ],
-  content_manager: [
-    "dashboard.view", "content.manage", "content.create", "content.view",
-    "blog.manage", "blog.view", "ads.view", "support.view"
-  ],
   sales_manager: [
-    "dashboard.view", "users.view", "sellers.manage", "sellers.verify", "sellers.view",
-    "payments.view", "packages.manage", "ads.view", "analytics.view"
+    "properties.view", "properties.edit", "properties.approve", "properties.featured",
+    "users.view", "analytics.view", "packages.view", "transactions.view", "reports.view"
   ],
   support_executive: [
-    "dashboard.view", "users.view", "support.view", "reports.view", "content.view"
+    "users.view", "users.support", "support.tickets", "support.resolve",
+    "chat.view", "chat.manage", "faq.view", "notifications.send"
+  ],
+  property_moderator: [
+    "properties.view", "properties.edit", "properties.approve",
+    "users.view", "categories.view", "analytics.view"
   ],
   admin: [
-    "dashboard.view", "content.view", "users.view", "ads.view", "analytics.view"
-  ]
+    "properties.view", "properties.edit", "users.view", "categories.view", "analytics.view"
+  ],
+  custom_role: [] // Will be filled with custom permissions
 };
 
 // Get all staff members
