@@ -893,7 +893,12 @@ export function createServer() {
     updateTransactionStatus,
   );
   app.post("/api/payments/verify", verifyPayment);
-  app.get("/api/payments/methods", getPaymentMethods);
+  app.get("/api/payments/methods", getPaymentMethodsWithPhonePe);
+
+  // PhonePe payment routes
+  app.post("/api/payments/phonepe/callback", phonePeCallback);
+  app.get("/api/payments/phonepe/status/:transactionId", getPhonePePaymentStatus);
+  app.post("/api/payments/phonepe/transaction", authenticateToken, createPhonePeTransaction);
 
   // Banner routes
   app.get("/api/banners", getActiveBanners);
