@@ -385,7 +385,8 @@ export default function DynamicFooter() {
   };
 
   const renderPageLink = (page: FooterPage) => {
-    const className = "text-red-200 hover:text-white transition-colors duration-200 text-sm";
+    const className =
+      "text-red-200 hover:text-white transition-colors duration-200 text-sm";
 
     const externalProps = {
       href: page.url,
