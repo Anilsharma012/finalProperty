@@ -16,11 +16,16 @@ const getPhonePeConfig = async (): Promise<PhonePeConfig | null> => {
   try {
     const db = getDatabase();
     const settings = await db.collection("admin_settings").findOne({});
-    
-    if (settings && settings.payment && settings.payment.phonePe && settings.payment.phonePe.enabled) {
+
+    if (
+      settings &&
+      settings.payment &&
+      settings.payment.phonePe &&
+      settings.payment.phonePe.enabled
+    ) {
       return settings.payment.phonePe as PhonePeConfig;
     }
-    
+
     return null;
   } catch (error) {
     console.error("Error getting PhonePe config:", error);
@@ -29,18 +34,30 @@ const getPhonePeConfig = async (): Promise<PhonePeConfig | null> => {
 };
 
 // Generate checksum for PhonePe API
-const generateChecksum = (payload: string, endpoint: string, saltKey: string, saltIndex: string): string => {
+const generateChecksum = (
+  payload: string,
+  endpoint: string,
+  saltKey: string,
+  saltIndex: string,
+): string => {
   const data = payload + endpoint + saltKey;
-  const hash = crypto.createHash('sha256').update(data).digest('hex');
-  return hash + '###' + saltIndex;
+  const hash = crypto.createHash("sha256").update(data).digest("hex");
+  return hash + "###" + saltIndex;
 };
 
 // Verify checksum from PhonePe callback
-const verifyChecksum = (response: string, xVerify: string, saltKey: string): boolean => {
+const verifyChecksum = (
+  response: string,
+  xVerify: string,
+  saltKey: string,
+): boolean => {
   try {
-    const [hash, saltIndex] = xVerify.split('###');
+    const [hash, saltIndex] = xVerify.split("###");
     const data = response + saltKey;
-    const calculatedHash = crypto.createHash('sha256').update(data).digest('hex');
+    const calculatedHash = crypto
+      .createHash("sha256")
+      .update(data)
+      .digest("hex");
     return calculatedHash === hash;
   } catch (error) {
     console.error("Error verifying checksum:", error);
@@ -52,24 +69,24 @@ const verifyChecksum = (response: string, xVerify: string, saltKey: string): boo
 export const phonePeCallback: RequestHandler = async (req, res) => {
   try {
     console.log("PhonePe callback received:", req.body);
-    
+
     const config = await getPhonePeConfig();
     if (!config) {
       console.error("PhonePe configuration not found");
       return res.status(400).json({
         success: false,
-        error: "PhonePe not configured"
+        error: "PhonePe not configured",
       });
     }
 
     const { response } = req.body;
-    const xVerify = req.headers['x-verify'] as string;
+    const xVerify = req.headers["x-verify"] as string;
 
     if (!response || !xVerify) {
       console.error("Missing response or x-verify header");
       return res.status(400).json({
         success: false,
-        error: "Invalid callback data"
+        error: "Invalid callback data",
       });
     }
 
@@ -78,16 +95,19 @@ export const phonePeCallback: RequestHandler = async (req, res) => {
       console.error("Checksum verification failed");
       return res.status(400).json({
         success: false,
-        error: "Invalid checksum"
+        error: "Invalid checksum",
       });
     }
 
     // Decode the response
-    const decodedResponse = JSON.parse(Buffer.from(response, 'base64').toString());
+    const decodedResponse = JSON.parse(
+      Buffer.from(response, "base64").toString(),
+    );
     console.log("Decoded PhonePe response:", decodedResponse);
 
     const db = getDatabase();
-    const { merchantTransactionId, transactionId, amount, state } = decodedResponse.data;
+    const { merchantTransactionId, transactionId, amount, state } =
+      decodedResponse.data;
 
     // Update transaction status in database
     await db.collection("transactions").updateOne(
@@ -98,15 +118,15 @@ export const phonePeCallback: RequestHandler = async (req, res) => {
           phonepeTransactionId: transactionId,
           phonepeResponse: decodedResponse,
           updatedAt: new Date(),
-        }
-      }
+        },
+      },
     );
 
     // If payment successful, activate the package
     if (state === "COMPLETED") {
       // Find the transaction and activate package
       const transaction = await db.collection("transactions").findOne({
-        phonepeTransactionId: merchantTransactionId
+        phonepeTransactionId: merchantTransactionId,
       });
 
       if (transaction) {
@@ -117,25 +137,30 @@ export const phonePeCallback: RequestHandler = async (req, res) => {
           propertyId: transaction.propertyId,
           transactionId: transaction._id,
           activatedAt: new Date(),
-          expiresAt: new Date(Date.now() + (transaction.packageDuration || 30) * 24 * 60 * 60 * 1000),
+          expiresAt: new Date(
+            Date.now() +
+              (transaction.packageDuration || 30) * 24 * 60 * 60 * 1000,
+          ),
           status: "active",
           createdAt: new Date(),
         });
 
-        console.log("Package activated successfully for transaction:", merchantTransactionId);
+        console.log(
+          "Package activated successfully for transaction:",
+          merchantTransactionId,
+        );
       }
     }
 
     res.json({
       success: true,
-      message: "Callback processed successfully"
+      message: "Callback processed successfully",
     });
-
   } catch (error) {
     console.error("PhonePe callback error:", error);
     res.status(500).json({
       success: false,
-      error: "Failed to process callback"
+      error: "Failed to process callback",
     });
   }
 };
@@ -145,28 +170,33 @@ export const getPhonePePaymentStatus: RequestHandler = async (req, res) => {
   try {
     const { transactionId } = req.params;
     const config = await getPhonePeConfig();
-    
+
     if (!config) {
       return res.status(400).json({
         success: false,
-        error: "PhonePe not configured"
+        error: "PhonePe not configured",
       });
     }
 
     const endpoint = `/pg/v1/status/${config.merchantId}/${transactionId}`;
-    const checksum = generateChecksum('', endpoint, config.saltKey, config.saltIndex);
+    const checksum = generateChecksum(
+      "",
+      endpoint,
+      config.saltKey,
+      config.saltIndex,
+    );
 
-    const apiUrl = config.testMode 
-      ? 'https://api-preprod.phonepe.com/apis/pg-sandbox'
-      : 'https://api.phonepe.com/apis/hermes';
+    const apiUrl = config.testMode
+      ? "https://api-preprod.phonepe.com/apis/pg-sandbox"
+      : "https://api.phonepe.com/apis/hermes";
 
     const response = await fetch(`${apiUrl}${endpoint}`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
-        'X-VERIFY': checksum,
-        'X-MERCHANT-ID': config.merchantId,
-      }
+        "Content-Type": "application/json",
+        "X-VERIFY": checksum,
+        "X-MERCHANT-ID": config.merchantId,
+      },
     });
 
     const responseData = await response.json();
@@ -181,8 +211,8 @@ export const getPhonePePaymentStatus: RequestHandler = async (req, res) => {
             status: responseData.data.state === "COMPLETED" ? "paid" : "failed",
             phonepeResponse: responseData.data,
             updatedAt: new Date(),
-          }
-        }
+          },
+        },
       );
     }
 
@@ -192,12 +222,11 @@ export const getPhonePePaymentStatus: RequestHandler = async (req, res) => {
     };
 
     res.json(apiResponse);
-
   } catch (error) {
     console.error("Error checking PhonePe payment status:", error);
     res.status(500).json({
       success: false,
-      error: "Failed to check payment status"
+      error: "Failed to check payment status",
     });
   }
 };
@@ -211,11 +240,13 @@ export const createPhonePeTransaction: RequestHandler = async (req, res) => {
     const db = getDatabase();
 
     // Get package details
-    const packageData = await db.collection("ad_packages").findOne({ _id: packageId });
+    const packageData = await db
+      .collection("ad_packages")
+      .findOne({ _id: packageId });
     if (!packageData) {
       return res.status(404).json({
         success: false,
-        error: "Package not found"
+        error: "Package not found",
       });
     }
 
@@ -250,18 +281,20 @@ export const createPhonePeTransaction: RequestHandler = async (req, res) => {
     };
 
     res.json(response);
-
   } catch (error) {
     console.error("Error creating PhonePe transaction:", error);
     res.status(500).json({
       success: false,
-      error: "Failed to create transaction"
+      error: "Failed to create transaction",
     });
   }
 };
 
 // Payment methods endpoint with PhonePe
-export const getPaymentMethodsWithPhonePe: RequestHandler = async (req, res) => {
+export const getPaymentMethodsWithPhonePe: RequestHandler = async (
+  req,
+  res,
+) => {
   try {
     const db = getDatabase();
     const config = await getPhonePeConfig();
@@ -297,12 +330,11 @@ export const getPaymentMethodsWithPhonePe: RequestHandler = async (req, res) => 
     };
 
     res.json(response);
-
   } catch (error) {
     console.error("Error fetching payment methods:", error);
     res.status(500).json({
       success: false,
-      error: "Failed to fetch payment methods"
+      error: "Failed to fetch payment methods",
     });
   }
 };

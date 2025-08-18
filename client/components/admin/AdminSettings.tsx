@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../hooks/useAuth';
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../../hooks/useAuth";
 import {
   Settings,
   Save,
@@ -15,31 +15,21 @@ import {
   Database,
   Server,
   Key,
-} from 'lucide-react';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Textarea } from '../ui/textarea';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '../ui/card';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '../ui/tabs';
-import { Switch } from '../ui/switch';
-import { Label } from '../ui/label';
+} from "lucide-react";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { Switch } from "../ui/switch";
+import { Label } from "../ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select';
+} from "../ui/select";
 
 interface AppSettings {
   general: {
@@ -87,14 +77,14 @@ export default function AdminSettings() {
   const { token } = useAuth();
   const [settings, setSettings] = useState<AppSettings>({
     general: {
-      siteName: '',
-      siteDescription: '',
-      siteUrl: '',
-      contactEmail: '',
-      contactPhone: '',
-      address: '',
-      currency: 'INR',
-      timezone: 'Asia/Kolkata',
+      siteName: "",
+      siteDescription: "",
+      siteUrl: "",
+      contactEmail: "",
+      contactPhone: "",
+      address: "",
+      currency: "INR",
+      timezone: "Asia/Kolkata",
     },
     features: {
       enableUserRegistration: true,
@@ -105,31 +95,31 @@ export default function AdminSettings() {
       enableSellerVerification: true,
     },
     email: {
-      smtpHost: '',
+      smtpHost: "",
       smtpPort: 587,
-      smtpUsername: '',
-      smtpPassword: '',
-      fromEmail: '',
-      fromName: '',
+      smtpUsername: "",
+      smtpPassword: "",
+      fromEmail: "",
+      fromName: "",
     },
     payment: {
       enablePayments: false,
-      paymentGateway: 'razorpay',
-      paymentApiKey: '',
+      paymentGateway: "razorpay",
+      paymentApiKey: "",
       commissionRate: 5,
       phonePe: {
         enabled: false,
-        merchantId: '',
-        saltKey: '',
-        saltIndex: '1',
+        merchantId: "",
+        saltKey: "",
+        saltIndex: "1",
         testMode: true,
       },
     },
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     fetchSettings();
@@ -140,31 +130,31 @@ export default function AdminSettings() {
 
     try {
       setLoading(true);
-      setError('');
+      setError("");
 
-      const response = await fetch('/api/admin/settings', {
+      const response = await fetch("/api/admin/settings", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.ok) {
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
           const data = await response.json();
           if (data.success) {
             setSettings({ ...settings, ...data.data });
           } else {
-            setError(data.error || 'Failed to fetch settings');
+            setError(data.error || "Failed to fetch settings");
           }
         } else {
           // API endpoint doesn't exist, use default settings
-          console.log('Settings API not implemented, using default settings');
+          console.log("Settings API not implemented, using default settings");
         }
       } else {
         // API endpoint doesn't exist, use default settings
-        console.log('Settings API not implemented, using default settings');
+        console.log("Settings API not implemented, using default settings");
       }
     } catch (err) {
-      setError('Network error while fetching settings');
+      setError("Network error while fetching settings");
     } finally {
       setLoading(false);
     }
@@ -175,66 +165,69 @@ export default function AdminSettings() {
 
     try {
       setSaving(true);
-      setError('');
-      setSuccess('');
+      setError("");
+      setSuccess("");
 
-      const response = await fetch('/api/admin/settings', {
-        method: 'PUT',
+      const response = await fetch("/api/admin/settings", {
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(settings),
       });
 
       if (response.ok) {
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
           const data = await response.json();
           if (data.success) {
-            setSuccess('Settings saved successfully!');
-            setTimeout(() => setSuccess(''), 3000);
+            setSuccess("Settings saved successfully!");
+            setTimeout(() => setSuccess(""), 3000);
           } else {
-            setError(data.error || 'Failed to save settings');
+            setError(data.error || "Failed to save settings");
           }
         } else {
-          setError('Settings API not implemented yet');
+          setError("Settings API not implemented yet");
         }
       } else {
-        setError('Settings API not implemented yet');
+        setError("Settings API not implemented yet");
       }
     } catch (err) {
-      setError('Network error while saving settings');
+      setError("Network error while saving settings");
     } finally {
       setSaving(false);
     }
   };
 
   const updateGeneralSetting = (key: string, value: string) => {
-    setSettings(prev => ({
+    setSettings((prev) => ({
       ...prev,
-      general: { ...prev.general, [key]: value }
+      general: { ...prev.general, [key]: value },
     }));
   };
 
   const updateFeatureSetting = (key: string, value: boolean) => {
-    setSettings(prev => ({
+    setSettings((prev) => ({
       ...prev,
-      features: { ...prev.features, [key]: value }
+      features: { ...prev.features, [key]: value },
     }));
   };
 
   const updateEmailSetting = (key: string, value: string | number) => {
-    setSettings(prev => ({
+    setSettings((prev) => ({
       ...prev,
-      email: { ...prev.email, [key]: value }
+      email: { ...prev.email, [key]: value },
     }));
   };
 
-  const updatePaymentSetting = (key: string, value: string | number | boolean) => {
-    setSettings(prev => ({
+  const updatePaymentSetting = (
+    key: string,
+    value: string | number | boolean,
+  ) => {
+    setSettings((prev) => ({
       ...prev,
-      payment: { ...prev.payment, [key]: value }
+      payment: { ...prev.payment, [key]: value },
     }));
   };
 
@@ -269,7 +262,7 @@ export default function AdminSettings() {
         </div>
         <Button onClick={saveSettings} disabled={saving}>
           <Save className="h-4 w-4 mr-2" />
-          {saving ? 'Saving...' : 'Save Changes'}
+          {saving ? "Saving..." : "Save Changes"}
         </Button>
       </div>
 
@@ -296,7 +289,9 @@ export default function AdminSettings() {
                   <Input
                     id="siteName"
                     value={settings.general.siteName}
-                    onChange={(e) => updateGeneralSetting('siteName', e.target.value)}
+                    onChange={(e) =>
+                      updateGeneralSetting("siteName", e.target.value)
+                    }
                     placeholder="Your Property Site"
                   />
                 </div>
@@ -305,7 +300,9 @@ export default function AdminSettings() {
                   <Input
                     id="siteUrl"
                     value={settings.general.siteUrl}
-                    onChange={(e) => updateGeneralSetting('siteUrl', e.target.value)}
+                    onChange={(e) =>
+                      updateGeneralSetting("siteUrl", e.target.value)
+                    }
                     placeholder="https://yoursite.com"
                   />
                 </div>
@@ -316,7 +313,9 @@ export default function AdminSettings() {
                 <Textarea
                   id="siteDescription"
                   value={settings.general.siteDescription}
-                  onChange={(e) => updateGeneralSetting('siteDescription', e.target.value)}
+                  onChange={(e) =>
+                    updateGeneralSetting("siteDescription", e.target.value)
+                  }
                   placeholder="Brief description of your property website"
                   rows={3}
                 />
@@ -329,7 +328,9 @@ export default function AdminSettings() {
                     id="contactEmail"
                     type="email"
                     value={settings.general.contactEmail}
-                    onChange={(e) => updateGeneralSetting('contactEmail', e.target.value)}
+                    onChange={(e) =>
+                      updateGeneralSetting("contactEmail", e.target.value)
+                    }
                     placeholder="contact@yoursite.com"
                   />
                 </div>
@@ -338,7 +339,9 @@ export default function AdminSettings() {
                   <Input
                     id="contactPhone"
                     value={settings.general.contactPhone}
-                    onChange={(e) => updateGeneralSetting('contactPhone', e.target.value)}
+                    onChange={(e) =>
+                      updateGeneralSetting("contactPhone", e.target.value)
+                    }
                     placeholder="+91 9876543210"
                   />
                 </div>
@@ -349,7 +352,9 @@ export default function AdminSettings() {
                 <Textarea
                   id="address"
                   value={settings.general.address}
-                  onChange={(e) => updateGeneralSetting('address', e.target.value)}
+                  onChange={(e) =>
+                    updateGeneralSetting("address", e.target.value)
+                  }
                   placeholder="Your business address"
                   rows={2}
                 />
@@ -358,7 +363,12 @@ export default function AdminSettings() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="currency">Currency</Label>
-                  <Select value={settings.general.currency} onValueChange={(value) => updateGeneralSetting('currency', value)}>
+                  <Select
+                    value={settings.general.currency}
+                    onValueChange={(value) =>
+                      updateGeneralSetting("currency", value)
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -372,15 +382,24 @@ export default function AdminSettings() {
                 </div>
                 <div>
                   <Label htmlFor="timezone">Timezone</Label>
-                  <Select value={settings.general.timezone} onValueChange={(value) => updateGeneralSetting('timezone', value)}>
+                  <Select
+                    value={settings.general.timezone}
+                    onValueChange={(value) =>
+                      updateGeneralSetting("timezone", value)
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Asia/Kolkata">Asia/Kolkata</SelectItem>
                       <SelectItem value="UTC">UTC</SelectItem>
-                      <SelectItem value="America/New_York">America/New_York</SelectItem>
-                      <SelectItem value="Europe/London">Europe/London</SelectItem>
+                      <SelectItem value="America/New_York">
+                        America/New_York
+                      </SelectItem>
+                      <SelectItem value="Europe/London">
+                        Europe/London
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -402,7 +421,9 @@ export default function AdminSettings() {
                 <div key={key} className="flex items-center justify-between">
                   <div>
                     <Label htmlFor={key} className="text-base font-medium">
-                      {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                      {key
+                        .replace(/([A-Z])/g, " $1")
+                        .replace(/^./, (str) => str.toUpperCase())}
                     </Label>
                     <p className="text-sm text-gray-600">
                       {getFeatureDescription(key)}
@@ -411,7 +432,9 @@ export default function AdminSettings() {
                   <Switch
                     id={key}
                     checked={value}
-                    onCheckedChange={(checked) => updateFeatureSetting(key, checked)}
+                    onCheckedChange={(checked) =>
+                      updateFeatureSetting(key, checked)
+                    }
                   />
                 </div>
               ))}
@@ -434,7 +457,9 @@ export default function AdminSettings() {
                   <Input
                     id="smtpHost"
                     value={settings.email.smtpHost}
-                    onChange={(e) => updateEmailSetting('smtpHost', e.target.value)}
+                    onChange={(e) =>
+                      updateEmailSetting("smtpHost", e.target.value)
+                    }
                     placeholder="smtp.gmail.com"
                   />
                 </div>
@@ -444,7 +469,9 @@ export default function AdminSettings() {
                     id="smtpPort"
                     type="number"
                     value={settings.email.smtpPort}
-                    onChange={(e) => updateEmailSetting('smtpPort', parseInt(e.target.value))}
+                    onChange={(e) =>
+                      updateEmailSetting("smtpPort", parseInt(e.target.value))
+                    }
                     placeholder="587"
                   />
                 </div>
@@ -456,7 +483,9 @@ export default function AdminSettings() {
                   <Input
                     id="smtpUsername"
                     value={settings.email.smtpUsername}
-                    onChange={(e) => updateEmailSetting('smtpUsername', e.target.value)}
+                    onChange={(e) =>
+                      updateEmailSetting("smtpUsername", e.target.value)
+                    }
                     placeholder="your-email@gmail.com"
                   />
                 </div>
@@ -466,7 +495,9 @@ export default function AdminSettings() {
                     id="smtpPassword"
                     type="password"
                     value={settings.email.smtpPassword}
-                    onChange={(e) => updateEmailSetting('smtpPassword', e.target.value)}
+                    onChange={(e) =>
+                      updateEmailSetting("smtpPassword", e.target.value)
+                    }
                     placeholder="App password"
                   />
                 </div>
@@ -479,7 +510,9 @@ export default function AdminSettings() {
                     id="fromEmail"
                     type="email"
                     value={settings.email.fromEmail}
-                    onChange={(e) => updateEmailSetting('fromEmail', e.target.value)}
+                    onChange={(e) =>
+                      updateEmailSetting("fromEmail", e.target.value)
+                    }
                     placeholder="noreply@yoursite.com"
                   />
                 </div>
@@ -488,7 +521,9 @@ export default function AdminSettings() {
                   <Input
                     id="fromName"
                     value={settings.email.fromName}
-                    onChange={(e) => updateEmailSetting('fromName', e.target.value)}
+                    onChange={(e) =>
+                      updateEmailSetting("fromName", e.target.value)
+                    }
                     placeholder="Your Site Name"
                   />
                 </div>
@@ -508,7 +543,10 @@ export default function AdminSettings() {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <Label htmlFor="enablePayments" className="text-base font-medium">
+                  <Label
+                    htmlFor="enablePayments"
+                    className="text-base font-medium"
+                  >
                     Enable Payments
                   </Label>
                   <p className="text-sm text-gray-600">
@@ -518,7 +556,9 @@ export default function AdminSettings() {
                 <Switch
                   id="enablePayments"
                   checked={settings.payment.enablePayments}
-                  onCheckedChange={(checked) => updatePaymentSetting('enablePayments', checked)}
+                  onCheckedChange={(checked) =>
+                    updatePaymentSetting("enablePayments", checked)
+                  }
                 />
               </div>
 
@@ -529,7 +569,9 @@ export default function AdminSettings() {
                       <Label htmlFor="paymentGateway">Payment Gateway</Label>
                       <Select
                         value={settings.payment.paymentGateway}
-                        onValueChange={(value) => updatePaymentSetting('paymentGateway', value)}
+                        onValueChange={(value) =>
+                          updatePaymentSetting("paymentGateway", value)
+                        }
                       >
                         <SelectTrigger>
                           <SelectValue />
@@ -543,14 +585,21 @@ export default function AdminSettings() {
                       </Select>
                     </div>
                     <div>
-                      <Label htmlFor="commissionRate">Commission Rate (%)</Label>
+                      <Label htmlFor="commissionRate">
+                        Commission Rate (%)
+                      </Label>
                       <Input
                         id="commissionRate"
                         type="number"
                         min="0"
                         max="100"
                         value={settings.payment.commissionRate}
-                        onChange={(e) => updatePaymentSetting('commissionRate', parseFloat(e.target.value))}
+                        onChange={(e) =>
+                          updatePaymentSetting(
+                            "commissionRate",
+                            parseFloat(e.target.value),
+                          )
+                        }
                         placeholder="5"
                       />
                     </div>
@@ -562,7 +611,9 @@ export default function AdminSettings() {
                       id="paymentApiKey"
                       type="password"
                       value={settings.payment.paymentApiKey}
-                      onChange={(e) => updatePaymentSetting('paymentApiKey', e.target.value)}
+                      onChange={(e) =>
+                        updatePaymentSetting("paymentApiKey", e.target.value)
+                      }
                       placeholder="Your payment gateway API key"
                     />
                   </div>
@@ -573,18 +624,25 @@ export default function AdminSettings() {
               <div className="border-t pt-6">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <Label className="text-base font-medium">PhonePe Payment Gateway</Label>
-                    <p className="text-sm text-gray-600">Configure PhonePe for Indian payments</p>
+                    <Label className="text-base font-medium">
+                      PhonePe Payment Gateway
+                    </Label>
+                    <p className="text-sm text-gray-600">
+                      Configure PhonePe for Indian payments
+                    </p>
                   </div>
                   <Switch
                     checked={settings.payment.phonePe.enabled}
                     onCheckedChange={(checked) =>
-                      setSettings(prev => ({
+                      setSettings((prev) => ({
                         ...prev,
                         payment: {
                           ...prev.payment,
-                          phonePe: { ...prev.payment.phonePe, enabled: checked }
-                        }
+                          phonePe: {
+                            ...prev.payment.phonePe,
+                            enabled: checked,
+                          },
+                        },
                       }))
                     }
                   />
@@ -599,12 +657,15 @@ export default function AdminSettings() {
                           id="phonePeMerchantId"
                           value={settings.payment.phonePe.merchantId}
                           onChange={(e) =>
-                            setSettings(prev => ({
+                            setSettings((prev) => ({
                               ...prev,
                               payment: {
                                 ...prev.payment,
-                                phonePe: { ...prev.payment.phonePe, merchantId: e.target.value }
-                              }
+                                phonePe: {
+                                  ...prev.payment.phonePe,
+                                  merchantId: e.target.value,
+                                },
+                              },
                             }))
                           }
                           placeholder="Your PhonePe Merchant ID"
@@ -616,12 +677,15 @@ export default function AdminSettings() {
                           id="phonePeSaltIndex"
                           value={settings.payment.phonePe.saltIndex}
                           onChange={(e) =>
-                            setSettings(prev => ({
+                            setSettings((prev) => ({
                               ...prev,
                               payment: {
                                 ...prev.payment,
-                                phonePe: { ...prev.payment.phonePe, saltIndex: e.target.value }
-                              }
+                                phonePe: {
+                                  ...prev.payment.phonePe,
+                                  saltIndex: e.target.value,
+                                },
+                              },
                             }))
                           }
                           placeholder="Salt Index (usually 1)"
@@ -636,12 +700,15 @@ export default function AdminSettings() {
                         type="password"
                         value={settings.payment.phonePe.saltKey}
                         onChange={(e) =>
-                          setSettings(prev => ({
+                          setSettings((prev) => ({
                             ...prev,
                             payment: {
                               ...prev.payment,
-                              phonePe: { ...prev.payment.phonePe, saltKey: e.target.value }
-                            }
+                              phonePe: {
+                                ...prev.payment.phonePe,
+                                saltKey: e.target.value,
+                              },
+                            },
                           }))
                         }
                         placeholder="Your PhonePe Salt Key"
@@ -651,17 +718,22 @@ export default function AdminSettings() {
                     <div className="flex items-center justify-between">
                       <div>
                         <Label className="text-sm font-medium">Test Mode</Label>
-                        <p className="text-xs text-gray-600">Use PhonePe sandbox for testing</p>
+                        <p className="text-xs text-gray-600">
+                          Use PhonePe sandbox for testing
+                        </p>
                       </div>
                       <Switch
                         checked={settings.payment.phonePe.testMode}
                         onCheckedChange={(checked) =>
-                          setSettings(prev => ({
+                          setSettings((prev) => ({
                             ...prev,
                             payment: {
                               ...prev.payment,
-                              phonePe: { ...prev.payment.phonePe, testMode: checked }
-                            }
+                              phonePe: {
+                                ...prev.payment.phonePe,
+                                testMode: checked,
+                              },
+                            },
                           }))
                         }
                       />
@@ -672,7 +744,9 @@ export default function AdminSettings() {
                         <strong>PhonePe Setup Instructions:</strong>
                       </p>
                       <ul className="text-xs text-yellow-700 mt-2 space-y-1">
-                        <li>• Get your Merchant ID from PhonePe Business Dashboard</li>
+                        <li>
+                          • Get your Merchant ID from PhonePe Business Dashboard
+                        </li>
                         <li>• Generate Salt Key from API section</li>
                         <li>• Salt Index is typically "1" for primary key</li>
                         <li>• Enable Test Mode for sandbox environment</li>
@@ -691,12 +765,12 @@ export default function AdminSettings() {
 
 function getFeatureDescription(key: string): string {
   const descriptions: Record<string, string> = {
-    enableUserRegistration: 'Allow new users to register on the platform',
-    enablePropertyPosting: 'Allow users to post property listings',
-    enableChat: 'Enable chat functionality between users',
-    enableNotifications: 'Send email and push notifications',
-    requirePropertyApproval: 'Require admin approval for new property listings',
-    enableSellerVerification: 'Enable seller verification process',
+    enableUserRegistration: "Allow new users to register on the platform",
+    enablePropertyPosting: "Allow users to post property listings",
+    enableChat: "Enable chat functionality between users",
+    enableNotifications: "Send email and push notifications",
+    requirePropertyApproval: "Require admin approval for new property listings",
+    enableSellerVerification: "Enable seller verification process",
   };
-  return descriptions[key] || '';
+  return descriptions[key] || "";
 }

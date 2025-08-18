@@ -1,4 +1,4 @@
-import CryptoJS from 'crypto-js';
+import CryptoJS from "crypto-js";
 
 interface PhonePeConfig {
   merchantId: string;
@@ -26,17 +26,17 @@ class PhonePeService {
 
   async loadConfig(): Promise<PhonePeConfig> {
     try {
-      const response = await fetch('/api/admin/settings/phonepe');
+      const response = await fetch("/api/admin/settings/phonepe");
       const data = await response.json();
-      
+
       if (data.success && data.data.enabled) {
         this.config = data.data;
         return this.config;
       } else {
-        throw new Error('PhonePe is not enabled or configured');
+        throw new Error("PhonePe is not enabled or configured");
       }
     } catch (error) {
-      console.error('Error loading PhonePe config:', error);
+      console.error("Error loading PhonePe config:", error);
       throw error;
     }
   }
@@ -47,12 +47,12 @@ class PhonePeService {
 
   generateChecksum(payload: string, endpoint: string): string {
     if (!this.config) {
-      throw new Error('PhonePe config not loaded');
+      throw new Error("PhonePe config not loaded");
     }
 
     const data = payload + endpoint + this.config.saltKey;
     const hash = CryptoJS.SHA256(data).toString();
-    return hash + '###' + this.config.saltIndex;
+    return hash + "###" + this.config.saltIndex;
   }
 
   async initiatePayment(paymentData: {
@@ -79,23 +79,23 @@ class PhonePeService {
       }
 
       if (!this.config) {
-        throw new Error('PhonePe configuration not available');
+        throw new Error("PhonePe configuration not available");
       }
 
       const merchantTransactionId = this.generateTransactionId();
       const baseUrl = window.location.origin;
-      
+
       const paymentRequest: PaymentRequest = {
         merchantTransactionId,
         merchantUserId: paymentData.userId,
         amount: paymentData.amount * 100, // Convert to paise
-        redirectUrl: `${baseUrl}/payment-callback?packageId=${paymentData.packageId}&propertyId=${paymentData.propertyId || ''}&transactionId=${merchantTransactionId}`,
-        redirectMode: 'POST',
+        redirectUrl: `${baseUrl}/payment-callback?packageId=${paymentData.packageId}&propertyId=${paymentData.propertyId || ""}&transactionId=${merchantTransactionId}`,
+        redirectMode: "POST",
         callbackUrl: `${baseUrl}/api/payments/phonepe/callback`,
         mobileNumber: paymentData.userPhone,
         paymentInstrument: {
-          type: 'PAY_PAGE'
-        }
+          type: "PAY_PAGE",
+        },
       };
 
       // Convert to base64
@@ -103,52 +103,55 @@ class PhonePeService {
       const base64Payload = btoa(payloadString);
 
       // Generate checksum
-      const endpoint = '/pg/v1/pay';
+      const endpoint = "/pg/v1/pay";
       const checksum = this.generateChecksum(base64Payload, endpoint);
 
       // API URL
-      const apiUrl = this.config.testMode 
-        ? 'https://api-preprod.phonepe.com/apis/pg-sandbox'
-        : 'https://api.phonepe.com/apis/hermes';
+      const apiUrl = this.config.testMode
+        ? "https://api-preprod.phonepe.com/apis/pg-sandbox"
+        : "https://api.phonepe.com/apis/hermes";
 
       // Make payment request
       const response = await fetch(`${apiUrl}/pg/v1/pay`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'X-VERIFY': checksum,
+          "Content-Type": "application/json",
+          "X-VERIFY": checksum,
         },
         body: JSON.stringify({
-          request: base64Payload
-        })
+          request: base64Payload,
+        }),
       });
 
       const responseData = await response.json();
 
       if (responseData.success) {
         // Store transaction details locally
-        localStorage.setItem(`phonepe_txn_${merchantTransactionId}`, JSON.stringify({
-          packageId: paymentData.packageId,
-          propertyId: paymentData.propertyId,
-          amount: paymentData.amount,
-          timestamp: Date.now()
-        }));
+        localStorage.setItem(
+          `phonepe_txn_${merchantTransactionId}`,
+          JSON.stringify({
+            packageId: paymentData.packageId,
+            propertyId: paymentData.propertyId,
+            amount: paymentData.amount,
+            timestamp: Date.now(),
+          }),
+        );
 
         return {
           success: true,
-          data: responseData.data
+          data: responseData.data,
         };
       } else {
         return {
           success: false,
-          error: responseData.message || 'Payment initiation failed'
+          error: responseData.message || "Payment initiation failed",
         };
       }
     } catch (error: any) {
-      console.error('PhonePe payment error:', error);
+      console.error("PhonePe payment error:", error);
       return {
         success: false,
-        error: error.message || 'Failed to initiate PhonePe payment'
+        error: error.message || "Failed to initiate PhonePe payment",
       };
     }
   }
@@ -164,23 +167,23 @@ class PhonePeService {
       }
 
       if (!this.config) {
-        throw new Error('PhonePe configuration not available');
+        throw new Error("PhonePe configuration not available");
       }
 
       const endpoint = `/pg/v1/status/${this.config.merchantId}/${transactionId}`;
-      const checksum = this.generateChecksum('', endpoint);
+      const checksum = this.generateChecksum("", endpoint);
 
-      const apiUrl = this.config.testMode 
-        ? 'https://api-preprod.phonepe.com/apis/pg-sandbox'
-        : 'https://api.phonepe.com/apis/hermes';
+      const apiUrl = this.config.testMode
+        ? "https://api-preprod.phonepe.com/apis/pg-sandbox"
+        : "https://api.phonepe.com/apis/hermes";
 
       const response = await fetch(`${apiUrl}${endpoint}`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
-          'X-VERIFY': checksum,
-          'X-MERCHANT-ID': this.config.merchantId,
-        }
+          "Content-Type": "application/json",
+          "X-VERIFY": checksum,
+          "X-MERCHANT-ID": this.config.merchantId,
+        },
       });
 
       const responseData = await response.json();
@@ -188,13 +191,13 @@ class PhonePeService {
       return {
         success: responseData.success,
         data: responseData.data,
-        error: responseData.success ? undefined : responseData.message
+        error: responseData.success ? undefined : responseData.message,
       };
     } catch (error: any) {
-      console.error('PhonePe status check error:', error);
+      console.error("PhonePe status check error:", error);
       return {
         success: false,
-        error: error.message || 'Failed to check payment status'
+        error: error.message || "Failed to check payment status",
       };
     }
   }
@@ -206,10 +209,10 @@ class PhonePeService {
     note: string;
   }): string {
     const { amount, transactionId, note } = paymentData;
-    
+
     // This would need the merchant VPA from PhonePe
-    const upiId = 'merchant@phonepe'; // Replace with actual merchant UPI ID
-    
+    const upiId = "merchant@phonepe"; // Replace with actual merchant UPI ID
+
     return `upi://pay?pa=${upiId}&pn=Aashish Property&am=${amount}&cu=INR&tn=${note}&tr=${transactionId}`;
   }
 }

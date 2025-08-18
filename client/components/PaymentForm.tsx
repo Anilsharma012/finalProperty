@@ -554,11 +554,15 @@ export default function PaymentForm({
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center p-3 border border-gray-200 rounded-lg">
                 <div className="text-sm font-medium">UPI Apps</div>
-                <div className="text-xs text-gray-500">PhonePe, GPay, PayTM</div>
+                <div className="text-xs text-gray-500">
+                  PhonePe, GPay, PayTM
+                </div>
               </div>
               <div className="text-center p-3 border border-gray-200 rounded-lg">
                 <div className="text-sm font-medium">Cards & Banking</div>
-                <div className="text-xs text-gray-500">Debit/Credit, Net Banking</div>
+                <div className="text-xs text-gray-500">
+                  Debit/Credit, Net Banking
+                </div>
               </div>
             </div>
 

@@ -576,7 +576,6 @@ const ComprehensiveAuth = () => {
                     </div>
                   </div>
 
-
                   <Button
                     type="submit"
                     className="w-full bg-[#C70000] hover:bg-[#A50000] text-white"
@@ -702,7 +701,6 @@ const ComprehensiveAuth = () => {
                     <p className="text-gray-600 text-sm mb-4">
                       Sign in instantly with your Google account
                     </p>
-
 
                     <Button
                       onClick={handleGoogleAuth}

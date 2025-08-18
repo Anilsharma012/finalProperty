@@ -10,7 +10,14 @@ interface StaffMember {
   email: string;
   phone?: string;
   password: string;
-  role: "super_admin" | "content_manager" | "sales_manager" | "support_executive" | "admin" | "property_moderator" | "custom_role";
+  role:
+    | "super_admin"
+    | "content_manager"
+    | "sales_manager"
+    | "support_executive"
+    | "admin"
+    | "property_moderator"
+    | "custom_role";
   permissions: string[];
   status: "active" | "inactive" | "suspended";
   lastLogin?: Date;
@@ -22,26 +29,54 @@ interface StaffMember {
 const rolePermissions = {
   super_admin: ["*"], // All permissions
   content_manager: [
-    "content.view", "content.create", "content.edit", "content.delete", "content.publish",
-    "categories.view", "categories.edit", "faq.view", "faq.edit",
-    "analytics.view"
+    "content.view",
+    "content.create",
+    "content.edit",
+    "content.delete",
+    "content.publish",
+    "categories.view",
+    "categories.edit",
+    "faq.view",
+    "faq.edit",
+    "analytics.view",
   ],
   sales_manager: [
-    "properties.view", "properties.edit", "properties.approve", "properties.featured",
-    "users.view", "analytics.view", "packages.view", "transactions.view", "reports.view"
+    "properties.view",
+    "properties.edit",
+    "properties.approve",
+    "properties.featured",
+    "users.view",
+    "analytics.view",
+    "packages.view",
+    "transactions.view",
+    "reports.view",
   ],
   support_executive: [
-    "users.view", "users.support", "support.tickets", "support.resolve",
-    "chat.view", "chat.manage", "faq.view", "notifications.send"
+    "users.view",
+    "users.support",
+    "support.tickets",
+    "support.resolve",
+    "chat.view",
+    "chat.manage",
+    "faq.view",
+    "notifications.send",
   ],
   property_moderator: [
-    "properties.view", "properties.edit", "properties.approve",
-    "users.view", "categories.view", "analytics.view"
+    "properties.view",
+    "properties.edit",
+    "properties.approve",
+    "users.view",
+    "categories.view",
+    "analytics.view",
   ],
   admin: [
-    "properties.view", "properties.edit", "users.view", "categories.view", "analytics.view"
+    "properties.view",
+    "properties.edit",
+    "users.view",
+    "categories.view",
+    "analytics.view",
   ],
-  custom_role: [] // Will be filled with custom permissions
+  custom_role: [], // Will be filled with custom permissions
 };
 
 // Get all staff members
@@ -57,14 +92,11 @@ export const getAllStaff: RequestHandler = async (req, res) => {
     const staff = await db
       .collection("users")
       .find(
-        { 
+        {
           ...filter,
-          $or: [
-            { userType: "admin" },
-            { role: { $exists: true } }
-          ]
+          $or: [{ userType: "admin" }, { role: { $exists: true } }],
         },
-        { projection: { password: 0 } }
+        { projection: { password: 0 } },
       )
       .sort({ createdAt: -1 })
       .toArray();
@@ -107,9 +139,7 @@ export const createStaff: RequestHandler = async (req, res) => {
     }
 
     // Check if email already exists in users collection
-    const existingUser = await db
-      .collection("users")
-      .findOne({ email });
+    const existingUser = await db.collection("users").findOne({ email });
 
     if (existingUser) {
       return res.status(400).json({
@@ -122,8 +152,9 @@ export const createStaff: RequestHandler = async (req, res) => {
     let password = req.body.password;
     if (autoGeneratePassword || !password) {
       // Generate a secure random password
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$&';
-      password = '';
+      const chars =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$&";
+      password = "";
       for (let i = 0; i < 12; i++) {
         password += chars.charAt(Math.floor(Math.random() * chars.length));
       }
@@ -146,7 +177,7 @@ export const createStaff: RequestHandler = async (req, res) => {
     }
 
     // Create username from email (first part before @)
-    const username = email.split('@')[0].toLowerCase();
+    const username = email.split("@")[0].toLowerCase();
 
     const newStaff: Omit<StaffMember, "_id"> = {
       name,
@@ -196,7 +227,7 @@ export const createStaff: RequestHandler = async (req, res) => {
         password: string;
         email: string;
         role: string;
-      }
+      };
     }> = {
       success: true,
       data: {
@@ -206,7 +237,7 @@ export const createStaff: RequestHandler = async (req, res) => {
           password, // Send password in response for admin to share
           email,
           role,
-        }
+        },
       },
       message: `Staff member created successfully! Login credentials: Username: ${username}, Password: ${password}`,
     };
@@ -243,12 +274,10 @@ export const updateStaff: RequestHandler = async (req, res) => {
 
     // Check if email is being updated and if it conflicts with existing users
     if (updateData.email) {
-      const existingUser = await db
-        .collection("users")
-        .findOne({
-          email: updateData.email,
-          _id: { $ne: new ObjectId(staffId) } // Exclude current user
-        });
+      const existingUser = await db.collection("users").findOne({
+        email: updateData.email,
+        _id: { $ne: new ObjectId(staffId) }, // Exclude current user
+      });
 
       if (existingUser) {
         return res.status(400).json({
@@ -270,7 +299,8 @@ export const updateStaff: RequestHandler = async (req, res) => {
         }
       } else {
         // For predefined roles, use role-based permissions
-        updateData.permissions = rolePermissions[updateData.role] || rolePermissions.admin;
+        updateData.permissions =
+          rolePermissions[updateData.role] || rolePermissions.admin;
       }
     }
 
@@ -362,17 +392,15 @@ export const updateStaffStatus: RequestHandler = async (req, res) => {
       });
     }
 
-    const result = await db
-      .collection("users")
-      .updateOne(
-        { _id: new ObjectId(staffId) },
-        { 
-          $set: { 
-            status,
-            updatedAt: new Date(),
-          }
-        }
-      );
+    const result = await db.collection("users").updateOne(
+      { _id: new ObjectId(staffId) },
+      {
+        $set: {
+          status,
+          updatedAt: new Date(),
+        },
+      },
+    );
 
     if (result.matchedCount === 0) {
       return res.status(404).json({
@@ -419,17 +447,15 @@ export const updateStaffPassword: RequestHandler = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    const result = await db
-      .collection("users")
-      .updateOne(
-        { _id: new ObjectId(staffId) },
-        { 
-          $set: { 
-            password: hashedPassword,
-            updatedAt: new Date(),
-          }
-        }
-      );
+    const result = await db.collection("users").updateOne(
+      { _id: new ObjectId(staffId) },
+      {
+        $set: {
+          password: hashedPassword,
+          updatedAt: new Date(),
+        },
+      },
+    );
 
     if (result.matchedCount === 0) {
       return res.status(404).json({
@@ -515,63 +541,227 @@ export const getAvailablePermissions: RequestHandler = async (req, res) => {
   try {
     const availablePermissions = {
       "User Management": [
-        { key: "users.view", label: "View Users", description: "View user profiles and information" },
-        { key: "users.edit", label: "Edit Users", description: "Edit user profiles and settings" },
-        { key: "users.delete", label: "Delete Users", description: "Delete user accounts" },
-        { key: "users.support", label: "User Support", description: "Handle user support queries" },
-        { key: "users.export", label: "Export Users", description: "Export user data" },
+        {
+          key: "users.view",
+          label: "View Users",
+          description: "View user profiles and information",
+        },
+        {
+          key: "users.edit",
+          label: "Edit Users",
+          description: "Edit user profiles and settings",
+        },
+        {
+          key: "users.delete",
+          label: "Delete Users",
+          description: "Delete user accounts",
+        },
+        {
+          key: "users.support",
+          label: "User Support",
+          description: "Handle user support queries",
+        },
+        {
+          key: "users.export",
+          label: "Export Users",
+          description: "Export user data",
+        },
       ],
       "Property Management": [
-        { key: "properties.view", label: "View Properties", description: "View property listings" },
-        { key: "properties.edit", label: "Edit Properties", description: "Edit property information" },
-        { key: "properties.delete", label: "Delete Properties", description: "Delete property listings" },
-        { key: "properties.approve", label: "Approve Properties", description: "Approve/reject property listings" },
-        { key: "properties.featured", label: "Feature Properties", description: "Mark properties as featured" },
-        { key: "properties.export", label: "Export Properties", description: "Export property data" },
+        {
+          key: "properties.view",
+          label: "View Properties",
+          description: "View property listings",
+        },
+        {
+          key: "properties.edit",
+          label: "Edit Properties",
+          description: "Edit property information",
+        },
+        {
+          key: "properties.delete",
+          label: "Delete Properties",
+          description: "Delete property listings",
+        },
+        {
+          key: "properties.approve",
+          label: "Approve Properties",
+          description: "Approve/reject property listings",
+        },
+        {
+          key: "properties.featured",
+          label: "Feature Properties",
+          description: "Mark properties as featured",
+        },
+        {
+          key: "properties.export",
+          label: "Export Properties",
+          description: "Export property data",
+        },
       ],
       "Content Management": [
-        { key: "content.view", label: "View Content", description: "View pages and blog posts" },
-        { key: "content.create", label: "Create Content", description: "Create pages and blog posts" },
-        { key: "content.edit", label: "Edit Content", description: "Edit pages and blog posts" },
-        { key: "content.delete", label: "Delete Content", description: "Delete pages and blog posts" },
-        { key: "content.publish", label: "Publish Content", description: "Publish/unpublish content" },
+        {
+          key: "content.view",
+          label: "View Content",
+          description: "View pages and blog posts",
+        },
+        {
+          key: "content.create",
+          label: "Create Content",
+          description: "Create pages and blog posts",
+        },
+        {
+          key: "content.edit",
+          label: "Edit Content",
+          description: "Edit pages and blog posts",
+        },
+        {
+          key: "content.delete",
+          label: "Delete Content",
+          description: "Delete pages and blog posts",
+        },
+        {
+          key: "content.publish",
+          label: "Publish Content",
+          description: "Publish/unpublish content",
+        },
       ],
       "Category Management": [
-        { key: "categories.view", label: "View Categories", description: "View property categories" },
-        { key: "categories.edit", label: "Edit Categories", description: "Edit property categories" },
-        { key: "categories.create", label: "Create Categories", description: "Create new categories" },
-        { key: "categories.delete", label: "Delete Categories", description: "Delete categories" },
+        {
+          key: "categories.view",
+          label: "View Categories",
+          description: "View property categories",
+        },
+        {
+          key: "categories.edit",
+          label: "Edit Categories",
+          description: "Edit property categories",
+        },
+        {
+          key: "categories.create",
+          label: "Create Categories",
+          description: "Create new categories",
+        },
+        {
+          key: "categories.delete",
+          label: "Delete Categories",
+          description: "Delete categories",
+        },
       ],
       "Payment & Packages": [
-        { key: "packages.view", label: "View Packages", description: "View advertisement packages" },
-        { key: "packages.edit", label: "Edit Packages", description: "Edit advertisement packages" },
-        { key: "transactions.view", label: "View Transactions", description: "View payment transactions" },
-        { key: "transactions.manage", label: "Manage Transactions", description: "Approve/reject payments" },
-        { key: "payment.settings", label: "Payment Settings", description: "Configure payment gateways" },
+        {
+          key: "packages.view",
+          label: "View Packages",
+          description: "View advertisement packages",
+        },
+        {
+          key: "packages.edit",
+          label: "Edit Packages",
+          description: "Edit advertisement packages",
+        },
+        {
+          key: "transactions.view",
+          label: "View Transactions",
+          description: "View payment transactions",
+        },
+        {
+          key: "transactions.manage",
+          label: "Manage Transactions",
+          description: "Approve/reject payments",
+        },
+        {
+          key: "payment.settings",
+          label: "Payment Settings",
+          description: "Configure payment gateways",
+        },
       ],
       "Analytics & Reports": [
-        { key: "analytics.view", label: "View Analytics", description: "View dashboard analytics" },
-        { key: "analytics.export", label: "Export Analytics", description: "Export analytics data" },
-        { key: "reports.view", label: "View Reports", description: "View system reports" },
-        { key: "reports.generate", label: "Generate Reports", description: "Generate custom reports" },
+        {
+          key: "analytics.view",
+          label: "View Analytics",
+          description: "View dashboard analytics",
+        },
+        {
+          key: "analytics.export",
+          label: "Export Analytics",
+          description: "Export analytics data",
+        },
+        {
+          key: "reports.view",
+          label: "View Reports",
+          description: "View system reports",
+        },
+        {
+          key: "reports.generate",
+          label: "Generate Reports",
+          description: "Generate custom reports",
+        },
       ],
       "Chat & Communication": [
-        { key: "chat.view", label: "View Chats", description: "View user conversations" },
-        { key: "chat.manage", label: "Manage Chats", description: "Reply to user conversations" },
-        { key: "notifications.send", label: "Send Notifications", description: "Send push notifications" },
-        { key: "email.send", label: "Send Emails", description: "Send bulk emails" },
+        {
+          key: "chat.view",
+          label: "View Chats",
+          description: "View user conversations",
+        },
+        {
+          key: "chat.manage",
+          label: "Manage Chats",
+          description: "Reply to user conversations",
+        },
+        {
+          key: "notifications.send",
+          label: "Send Notifications",
+          description: "Send push notifications",
+        },
+        {
+          key: "email.send",
+          label: "Send Emails",
+          description: "Send bulk emails",
+        },
       ],
       "System Settings": [
-        { key: "settings.view", label: "View Settings", description: "View system settings" },
-        { key: "settings.edit", label: "Edit Settings", description: "Modify system settings" },
-        { key: "staff.manage", label: "Manage Staff", description: "Manage staff members and roles" },
-        { key: "system.backup", label: "System Backup", description: "Create system backups" },
+        {
+          key: "settings.view",
+          label: "View Settings",
+          description: "View system settings",
+        },
+        {
+          key: "settings.edit",
+          label: "Edit Settings",
+          description: "Modify system settings",
+        },
+        {
+          key: "staff.manage",
+          label: "Manage Staff",
+          description: "Manage staff members and roles",
+        },
+        {
+          key: "system.backup",
+          label: "System Backup",
+          description: "Create system backups",
+        },
       ],
       "FAQ & Support": [
-        { key: "faq.view", label: "View FAQs", description: "View FAQ entries" },
-        { key: "faq.edit", label: "Edit FAQs", description: "Edit FAQ entries" },
-        { key: "support.tickets", label: "Support Tickets", description: "Handle support tickets" },
-        { key: "support.resolve", label: "Resolve Issues", description: "Resolve user issues" },
+        {
+          key: "faq.view",
+          label: "View FAQs",
+          description: "View FAQ entries",
+        },
+        {
+          key: "faq.edit",
+          label: "Edit FAQs",
+          description: "Edit FAQ entries",
+        },
+        {
+          key: "support.tickets",
+          label: "Support Tickets",
+          description: "Handle support tickets",
+        },
+        {
+          key: "support.resolve",
+          label: "Resolve Issues",
+          description: "Resolve user issues",
+        },
       ],
     };
 

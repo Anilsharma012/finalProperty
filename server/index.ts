@@ -706,10 +706,30 @@ export function createServer() {
   app.get("/api/admin/stats", authenticateToken, requireAdmin, getUserStats);
 
   // Admin settings routes
-  app.get("/api/admin/settings", authenticateToken, requireAdmin, getAdminSettings);
-  app.put("/api/admin/settings", authenticateToken, requireAdmin, updateAdminSettings);
-  app.get("/api/admin/settings/phonepe", authenticateToken, requireAdmin, getPhonePeConfig);
-  app.put("/api/admin/settings/phonepe", authenticateToken, requireAdmin, updatePhonePeConfig);
+  app.get(
+    "/api/admin/settings",
+    authenticateToken,
+    requireAdmin,
+    getAdminSettings,
+  );
+  app.put(
+    "/api/admin/settings",
+    authenticateToken,
+    requireAdmin,
+    updateAdminSettings,
+  );
+  app.get(
+    "/api/admin/settings/phonepe",
+    authenticateToken,
+    requireAdmin,
+    getPhonePeConfig,
+  );
+  app.put(
+    "/api/admin/settings/phonepe",
+    authenticateToken,
+    requireAdmin,
+    updatePhonePeConfig,
+  );
   app.get(
     "/api/admin/user-stats",
     authenticateToken,
@@ -903,11 +923,23 @@ export function createServer() {
 
   // PhonePe payment routes
   app.post("/api/payments/phonepe/callback", phonePeCallback);
-  app.get("/api/payments/phonepe/status/:transactionId", getPhonePePaymentStatus);
-  app.post("/api/payments/phonepe/transaction", authenticateToken, createPhonePeTransaction);
+  app.get(
+    "/api/payments/phonepe/status/:transactionId",
+    getPhonePePaymentStatus,
+  );
+  app.post(
+    "/api/payments/phonepe/transaction",
+    authenticateToken,
+    createPhonePeTransaction,
+  );
 
   // Test endpoints for debugging
-  app.get("/api/test/phonepe-config", authenticateToken, requireAdmin, testPhonePeConfig);
+  app.get(
+    "/api/test/phonepe-config",
+    authenticateToken,
+    requireAdmin,
+    testPhonePeConfig,
+  );
   app.get("/api/test/payment-methods", testPaymentMethods);
   app.get("/api/test/database", testDatabaseConnection);
 

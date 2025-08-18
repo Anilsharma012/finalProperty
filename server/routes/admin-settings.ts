@@ -50,19 +50,19 @@ export const getAdminSettings: RequestHandler = async (req, res) => {
     const db = getDatabase();
 
     let settings = await db.collection("admin_settings").findOne({});
-    
+
     if (!settings) {
       // Create default settings if they don't exist
       const defaultSettings: AdminSettings = {
         general: {
-          siteName: 'Aashish Property',
-          siteDescription: 'Your trusted partner in real estate solutions',
-          siteUrl: '',
-          contactEmail: 'contact@aashishproperty.com',
-          contactPhone: '+91 9876543210',
-          address: '',
-          currency: 'INR',
-          timezone: 'Asia/Kolkata',
+          siteName: "Aashish Property",
+          siteDescription: "Your trusted partner in real estate solutions",
+          siteUrl: "",
+          contactEmail: "contact@aashishproperty.com",
+          contactPhone: "+91 9876543210",
+          address: "",
+          currency: "INR",
+          timezone: "Asia/Kolkata",
         },
         features: {
           enableUserRegistration: true,
@@ -73,23 +73,23 @@ export const getAdminSettings: RequestHandler = async (req, res) => {
           enableSellerVerification: true,
         },
         email: {
-          smtpHost: '',
+          smtpHost: "",
           smtpPort: 587,
-          smtpUsername: '',
-          smtpPassword: '',
-          fromEmail: '',
-          fromName: '',
+          smtpUsername: "",
+          smtpPassword: "",
+          fromEmail: "",
+          fromName: "",
         },
         payment: {
           enablePayments: false,
-          paymentGateway: 'razorpay',
-          paymentApiKey: '',
+          paymentGateway: "razorpay",
+          paymentApiKey: "",
           commissionRate: 5,
           phonePe: {
             enabled: false,
-            merchantId: '',
-            saltKey: '',
-            saltIndex: '1',
+            merchantId: "",
+            saltKey: "",
+            saltIndex: "1",
             testMode: true,
           },
         },
@@ -126,11 +126,9 @@ export const updateAdminSettings: RequestHandler = async (req, res) => {
       updatedAt: new Date(),
     };
 
-    const result = await db.collection("admin_settings").replaceOne(
-      {},
-      updateData,
-      { upsert: true }
-    );
+    const result = await db
+      .collection("admin_settings")
+      .replaceOne({}, updateData, { upsert: true });
 
     const response: ApiResponse<{ message: string }> = {
       success: true,
@@ -153,15 +151,15 @@ export const getPhonePeConfig: RequestHandler = async (req, res) => {
     const db = getDatabase();
 
     const settings = await db.collection("admin_settings").findOne({});
-    
+
     if (!settings || !settings.payment || !settings.payment.phonePe) {
       return res.json({
         success: true,
         data: {
           enabled: false,
-          merchantId: '',
-          saltKey: '',
-          saltIndex: '1',
+          merchantId: "",
+          saltKey: "",
+          saltIndex: "1",
           testMode: true,
         },
       });
@@ -202,7 +200,7 @@ export const updatePhonePeConfig: RequestHandler = async (req, res) => {
           updatedAt: new Date(),
         },
       },
-      { upsert: true }
+      { upsert: true },
     );
 
     const response: ApiResponse<{ message: string }> = {

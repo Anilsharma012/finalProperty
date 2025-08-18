@@ -33,12 +33,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import {
   Dialog,
   DialogContent,
@@ -110,7 +105,9 @@ export default function ContentManagement() {
           setError(data.error || "Failed to fetch pages");
         }
       } else {
-        setError(`Failed to fetch pages: ${response.status} ${response.statusText}`);
+        setError(
+          `Failed to fetch pages: ${response.status} ${response.statusText}`,
+        );
       }
     } catch (error) {
       console.error("Error fetching pages:", error);
@@ -144,18 +141,24 @@ export default function ContentManagement() {
           setSuccessMessage(
             formData.status === "published"
               ? "Page created and published successfully! It's now visible on the website and footer."
-              : "Page created as draft. Publish it to make it visible on the website footer."
+              : "Page created as draft. Publish it to make it visible on the website footer.",
           );
           setTimeout(() => setSuccessMessage(""), 5000);
 
           // Trigger footer refresh if page is published
           if (formData.status === "published") {
             console.log("🔄 Triggering footer refresh for new published page");
-            window.dispatchEvent(new CustomEvent('footerUpdate'));
-            window.dispatchEvent(new CustomEvent('footerRefresh'));
-            window.dispatchEvent(new CustomEvent('pagePublished', {
-              detail: { pageId: data.data._id, title: formData.title, slug: formData.slug }
-            }));
+            window.dispatchEvent(new CustomEvent("footerUpdate"));
+            window.dispatchEvent(new CustomEvent("footerRefresh"));
+            window.dispatchEvent(
+              new CustomEvent("pagePublished", {
+                detail: {
+                  pageId: data.data._id,
+                  title: formData.title,
+                  slug: formData.slug,
+                },
+              }),
+            );
           }
         } else {
           setError(data.error || "Failed to create page");
@@ -208,7 +211,7 @@ export default function ContentManagement() {
           setSuccessMessage(
             formData.status === "published"
               ? "Page updated successfully! Changes are now live on the website."
-              : "Page updated successfully."
+              : "Page updated successfully.",
           );
           setTimeout(() => setSuccessMessage(""), 5000);
           console.log("✅ Page update successful");
@@ -219,17 +222,29 @@ export default function ContentManagement() {
 
           if (isPublished || wasPublished) {
             console.log("🔄 Triggering footer refresh for updated page");
-            window.dispatchEvent(new CustomEvent('footerUpdate'));
-            window.dispatchEvent(new CustomEvent('footerRefresh'));
+            window.dispatchEvent(new CustomEvent("footerUpdate"));
+            window.dispatchEvent(new CustomEvent("footerRefresh"));
 
             if (isPublished) {
-              window.dispatchEvent(new CustomEvent('pagePublished', {
-                detail: { pageId: selectedPage?._id, title: formData.title, slug: formData.slug }
-              }));
+              window.dispatchEvent(
+                new CustomEvent("pagePublished", {
+                  detail: {
+                    pageId: selectedPage?._id,
+                    title: formData.title,
+                    slug: formData.slug,
+                  },
+                }),
+              );
             } else if (wasPublished && !isPublished) {
-              window.dispatchEvent(new CustomEvent('pageUnpublished', {
-                detail: { pageId: selectedPage?._id, title: formData.title, slug: formData.slug }
-              }));
+              window.dispatchEvent(
+                new CustomEvent("pageUnpublished", {
+                  detail: {
+                    pageId: selectedPage?._id,
+                    title: formData.title,
+                    slug: formData.slug,
+                  },
+                }),
+              );
             }
           }
         } else {
@@ -241,21 +256,33 @@ export default function ContentManagement() {
         console.error("❌ Update response error:", response.status, errorText);
         try {
           const errorData = JSON.parse(errorText);
-          setError(errorData.error || `Failed to update page: ${response.status}`);
+          setError(
+            errorData.error || `Failed to update page: ${response.status}`,
+          );
         } catch {
-          setError(`Failed to update page: ${response.status} ${response.statusText}`);
+          setError(
+            `Failed to update page: ${response.status} ${response.statusText}`,
+          );
         }
       }
     } catch (error) {
       console.error("❌ Error updating page:", error);
-      setError(`Failed to update page: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setError(
+        `Failed to update page: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = async (pageId: string) => {
-    if (!token || !confirm("Are you sure you want to delete this page? This action cannot be undone.")) return;
+    if (
+      !token ||
+      !confirm(
+        "Are you sure you want to delete this page? This action cannot be undone.",
+      )
+    )
+      return;
 
     try {
       const response = await fetch(`/api/admin/content/${pageId}`, {
@@ -264,16 +291,18 @@ export default function ContentManagement() {
       });
 
       if (response.ok) {
-        const deletedPage = pages.find(page => page._id === pageId);
-        setPages(pages.filter(page => page._id !== pageId));
+        const deletedPage = pages.find((page) => page._id === pageId);
+        setPages(pages.filter((page) => page._id !== pageId));
         setSuccessMessage("Page deleted successfully!");
         setTimeout(() => setSuccessMessage(""), 3000);
 
         // Trigger footer refresh if the deleted page was published
         if (deletedPage?.status === "published") {
-          console.log("🔄 Triggering footer refresh for deleted published page");
-          window.dispatchEvent(new CustomEvent('footerUpdate'));
-          window.dispatchEvent(new CustomEvent('footerRefresh'));
+          console.log(
+            "🔄 Triggering footer refresh for deleted published page",
+          );
+          window.dispatchEvent(new CustomEvent("footerUpdate"));
+          window.dispatchEvent(new CustomEvent("footerRefresh"));
         }
       } else {
         const data = await response.json();
@@ -339,12 +368,17 @@ export default function ContentManagement() {
       });
 
       console.log("📡 API Response status:", response.status);
-      console.log("📡 API Response headers:", Object.fromEntries(response.headers.entries()));
+      console.log(
+        "📡 API Response headers:",
+        Object.fromEntries(response.headers.entries()),
+      );
 
       if (response.ok) {
         const data = await response.json();
         console.log("✅ API Response data:", data);
-        setSuccessMessage(`✅ API Test Successful! Found ${data.data?.length || 0} pages. Status: ${response.status}`);
+        setSuccessMessage(
+          `✅ API Test Successful! Found ${data.data?.length || 0} pages. Status: ${response.status}`,
+        );
         setTimeout(() => setSuccessMessage(""), 5000);
       } else {
         const errorText = await response.text();
@@ -353,7 +387,9 @@ export default function ContentManagement() {
       }
     } catch (error) {
       console.error("❌ API Test error:", error);
-      setError(`API Test Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setError(
+        `API Test Error: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     } finally {
       setSaving(false);
     }
@@ -398,7 +434,9 @@ export default function ContentManagement() {
       if (response.ok) {
         const data = await response.json();
         console.log("✅ Test update response data:", data);
-        setSuccessMessage(`✅ Test Update Successful! Page "${page.title}" updated.`);
+        setSuccessMessage(
+          `✅ Test Update Successful! Page "${page.title}" updated.`,
+        );
         setTimeout(() => setSuccessMessage(""), 5000);
         fetchPages(); // Refresh the list
       } else {
@@ -408,7 +446,9 @@ export default function ContentManagement() {
       }
     } catch (error) {
       console.error("❌ Test update error:", error);
-      setError(`Test Update Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setError(
+        `Test Update Error: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     } finally {
       setSaving(false);
     }
@@ -420,9 +460,9 @@ export default function ContentManagement() {
       draft: { className: "bg-yellow-100 text-yellow-800", icon: Edit },
       archived: { className: "bg-gray-100 text-gray-800", icon: X },
     };
-    
+
     const { className, icon: Icon } = config[status] || config.draft;
-    
+
     return (
       <Badge className={className}>
         <Icon className="h-3 w-3 mr-1" />
@@ -438,9 +478,9 @@ export default function ContentManagement() {
       terms: { className: "bg-orange-100 text-orange-800", label: "Terms" },
       faq: { className: "bg-indigo-100 text-indigo-800", label: "FAQ" },
     };
-    
+
     const { className, label } = config[type] || config.page;
-    
+
     return (
       <Badge variant="outline" className={className}>
         {label}
@@ -448,23 +488,25 @@ export default function ContentManagement() {
     );
   };
 
-  const filteredPages = pages.filter(page => {
-    const safeTitle = page.title || '';
-    const safeSlug = page.slug || '';
-    const safeSearchTerm = searchTerm || '';
-    const matchesSearch = safeTitle.toLowerCase().includes(safeSearchTerm.toLowerCase()) ||
-                         safeSlug.toLowerCase().includes(safeSearchTerm.toLowerCase());
-    const matchesStatus = selectedStatus === "all" || page.status === selectedStatus;
+  const filteredPages = pages.filter((page) => {
+    const safeTitle = page.title || "";
+    const safeSlug = page.slug || "";
+    const safeSearchTerm = searchTerm || "";
+    const matchesSearch =
+      safeTitle.toLowerCase().includes(safeSearchTerm.toLowerCase()) ||
+      safeSlug.toLowerCase().includes(safeSearchTerm.toLowerCase());
+    const matchesStatus =
+      selectedStatus === "all" || page.status === selectedStatus;
     const matchesType = selectedType === "all" || page.type === selectedType;
-    
+
     return matchesSearch && matchesStatus && matchesType;
   });
 
   const stats = {
     total: pages.length,
-    published: pages.filter(p => p.status === "published").length,
-    draft: pages.filter(p => p.status === "draft").length,
-    archived: pages.filter(p => p.status === "archived").length,
+    published: pages.filter((p) => p.status === "published").length,
+    draft: pages.filter((p) => p.status === "draft").length,
+    archived: pages.filter((p) => p.status === "archived").length,
   };
 
   // Initialize default pages if none exist
@@ -476,39 +518,47 @@ export default function ContentManagement() {
             {
               title: "About Us",
               slug: "about-us",
-              content: "<h1>About Aashish Property</h1><p>Welcome to Aashish Property, your trusted partner in real estate solutions in Rohtak and surrounding areas.</p>",
+              content:
+                "<h1>About Aashish Property</h1><p>Welcome to Aashish Property, your trusted partner in real estate solutions in Rohtak and surrounding areas.</p>",
               metaTitle: "About Us - Aashish Property",
-              metaDescription: "Learn more about Aashish Property, your trusted real estate partner in Rohtak.",
+              metaDescription:
+                "Learn more about Aashish Property, your trusted real estate partner in Rohtak.",
               status: "published",
-              type: "page"
+              type: "page",
             },
             {
               title: "Privacy Policy",
               slug: "privacy-policy",
-              content: "<h1>Privacy Policy</h1><p>Your privacy is important to us. This policy explains how we collect, use, and protect your information.</p>",
+              content:
+                "<h1>Privacy Policy</h1><p>Your privacy is important to us. This policy explains how we collect, use, and protect your information.</p>",
               metaTitle: "Privacy Policy - Aashish Property",
-              metaDescription: "Read our privacy policy to understand how we protect your data.",
+              metaDescription:
+                "Read our privacy policy to understand how we protect your data.",
               status: "published",
-              type: "policy"
+              type: "policy",
             },
             {
               title: "Terms and Conditions",
               slug: "terms-conditions",
-              content: "<h1>Terms and Conditions</h1><p>Please read these terms and conditions carefully before using our services.</p>",
+              content:
+                "<h1>Terms and Conditions</h1><p>Please read these terms and conditions carefully before using our services.</p>",
               metaTitle: "Terms and Conditions - Aashish Property",
-              metaDescription: "Terms and conditions for using Aashish Property services.",
+              metaDescription:
+                "Terms and conditions for using Aashish Property services.",
               status: "published",
-              type: "terms"
+              type: "terms",
             },
             {
               title: "Refund Policy",
               slug: "refund-policy",
-              content: "<h1>Refund Policy</h1><p>Our refund policy ensures fair treatment for all our customers.</p>",
+              content:
+                "<h1>Refund Policy</h1><p>Our refund policy ensures fair treatment for all our customers.</p>",
               metaTitle: "Refund Policy - Aashish Property",
-              metaDescription: "Understanding our refund policy for property services.",
+              metaDescription:
+                "Understanding our refund policy for property services.",
               status: "published",
-              type: "policy"
-            }
+              type: "policy",
+            },
           ];
 
           for (const pageData of defaultPages) {
@@ -568,11 +618,7 @@ export default function ContentManagement() {
               <p className="text-red-700 font-medium">Error</p>
               <p className="text-red-600 text-sm mt-1">{error}</p>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setError("")}
-            >
+            <Button variant="outline" size="sm" onClick={() => setError("")}>
               ✕
             </Button>
           </div>
@@ -594,7 +640,10 @@ export default function ContentManagement() {
       <div className="flex justify-between items-center">
         <div>
           <h3 className="text-2xl font-bold text-gray-900">Page Management</h3>
-          <p className="text-gray-600">Create dynamic pages that auto-appear in footer. All pages are MongoDB-connected and fully functional.</p>
+          <p className="text-gray-600">
+            Create dynamic pages that auto-appear in footer. All pages are
+            MongoDB-connected and fully functional.
+          </p>
           <div className="flex items-center space-x-4 mt-2">
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
               <Globe className="h-3 w-3 mr-1" />
@@ -604,8 +653,10 @@ export default function ContentManagement() {
               <Link className="h-3 w-3 mr-1" />
               Auto Footer Integration
             </span>
-            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${token ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-              🔑 Auth: {token ? 'Connected' : 'Missing'}
+            <span
+              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${token ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+            >
+              🔑 Auth: {token ? "Connected" : "Missing"}
             </span>
           </div>
         </div>
@@ -640,10 +691,26 @@ export default function ContentManagement() {
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
-              { title: "About Us", type: "page", description: "Company information" },
-              { title: "Privacy Policy", type: "policy", description: "Privacy terms" },
-              { title: "Terms & Conditions", type: "terms", description: "Service terms" },
-              { title: "Contact Us", type: "page", description: "Contact information" },
+              {
+                title: "About Us",
+                type: "page",
+                description: "Company information",
+              },
+              {
+                title: "Privacy Policy",
+                type: "policy",
+                description: "Privacy terms",
+              },
+              {
+                title: "Terms & Conditions",
+                type: "terms",
+                description: "Service terms",
+              },
+              {
+                title: "Contact Us",
+                type: "page",
+                description: "Contact information",
+              },
             ].map((template) => (
               <Button
                 key={template.title}
@@ -660,7 +727,9 @@ export default function ContentManagement() {
                 }}
               >
                 <span className="font-medium text-sm">{template.title}</span>
-                <span className="text-xs text-gray-500">{template.description}</span>
+                <span className="text-xs text-gray-500">
+                  {template.description}
+                </span>
               </Button>
             ))}
           </div>
@@ -685,7 +754,9 @@ export default function ContentManagement() {
             <Check className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{stats.published}</div>
+            <div className="text-2xl font-bold text-green-600">
+              {stats.published}
+            </div>
             <p className="text-xs text-muted-foreground">Live pages</p>
           </CardContent>
         </Card>
@@ -695,7 +766,9 @@ export default function ContentManagement() {
             <Edit className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">{stats.draft}</div>
+            <div className="text-2xl font-bold text-yellow-600">
+              {stats.draft}
+            </div>
             <p className="text-xs text-muted-foreground">Work in progress</p>
           </CardContent>
         </Card>
@@ -705,7 +778,9 @@ export default function ContentManagement() {
             <X className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-gray-600">{stats.archived}</div>
+            <div className="text-2xl font-bold text-gray-600">
+              {stats.archived}
+            </div>
             <p className="text-xs text-muted-foreground">Archived pages</p>
           </CardContent>
         </Card>
@@ -777,7 +852,7 @@ export default function ContentManagement() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => window.open(`/${page.slug}`, '_blank')}
+                        onClick={() => window.open(`/${page.slug}`, "_blank")}
                       >
                         <Eye className="h-4 w-4" />
                       </Button>
@@ -815,7 +890,10 @@ export default function ContentManagement() {
               ))}
               {filteredPages.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center text-gray-500 py-8">
+                  <TableCell
+                    colSpan={6}
+                    className="text-center text-gray-500 py-8"
+                  >
                     No pages found
                   </TableCell>
                 </TableRow>
@@ -834,15 +912,17 @@ export default function ContentManagement() {
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Page Title *</label>
+                <label className="block text-sm font-medium mb-2">
+                  Page Title *
+                </label>
                 <Input
                   value={formData.title}
                   onChange={(e) => {
                     const title = e.target.value;
-                    setFormData({ 
-                      ...formData, 
+                    setFormData({
+                      ...formData,
                       title,
-                      slug: generateSlug(title)
+                      slug: generateSlug(title),
                     });
                   }}
                   placeholder="Enter page title..."
@@ -852,7 +932,9 @@ export default function ContentManagement() {
                 <label className="block text-sm font-medium mb-2">Slug *</label>
                 <Input
                   value={formData.slug}
-                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, slug: e.target.value })
+                  }
                   placeholder="page-url-slug"
                 />
               </div>
@@ -861,7 +943,12 @@ export default function ContentManagement() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Type</label>
-                <Select value={formData.type} onValueChange={(value: any) => setFormData({ ...formData, type: value })}>
+                <Select
+                  value={formData.type}
+                  onValueChange={(value: any) =>
+                    setFormData({ ...formData, type: value })
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -875,7 +962,12 @@ export default function ContentManagement() {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Status</label>
-                <Select value={formData.status} onValueChange={(value: any) => setFormData({ ...formData, status: value })}>
+                <Select
+                  value={formData.status}
+                  onValueChange={(value: any) =>
+                    setFormData({ ...formData, status: value })
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -889,10 +981,14 @@ export default function ContentManagement() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Content *</label>
+              <label className="block text-sm font-medium mb-2">
+                Content *
+              </label>
               <Textarea
                 value={formData.content}
-                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, content: e.target.value })
+                }
                 placeholder="Enter page content (HTML supported)..."
                 rows={10}
                 className="font-mono text-sm"
@@ -901,29 +997,43 @@ export default function ContentManagement() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Meta Title</label>
+                <label className="block text-sm font-medium mb-2">
+                  Meta Title
+                </label>
                 <Input
                   value={formData.metaTitle}
-                  onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, metaTitle: e.target.value })
+                  }
                   placeholder="SEO title..."
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">Meta Description</label>
+                <label className="block text-sm font-medium mb-2">
+                  Meta Description
+                </label>
                 <Input
                   value={formData.metaDescription}
-                  onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      metaDescription: e.target.value,
+                    })
+                  }
                   placeholder="SEO description..."
                 />
               </div>
             </div>
 
             <div className="flex justify-end space-x-2 pt-6 border-t">
-              <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setShowCreateDialog(false)}
+              >
                 Cancel
               </Button>
-              <Button 
-                onClick={handleCreate} 
+              <Button
+                onClick={handleCreate}
                 className="bg-[#C70000] hover:bg-[#A60000]"
                 disabled={saving}
               >
@@ -954,10 +1064,14 @@ export default function ContentManagement() {
             {/* Same form fields as create dialog */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Page Title *</label>
+                <label className="block text-sm font-medium mb-2">
+                  Page Title *
+                </label>
                 <Input
                   value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, title: e.target.value })
+                  }
                   placeholder="Enter page title..."
                 />
               </div>
@@ -965,17 +1079,23 @@ export default function ContentManagement() {
                 <label className="block text-sm font-medium mb-2">Slug *</label>
                 <Input
                   value={formData.slug}
-                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, slug: e.target.value })
+                  }
                   placeholder="page-url-slug"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Content *</label>
+              <label className="block text-sm font-medium mb-2">
+                Content *
+              </label>
               <Textarea
                 value={formData.content}
-                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, content: e.target.value })
+                }
                 placeholder="Enter page content (HTML supported)..."
                 rows={10}
                 className="font-mono text-sm"
@@ -983,11 +1103,14 @@ export default function ContentManagement() {
             </div>
 
             <div className="flex justify-end space-x-2 pt-6 border-t">
-              <Button variant="outline" onClick={() => setShowEditDialog(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setShowEditDialog(false)}
+              >
                 Cancel
               </Button>
-              <Button 
-                onClick={handleUpdate} 
+              <Button
+                onClick={handleUpdate}
                 className="bg-[#C70000] hover:bg-[#A60000]"
                 disabled={saving}
               >
@@ -1013,9 +1136,12 @@ export default function ContentManagement() {
         <Card className="border-dashed border-2 border-blue-300 bg-blue-50">
           <CardContent className="text-center py-12">
             <FileText className="h-16 w-16 text-blue-400 mx-auto mb-4" />
-            <h3 className="text-xl font-medium text-gray-900 mb-2">Create Your First Page</h3>
+            <h3 className="text-xl font-medium text-gray-900 mb-2">
+              Create Your First Page
+            </h3>
             <p className="text-gray-600 mb-6 max-w-md mx-auto">
-              Admin can create any page for the website like About Us, Privacy Policy, Contact Us, or any custom page.
+              Admin can create any page for the website like About Us, Privacy
+              Policy, Contact Us, or any custom page.
             </p>
             <div className="flex justify-center space-x-3">
               <Button
