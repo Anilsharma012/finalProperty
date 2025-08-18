@@ -537,6 +537,59 @@ export default function PaymentForm({
           </div>
         )}
 
+        {paymentMethod === "phonepe" && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold flex items-center">
+              <Zap className="h-5 w-5 mr-2 text-purple-600" />
+              PhonePe Payment
+            </h3>
+
+            <div className="bg-purple-50 p-4 rounded-lg">
+              <p className="text-purple-800 font-medium">Amount: ₹{amount}</p>
+              <p className="text-sm text-purple-700 mt-1">
+                You will be redirected to PhonePe secure payment gateway
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-center p-3 border border-gray-200 rounded-lg">
+                <div className="text-sm font-medium">UPI Apps</div>
+                <div className="text-xs text-gray-500">PhonePe, GPay, PayTM</div>
+              </div>
+              <div className="text-center p-3 border border-gray-200 rounded-lg">
+                <div className="text-sm font-medium">Cards & Banking</div>
+                <div className="text-xs text-gray-500">Debit/Credit, Net Banking</div>
+              </div>
+            </div>
+
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <div className="flex items-start">
+                <CheckCircle className="h-5 w-5 text-green-400 mt-0.5 mr-3" />
+                <div>
+                  <h4 className="text-sm font-medium text-green-800">
+                    PhonePe Benefits
+                  </h4>
+                  <ul className="text-sm text-green-700 mt-1 space-y-1">
+                    <li>• Instant payment confirmation</li>
+                    <li>• Secure payment gateway</li>
+                    <li>• Multiple payment options</li>
+                    <li>• No hidden charges</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <Button
+              onClick={handlePhonePePayment}
+              disabled={loading}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+            >
+              {loading ? "Redirecting..." : "Pay with PhonePe"}
+              <ExternalLink className="h-4 w-4 ml-2" />
+            </Button>
+          </div>
+        )}
+
         {paymentMethod === "online" && (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold flex items-center">
