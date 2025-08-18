@@ -443,32 +443,38 @@ export const getRolesAndPermissions: RequestHandler = async (req, res) => {
       {
         id: "super_admin",
         name: "Super Admin",
-        description: "Full access to all features and settings",
+        description: "Complete system access with all permissions",
         permissions: rolePermissions.super_admin,
       },
       {
         id: "content_manager",
         name: "Content Manager",
-        description: "Manage pages, blogs, and content",
+        description: "Manage website content, pages, and blogs",
         permissions: rolePermissions.content_manager,
       },
       {
         id: "sales_manager",
         name: "Sales Manager",
-        description: "Manage leads, properties, and sales",
+        description: "Manage properties, leads, and sales analytics",
         permissions: rolePermissions.sales_manager,
       },
       {
         id: "support_executive",
         name: "Support Executive",
-        description: "Handle user queries and support",
+        description: "Handle customer support and user queries",
         permissions: rolePermissions.support_executive,
       },
       {
-        id: "admin",
-        name: "Admin",
-        description: "General admin access",
-        permissions: rolePermissions.admin,
+        id: "property_moderator",
+        name: "Property Moderator",
+        description: "Review and moderate property listings",
+        permissions: rolePermissions.property_moderator,
+      },
+      {
+        id: "custom_role",
+        name: "Custom Role",
+        description: "Custom role with specific permissions",
+        permissions: rolePermissions.custom_role,
       },
     ];
 
