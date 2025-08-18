@@ -269,6 +269,9 @@ export default function Footer() {
 
     try {
       window.addEventListener("footerRefresh", handleFooterRefresh);
+      window.addEventListener("footerUpdate", handleFooterRefresh);
+      window.addEventListener("pagePublished", handlePagePublished);
+      window.addEventListener("pageUnpublished", handlePageUnpublished);
       window.addEventListener("online", handleOnline);
       window.addEventListener("offline", handleOffline);
       document.addEventListener("visibilitychange", handleVisibilityChange);
