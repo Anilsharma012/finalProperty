@@ -1107,7 +1107,95 @@ export default function StaffManagement() {
                   ))}
                 </SelectContent>
               </Select>
+              {formData.role && (
+                <p className="text-sm text-gray-600 mt-1">
+                  {getRoleInfo(formData.role).description}
+                </p>
+              )}
             </div>
+
+            {/* Custom Permissions for Edit */}
+            {(formData.role === "custom_role" || formData.role === "super_admin") && (
+              <div className="border-t pt-4">
+                <label className="block text-sm font-medium mb-3">
+                  Permissions {formData.role === "super_admin" ? "(All permissions enabled)" : "*"}
+                </label>
+
+                {formData.role === "super_admin" ? (
+                  <div className="bg-purple-50 p-4 rounded-lg">
+                    <p className="text-purple-800 font-medium">Super Admin Access</p>
+                    <p className="text-sm text-purple-600">This role has complete access to all system features and permissions.</p>
+                  </div>
+                ) : (
+                  <div className="max-h-96 overflow-y-auto space-y-4">
+                    {Object.entries(availablePermissions).map(([category, permissions]) => (
+                      <div key={category} className="border border-gray-200 rounded-lg p-4">
+                        <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
+                          <Settings className="h-4 w-4 mr-2" />
+                          {category}
+                        </h4>
+                        <div className="space-y-2">
+                          {permissions.map((permission) => (
+                            <div key={permission.key} className="flex items-start space-x-2">
+                              <Checkbox
+                                id={`edit_${permission.key}`}
+                                checked={formData.permissions.includes(permission.key)}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      permissions: [...prev.permissions, permission.key]
+                                    }));
+                                  } else {
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      permissions: prev.permissions.filter(p => p !== permission.key)
+                                    }));
+                                  }
+                                }}
+                              />
+                              <div>
+                                <label
+                                  htmlFor={`edit_${permission.key}`}
+                                  className="text-sm font-medium text-gray-700 cursor-pointer"
+                                >
+                                  {permission.label}
+                                </label>
+                                <p className="text-xs text-gray-500">
+                                  {permission.description}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Permission Summary for Edit */}
+            {formData.permissions.length > 0 && formData.role !== "super_admin" && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 className="font-medium text-blue-900 mb-2">Selected Permissions ({formData.permissions.length})</h4>
+                <div className="flex flex-wrap gap-1">
+                  {formData.permissions.map(permission => {
+                    const permissionInfo = Object.values(availablePermissions)
+                      .flat()
+                      .find(p => p.key === permission);
+                    return (
+                      <span
+                        key={permission}
+                        className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded"
+                      >
+                        {permissionInfo?.label || permission}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             <div className="flex justify-end space-x-2 pt-6 border-t">
               <Button
