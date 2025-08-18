@@ -73,6 +73,13 @@ interface AppSettings {
     paymentGateway: string;
     paymentApiKey: string;
     commissionRate: number;
+    phonePe: {
+      enabled: boolean;
+      merchantId: string;
+      saltKey: string;
+      saltIndex: string;
+      testMode: boolean;
+    };
   };
 }
 
