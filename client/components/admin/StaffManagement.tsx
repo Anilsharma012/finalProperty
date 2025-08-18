@@ -367,8 +367,32 @@ export default function StaffManagement() {
   const handleUpdate = async () => {
     if (!token || !selectedStaff) return;
 
+    // Validate form data
+    if (!formData.name.trim()) {
+      setError("Name is required");
+      return;
+    }
+
+    if (!formData.email.trim()) {
+      setError("Email is required");
+      return;
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    if (formData.role === "custom_role" && formData.permissions.length === 0) {
+      setError("Custom role requires at least one permission");
+      return;
+    }
+
     try {
       setSaving(true);
+      setError(""); // Clear previous errors
 
       const response = await fetch(`/api/admin/staff/${selectedStaff._id}`, {
         method: "PUT",
