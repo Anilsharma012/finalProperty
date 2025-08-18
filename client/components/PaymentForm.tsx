@@ -39,6 +39,11 @@ interface PaymentMethods {
     enabled: boolean;
     gateways: string[];
   };
+  phonepe: {
+    enabled: boolean;
+    merchantId: string;
+    testMode: boolean;
+  };
 }
 
 export default function PaymentForm({
@@ -435,7 +440,7 @@ export default function PaymentForm({
                 <p className="text-sm font-medium text-green-900">
                   Amount to Transfer:
                 </p>
-                <p className="text-2xl font-bold text-green-800">₹{amount}</p>
+                <p className="text-2xl font-bold text-green-800">���{amount}</p>
               </div>
             </div>
 
