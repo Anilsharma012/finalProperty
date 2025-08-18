@@ -166,6 +166,42 @@ export default function PaymentForm({
     });
   };
 
+  const handlePhonePePayment = async () => {
+    try {
+      setLoading(true);
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please login to continue");
+        return;
+      }
+
+      // Get user info from token or localStorage
+      const userInfo = JSON.parse(localStorage.getItem("user") || "{}");
+
+      const paymentResult = await phonePeService.initiatePayment({
+        amount: amount,
+        packageId: packageId,
+        propertyId: propertyId,
+        userId: userInfo.id || "user_" + Date.now(),
+        userPhone: userInfo.phone,
+      });
+
+      if (paymentResult.success && paymentResult.data) {
+        // Redirect to PhonePe payment page
+        const redirectInfo = paymentResult.data.instrumentResponse.redirectInfo;
+        window.location.href = redirectInfo.url;
+      } else {
+        alert(paymentResult.error || "Failed to initiate PhonePe payment");
+      }
+    } catch (error: any) {
+      console.error("PhonePe payment error:", error);
+      alert("Failed to process PhonePe payment: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!paymentMethods) {
     return (
       <div className="flex items-center justify-center py-12">
