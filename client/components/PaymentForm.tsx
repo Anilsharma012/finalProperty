@@ -49,8 +49,8 @@ export default function PaymentForm({
   onCancel,
 }: PaymentFormProps) {
   const [paymentMethod, setPaymentMethod] = useState<
-    "upi" | "bank_transfer" | "online"
-  >("upi");
+    "upi" | "bank_transfer" | "online" | "phonepe"
+  >("phonepe");
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethods | null>(
     null,
   );
