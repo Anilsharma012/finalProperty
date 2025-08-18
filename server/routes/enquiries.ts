@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import { ObjectId } from "mongodb";
-import { getDb } from "../db/mongodb";
+import { getDatabase } from "../db/mongodb";
 
 interface EnquiryData {
   propertyId: string;
