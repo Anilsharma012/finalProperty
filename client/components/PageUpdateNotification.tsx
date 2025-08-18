@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AlertCircle, CheckCircle, Refresh, X } from 'lucide-react';
+import { AlertCircle, CheckCircle, RefreshCw, X } from 'lucide-react';
 import { Button } from './ui/button';
 
 interface Notification {
