@@ -906,6 +906,11 @@ export function createServer() {
   app.get("/api/payments/phonepe/status/:transactionId", getPhonePePaymentStatus);
   app.post("/api/payments/phonepe/transaction", authenticateToken, createPhonePeTransaction);
 
+  // Test endpoints for debugging
+  app.get("/api/test/phonepe-config", authenticateToken, requireAdmin, testPhonePeConfig);
+  app.get("/api/test/payment-methods", testPaymentMethods);
+  app.get("/api/test/database", testDatabaseConnection);
+
   // Banner routes
   app.get("/api/banners", getActiveBanners);
   app.get("/api/banners/:position", getBannersByPosition);
