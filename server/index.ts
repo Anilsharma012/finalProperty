@@ -151,6 +151,11 @@ import {
   getPaymentMethodsWithPhonePe,
 } from "./routes/phonepe-payments";
 import {
+  testPhonePeConfig,
+  testPaymentMethods,
+  testDatabaseConnection,
+} from "./routes/test-phonepe";
+import {
   sendEmailVerification,
   verifyEmail,
   resendEmailVerification,
