@@ -145,6 +145,12 @@ import {
   updatePhonePeConfig,
 } from "./routes/admin-settings";
 import {
+  phonePeCallback,
+  getPhonePePaymentStatus,
+  createPhonePeTransaction,
+  getPaymentMethodsWithPhonePe,
+} from "./routes/phonepe-payments";
+import {
   sendEmailVerification,
   verifyEmail,
   resendEmailVerification,
