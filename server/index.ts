@@ -1666,9 +1666,18 @@ export function createServer() {
   );
 
   // Health check endpoint for network monitoring
-  app.get("/api/health", (req, res) => {
+  app.get("/api/health", async (req, res) => {
+    let dbStatus = "ok";
+    try {
+      const db = getDatabase();
+      await db.admin().ping();
+    } catch (error) {
+      dbStatus = "error";
+    }
+
     res.json({
       status: "ok",
+      db: dbStatus,
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
       environment: process.env.NODE_ENV || "development",
