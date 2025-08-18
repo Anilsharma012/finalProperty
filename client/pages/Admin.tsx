@@ -1094,6 +1094,8 @@ export default function Admin() {
           return <TestimonialManagement />;
         case "settings":
           return <AdminSettings />;
+        case "testing":
+          return <AdminTestingDashboard />;
         case "system-update":
           return <SystemUpdate />;
         case "auth-debug":
