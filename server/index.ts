@@ -1219,6 +1219,7 @@ export function createServer() {
 
   // Content Management routes
   app.get("/api/content/pages", getPublishedPages);
+  app.get("/api/pages", getPublishedPages); // Alias for content pages
   app.get("/api/content/pages/slug/:slug", getContentPageBySlug); // Public page by slug
   app.post("/api/content/pages/:pageId/view", trackPageView); // Track page view // Track page view
   app.get(
@@ -1666,9 +1667,18 @@ export function createServer() {
   );
 
   // Health check endpoint for network monitoring
-  app.get("/api/health", (req, res) => {
+  app.get("/api/health", async (req, res) => {
+    let dbStatus = "ok";
+    try {
+      const db = getDatabase();
+      await db.admin().ping();
+    } catch (error) {
+      dbStatus = "error";
+    }
+
     res.json({
       status: "ok",
+      db: dbStatus,
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
       environment: process.env.NODE_ENV || "development",

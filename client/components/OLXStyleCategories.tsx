@@ -201,6 +201,7 @@ function OLXStyleCategories() {
             return (
               <div
                 key={category._id || category.slug || index}
+                data-testid="header-cat-chip"
                 onClick={() => handleCategoryClick(category)}
                 className="flex flex-col items-center cursor-pointer active:scale-95 transition-transform"
               >

@@ -385,20 +385,20 @@ export default function DynamicFooter() {
   };
 
   const renderPageLink = (page: FooterPage) => {
-    const url = page.isExternal ? page.url : `/page/${page.slug}`;
-    const linkProps = page.isExternal
-      ? {
-          href: page.url,
-          target: "_blank",
-          rel: "noopener noreferrer",
-          className:
-            "text-red-200 hover:text-white transition-colors duration-200 text-sm flex items-center",
-        }
-      : {
-          to: `/page/${page.slug}`,
-          className:
-            "text-red-200 hover:text-white transition-colors duration-200 text-sm",
-        };
+    const className =
+      "text-red-200 hover:text-white transition-colors duration-200 text-sm";
+
+    const externalProps = {
+      href: page.url,
+      target: "_blank",
+      rel: "noopener noreferrer",
+      className: className + " flex items-center",
+    };
+
+    const internalProps = {
+      to: `/page/${page.slug}`,
+      className,
+    };
 
     const content = (
       <>
@@ -410,29 +410,15 @@ export default function DynamicFooter() {
     return (
       <li key={page._id}>
         {page.isExternal ? (
-          <a {...linkProps}>{content}</a>
+          <a {...externalProps}>{content}</a>
         ) : (
-          <Link {...linkProps}>{content}</Link>
+          <Link {...internalProps}>{content}</Link>
         )}
       </li>
     );
   };
 
   const renderFooterLink = (link: FooterLink) => {
-    const linkProps = link.isExternal
-      ? {
-          href: link.url,
-          target: "_blank",
-          rel: "noopener noreferrer",
-          className:
-            "text-red-200 hover:text-white transition-colors duration-200 text-sm flex items-center",
-        }
-      : {
-          to: link.url,
-          className:
-            "text-red-200 hover:text-white transition-colors duration-200 text-sm",
-        };
-
     const content = (
       <>
         {link.title}
@@ -443,9 +429,21 @@ export default function DynamicFooter() {
     return (
       <li key={link._id}>
         {link.isExternal ? (
-          <a {...linkProps}>{content}</a>
+          <a
+            href={link.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-red-200 hover:text-white transition-colors duration-200 text-sm flex items-center"
+          >
+            {content}
+          </a>
         ) : (
-          <Link {...linkProps}>{content}</Link>
+          <Link
+            to={link.url}
+            className="text-red-200 hover:text-white transition-colors duration-200 text-sm"
+          >
+            {content}
+          </Link>
         )}
       </li>
     );
