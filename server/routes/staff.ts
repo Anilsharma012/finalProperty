@@ -10,7 +10,7 @@ interface StaffMember {
   email: string;
   phone?: string;
   password: string;
-  role: "super_admin" | "content_manager" | "sales_manager" | "support_executive" | "admin";
+  role: "super_admin" | "content_manager" | "sales_manager" | "support_executive" | "admin" | "property_moderator" | "custom_role";
   permissions: string[];
   status: "active" | "inactive" | "suspended";
   lastLogin?: Date;
