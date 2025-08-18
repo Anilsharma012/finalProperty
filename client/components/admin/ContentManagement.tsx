@@ -246,7 +246,17 @@ export default function ContentManagement() {
       });
 
       if (response.ok) {
+        const deletedPage = pages.find(page => page._id === pageId);
         setPages(pages.filter(page => page._id !== pageId));
+        setSuccessMessage("Page deleted successfully!");
+        setTimeout(() => setSuccessMessage(""), 3000);
+
+        // Trigger footer refresh if the deleted page was published
+        if (deletedPage?.status === "published") {
+          console.log("🔄 Triggering footer refresh for deleted published page");
+          window.dispatchEvent(new CustomEvent('footerUpdate'));
+          window.dispatchEvent(new CustomEvent('footerRefresh'));
+        }
       } else {
         const data = await response.json();
         setError(data.error || "Failed to delete page");
