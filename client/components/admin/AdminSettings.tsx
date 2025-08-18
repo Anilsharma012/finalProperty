@@ -568,6 +568,119 @@ export default function AdminSettings() {
                   </div>
                 </>
               )}
+
+              {/* PhonePe Configuration */}
+              <div className="border-t pt-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <Label className="text-base font-medium">PhonePe Payment Gateway</Label>
+                    <p className="text-sm text-gray-600">Configure PhonePe for Indian payments</p>
+                  </div>
+                  <Switch
+                    checked={settings.payment.phonePe.enabled}
+                    onCheckedChange={(checked) =>
+                      setSettings(prev => ({
+                        ...prev,
+                        payment: {
+                          ...prev.payment,
+                          phonePe: { ...prev.payment.phonePe, enabled: checked }
+                        }
+                      }))
+                    }
+                  />
+                </div>
+
+                {settings.payment.phonePe.enabled && (
+                  <div className="space-y-4 bg-blue-50 p-4 rounded-lg">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="phonePeMerchantId">Merchant ID</Label>
+                        <Input
+                          id="phonePeMerchantId"
+                          value={settings.payment.phonePe.merchantId}
+                          onChange={(e) =>
+                            setSettings(prev => ({
+                              ...prev,
+                              payment: {
+                                ...prev.payment,
+                                phonePe: { ...prev.payment.phonePe, merchantId: e.target.value }
+                              }
+                            }))
+                          }
+                          placeholder="Your PhonePe Merchant ID"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="phonePeSaltIndex">Salt Index</Label>
+                        <Input
+                          id="phonePeSaltIndex"
+                          value={settings.payment.phonePe.saltIndex}
+                          onChange={(e) =>
+                            setSettings(prev => ({
+                              ...prev,
+                              payment: {
+                                ...prev.payment,
+                                phonePe: { ...prev.payment.phonePe, saltIndex: e.target.value }
+                              }
+                            }))
+                          }
+                          placeholder="Salt Index (usually 1)"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="phonePeSaltKey">Salt Key</Label>
+                      <Input
+                        id="phonePeSaltKey"
+                        type="password"
+                        value={settings.payment.phonePe.saltKey}
+                        onChange={(e) =>
+                          setSettings(prev => ({
+                            ...prev,
+                            payment: {
+                              ...prev.payment,
+                              phonePe: { ...prev.payment.phonePe, saltKey: e.target.value }
+                            }
+                          }))
+                        }
+                        placeholder="Your PhonePe Salt Key"
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label className="text-sm font-medium">Test Mode</Label>
+                        <p className="text-xs text-gray-600">Use PhonePe sandbox for testing</p>
+                      </div>
+                      <Switch
+                        checked={settings.payment.phonePe.testMode}
+                        onCheckedChange={(checked) =>
+                          setSettings(prev => ({
+                            ...prev,
+                            payment: {
+                              ...prev.payment,
+                              phonePe: { ...prev.payment.phonePe, testMode: checked }
+                            }
+                          }))
+                        }
+                      />
+                    </div>
+
+                    <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
+                      <p className="text-yellow-800 text-sm">
+                        <strong>PhonePe Setup Instructions:</strong>
+                      </p>
+                      <ul className="text-xs text-yellow-700 mt-2 space-y-1">
+                        <li>• Get your Merchant ID from PhonePe Business Dashboard</li>
+                        <li>• Generate Salt Key from API section</li>
+                        <li>• Salt Index is typically "1" for primary key</li>
+                        <li>• Enable Test Mode for sandbox environment</li>
+                      </ul>
+                    </div>
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
