@@ -241,6 +241,23 @@ export const updateStaff: RequestHandler = async (req, res) => {
     delete updateData.createdAt;
     delete updateData.createdBy;
 
+    // Check if email is being updated and if it conflicts with existing users
+    if (updateData.email) {
+      const existingUser = await db
+        .collection("users")
+        .findOne({
+          email: updateData.email,
+          _id: { $ne: new ObjectId(staffId) } // Exclude current user
+        });
+
+      if (existingUser) {
+        return res.status(400).json({
+          success: false,
+          error: `Email ${updateData.email} is already in use by another user. Please use a different email.`,
+        });
+      }
+    }
+
     // Update permissions if role changed
     if (updateData.role) {
       if (updateData.role === "custom_role") {
