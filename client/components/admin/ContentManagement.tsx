@@ -152,6 +152,10 @@ export default function ContentManagement() {
           if (formData.status === "published") {
             console.log("🔄 Triggering footer refresh for new published page");
             window.dispatchEvent(new CustomEvent('footerUpdate'));
+            window.dispatchEvent(new CustomEvent('footerRefresh'));
+            window.dispatchEvent(new CustomEvent('pagePublished', {
+              detail: { pageId: data.data._id, title: formData.title, slug: formData.slug }
+            }));
           }
         } else {
           setError(data.error || "Failed to create page");
