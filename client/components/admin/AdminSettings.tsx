@@ -538,6 +538,7 @@ export default function AdminSettings() {
                           <SelectItem value="razorpay">Razorpay</SelectItem>
                           <SelectItem value="stripe">Stripe</SelectItem>
                           <SelectItem value="payu">PayU</SelectItem>
+                          <SelectItem value="phonepe">PhonePe</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
