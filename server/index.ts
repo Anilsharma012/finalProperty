@@ -1219,6 +1219,7 @@ export function createServer() {
 
   // Content Management routes
   app.get("/api/content/pages", getPublishedPages);
+  app.get("/api/pages", getPublishedPages); // Alias for content pages
   app.get("/api/content/pages/slug/:slug", getContentPageBySlug); // Public page by slug
   app.post("/api/content/pages/:pageId/view", trackPageView); // Track page view // Track page view
   app.get(
