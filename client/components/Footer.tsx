@@ -283,6 +283,9 @@ export default function Footer() {
       try {
         clearInterval(interval);
         window.removeEventListener("footerRefresh", handleFooterRefresh);
+        window.removeEventListener("footerUpdate", handleFooterRefresh);
+        window.removeEventListener("pagePublished", handlePagePublished);
+        window.removeEventListener("pageUnpublished", handlePageUnpublished);
         window.removeEventListener("online", handleOnline);
         window.removeEventListener("offline", handleOffline);
         document.removeEventListener(
