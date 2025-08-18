@@ -139,6 +139,12 @@ import { handleDemo } from "./routes/demo";
 import { seedDatabase } from "./routes/seed";
 import { initializeSystem } from "./routes/init";
 import {
+  getAdminSettings,
+  updateAdminSettings,
+  getPhonePeConfig,
+  updatePhonePeConfig,
+} from "./routes/admin-settings";
+import {
   sendEmailVerification,
   verifyEmail,
   resendEmailVerification,
