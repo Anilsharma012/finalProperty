@@ -493,6 +493,86 @@ export const getRolesAndPermissions: RequestHandler = async (req, res) => {
   }
 };
 
+// Get available permissions grouped by category
+export const getAvailablePermissions: RequestHandler = async (req, res) => {
+  try {
+    const availablePermissions = {
+      "User Management": [
+        { key: "users.view", label: "View Users", description: "View user profiles and information" },
+        { key: "users.edit", label: "Edit Users", description: "Edit user profiles and settings" },
+        { key: "users.delete", label: "Delete Users", description: "Delete user accounts" },
+        { key: "users.support", label: "User Support", description: "Handle user support queries" },
+        { key: "users.export", label: "Export Users", description: "Export user data" },
+      ],
+      "Property Management": [
+        { key: "properties.view", label: "View Properties", description: "View property listings" },
+        { key: "properties.edit", label: "Edit Properties", description: "Edit property information" },
+        { key: "properties.delete", label: "Delete Properties", description: "Delete property listings" },
+        { key: "properties.approve", label: "Approve Properties", description: "Approve/reject property listings" },
+        { key: "properties.featured", label: "Feature Properties", description: "Mark properties as featured" },
+        { key: "properties.export", label: "Export Properties", description: "Export property data" },
+      ],
+      "Content Management": [
+        { key: "content.view", label: "View Content", description: "View pages and blog posts" },
+        { key: "content.create", label: "Create Content", description: "Create pages and blog posts" },
+        { key: "content.edit", label: "Edit Content", description: "Edit pages and blog posts" },
+        { key: "content.delete", label: "Delete Content", description: "Delete pages and blog posts" },
+        { key: "content.publish", label: "Publish Content", description: "Publish/unpublish content" },
+      ],
+      "Category Management": [
+        { key: "categories.view", label: "View Categories", description: "View property categories" },
+        { key: "categories.edit", label: "Edit Categories", description: "Edit property categories" },
+        { key: "categories.create", label: "Create Categories", description: "Create new categories" },
+        { key: "categories.delete", label: "Delete Categories", description: "Delete categories" },
+      ],
+      "Payment & Packages": [
+        { key: "packages.view", label: "View Packages", description: "View advertisement packages" },
+        { key: "packages.edit", label: "Edit Packages", description: "Edit advertisement packages" },
+        { key: "transactions.view", label: "View Transactions", description: "View payment transactions" },
+        { key: "transactions.manage", label: "Manage Transactions", description: "Approve/reject payments" },
+        { key: "payment.settings", label: "Payment Settings", description: "Configure payment gateways" },
+      ],
+      "Analytics & Reports": [
+        { key: "analytics.view", label: "View Analytics", description: "View dashboard analytics" },
+        { key: "analytics.export", label: "Export Analytics", description: "Export analytics data" },
+        { key: "reports.view", label: "View Reports", description: "View system reports" },
+        { key: "reports.generate", label: "Generate Reports", description: "Generate custom reports" },
+      ],
+      "Chat & Communication": [
+        { key: "chat.view", label: "View Chats", description: "View user conversations" },
+        { key: "chat.manage", label: "Manage Chats", description: "Reply to user conversations" },
+        { key: "notifications.send", label: "Send Notifications", description: "Send push notifications" },
+        { key: "email.send", label: "Send Emails", description: "Send bulk emails" },
+      ],
+      "System Settings": [
+        { key: "settings.view", label: "View Settings", description: "View system settings" },
+        { key: "settings.edit", label: "Edit Settings", description: "Modify system settings" },
+        { key: "staff.manage", label: "Manage Staff", description: "Manage staff members and roles" },
+        { key: "system.backup", label: "System Backup", description: "Create system backups" },
+      ],
+      "FAQ & Support": [
+        { key: "faq.view", label: "View FAQs", description: "View FAQ entries" },
+        { key: "faq.edit", label: "Edit FAQs", description: "Edit FAQ entries" },
+        { key: "support.tickets", label: "Support Tickets", description: "Handle support tickets" },
+        { key: "support.resolve", label: "Resolve Issues", description: "Resolve user issues" },
+      ],
+    };
+
+    const response: ApiResponse<any> = {
+      success: true,
+      data: availablePermissions,
+    };
+
+    res.json(response);
+  } catch (error) {
+    console.error("Error fetching permissions:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch permissions",
+    });
+  }
+};
+
 // Check user permissions middleware
 export const checkPermission = (permission: string) => {
   return (req: any, res: any, next: any) => {
