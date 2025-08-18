@@ -692,6 +692,12 @@ export function createServer() {
   // Admin routes
   app.get("/api/admin/users", authenticateToken, requireAdmin, getAllUsers);
   app.get("/api/admin/stats", authenticateToken, requireAdmin, getUserStats);
+
+  // Admin settings routes
+  app.get("/api/admin/settings", authenticateToken, requireAdmin, getAdminSettings);
+  app.put("/api/admin/settings", authenticateToken, requireAdmin, updateAdminSettings);
+  app.get("/api/admin/settings/phonepe", authenticateToken, requireAdmin, getPhonePeConfig);
+  app.put("/api/admin/settings/phonepe", authenticateToken, requireAdmin, updatePhonePeConfig);
   app.get(
     "/api/admin/user-stats",
     authenticateToken,
