@@ -117,6 +117,13 @@ export default function AdminSettings() {
       paymentGateway: 'razorpay',
       paymentApiKey: '',
       commissionRate: 5,
+      phonePe: {
+        enabled: false,
+        merchantId: '',
+        saltKey: '',
+        saltIndex: '1',
+        testMode: true,
+      },
     },
   });
   const [loading, setLoading] = useState(true);
