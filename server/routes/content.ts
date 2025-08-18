@@ -453,11 +453,18 @@ export const initializeContentPages: RequestHandler = async (req, res) => {
 export const getPublishedPages: RequestHandler = async (req, res) => {
   try {
     const db = getDatabase();
+    const { active } = req.query;
+
+    // Support both 'active=1' and 'status=published' queries
+    const filter: any = { status: "published" };
+    if (active === "1") {
+      filter.status = "published";
+    }
 
     const pages = await db
       .collection("content_pages")
       .find(
-        { status: "published" },
+        filter,
         { projection: { title: 1, slug: 1, type: 1, updatedAt: 1 } }
       )
       .sort({ type: 1, title: 1 })
