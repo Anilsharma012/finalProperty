@@ -409,9 +409,9 @@ export default function DynamicFooter() {
     return (
       <li key={page._id}>
         {page.isExternal ? (
-          <a {...linkProps}>{content}</a>
+          <a {...externalProps}>{content}</a>
         ) : (
-          <Link {...linkProps}>{content}</Link>
+          <Link {...internalProps}>{content}</Link>
         )}
       </li>
     );
