@@ -133,7 +133,17 @@ export const createStaff: RequestHandler = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Get permissions for role
-    const permissions = rolePermissions[role] || rolePermissions.admin;
+    let permissions = req.body.permissions || [];
+
+    // If not custom role, use predefined permissions
+    if (role !== "custom_role") {
+      permissions = rolePermissions[role] || rolePermissions.admin;
+    } else if (!permissions || permissions.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: "Custom role requires at least one permission",
+      });
+    }
 
     // Create username from email (first part before @)
     const username = email.split('@')[0].toLowerCase();
