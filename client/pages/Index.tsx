@@ -9,15 +9,18 @@ import BottomNavigation from "../components/BottomNavigation";
 import HomepageBanner from "../components/HomepageBanner";
 import StaticFooter from "../components/StaticFooter";
 import HeroImageSlider from "../components/HeroImageSlider";
+import PropertyAdsSlider from "../components/PropertyAdsSlider";
 
 export default function Index() {
   return (
     <div className="min-h-screen bg-white">
       <OLXStyleHeader />
-
       <main className="pb-16 bg-gradient-to-b from-red-50 to-white">
         {/* Hero Image Slider */}
         <HeroImageSlider />
+
+        {/* Property Ads Slider */}
+        <PropertyAdsSlider />
 
         <CategoryBar />
 
@@ -34,10 +37,10 @@ export default function Index() {
           <PackagesShowcase />
         </div>
       </main>
-
       <BottomNavigation />
       <PWAInstallPrompt />
-      {/* <PWAInstallButton /> */} {/* Removed red Install App button as requested */}
+      {/* <PWAInstallButton /> */}{" "}
+      {/* Removed red Install App button as requested */}
       <StaticFooter />
     </div>
   );

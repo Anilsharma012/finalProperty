@@ -8,6 +8,7 @@ import {
   MapPin,
   Bed,
   Bath,
+  Send,
   Square,
   Car,
   Calendar,
@@ -27,6 +28,7 @@ import {
 import { toast } from "../components/ui/use-toast";
 import ChatBot from "../components/ChatBot";
 import ApiDiagnostic from "../components/ApiDiagnostic";
+import EnquiryModal from "../components/EnquiryModal";
 
 interface Property {
   _id: string;
@@ -76,6 +78,7 @@ export default function PropertyDetail() {
   const [error, setError] = useState<string>("");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
+  const [enquiryModalOpen, setEnquiryModalOpen] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -180,6 +183,10 @@ export default function PropertyDetail() {
     const message = `Hi, I'm interested in your property: ${property?.title}`;
     const url = `https://wa.me/${phoneNumber.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(message)}`;
     window.open(url, "_blank");
+  };
+
+  const handleEnquiry = () => {
+    setEnquiryModalOpen(true);
   };
 
   const handleStartChat = async () => {
@@ -538,10 +545,11 @@ export default function PropertyDetail() {
                 <div className="space-y-3 hidden md:block">
                   <Button
                     className="w-full bg-[#C70000] hover:bg-[#A60000] text-white flex items-center justify-center space-x-2 py-3"
-                    onClick={handleStartChat}
+                    onClick={handleEnquiry}
+                    data-testid="enquiry-btn"
                   >
-                    <MessageCircle className="h-4 w-4" />
-                    <span>Chat with Owner</span>
+                    <Send className="h-4 w-4" />
+                    <span>Enquiry Now</span>
                   </Button>
 
                   <Button
@@ -577,10 +585,11 @@ export default function PropertyDetail() {
                 <div className="grid grid-cols-3 gap-2 md:hidden">
                   <Button
                     className="bg-[#C70000] hover:bg-[#A60000] text-white flex flex-col items-center justify-center space-y-1 py-4"
-                    onClick={handleStartChat}
+                    onClick={handleEnquiry}
+                    data-testid="enquiry-btn"
                   >
-                    <MessageCircle className="h-5 w-5" />
-                    <span className="text-xs">Chat</span>
+                    <Send className="h-5 w-5" />
+                    <span className="text-xs">Enquiry</span>
                   </Button>
 
                   <Button
@@ -662,6 +671,17 @@ export default function PropertyDetail() {
           position="bottom-right"
           theme="red"
           enableHumanHandoff={true}
+        />
+      )}
+
+      {/* Enquiry Modal */}
+      {property && (
+        <EnquiryModal
+          isOpen={enquiryModalOpen}
+          onClose={() => setEnquiryModalOpen(false)}
+          propertyId={property._id}
+          propertyTitle={property.title}
+          ownerName={property.contactInfo.name}
         />
       )}
     </div>

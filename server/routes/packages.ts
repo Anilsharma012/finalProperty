@@ -8,7 +8,8 @@ async function initializePackagesInternal(db: Db) {
   const defaultPackages: Omit<AdPackage, "_id">[] = [
     {
       name: "Basic Listing",
-      description: "Perfect for getting started with property listing in Rohtak",
+      description:
+        "Perfect for getting started with property listing in Rohtak",
       price: 0,
       duration: 30,
       features: [
@@ -16,7 +17,7 @@ async function initializePackagesInternal(db: Db) {
         "Up to 5 images",
         "Standard visibility",
         "Email support",
-        "30-day listing duration"
+        "30-day listing duration",
       ],
       type: "basic",
       category: "property",
@@ -37,7 +38,7 @@ async function initializePackagesInternal(db: Db) {
         "Highlighted in search results",
         "Phone support",
         "45-day listing duration",
-        "WhatsApp chat support"
+        "WhatsApp chat support",
       ],
       type: "featured",
       category: "property",
@@ -48,7 +49,8 @@ async function initializePackagesInternal(db: Db) {
     },
     {
       name: "Premium Listing",
-      description: "Maximum exposure and fastest sales for your premium properties",
+      description:
+        "Maximum exposure and fastest sales for your premium properties",
       price: 599,
       duration: 60,
       features: [
@@ -60,7 +62,7 @@ async function initializePackagesInternal(db: Db) {
         "60-day listing duration",
         "Priority customer support",
         "Property photoshoot assistance",
-        "Market analysis report"
+        "Market analysis report",
       ],
       type: "premium",
       category: "property",
@@ -79,12 +81,12 @@ async function initializePackagesInternal(db: Db) {
 export const getAdPackages: RequestHandler = async (req, res) => {
   try {
     const db = getDatabase();
-    const { category, location, activeOnly = "false" } = req.query;
+    const { category, location, activeOnly = "false", isActive } = req.query;
 
     const filter: any = {};
 
-    // If activeOnly is true (default for public API), only show active packages
-    if (activeOnly === "true") {
+    // Support both activeOnly and isActive parameters for backward compatibility
+    if (activeOnly === "true" || isActive === "1") {
       filter.active = true;
     }
 
@@ -101,9 +103,11 @@ export const getAdPackages: RequestHandler = async (req, res) => {
 
     console.log(`📦 Found ${packages.length} packages`);
 
-    // If no packages found and activeOnly is true, try to initialize default packages
-    if (packages.length === 0 && activeOnly === "true") {
-      console.log("📦 No active packages found, checking if packages need initialization...");
+    // If no packages found and either activeOnly or isActive is true, try to initialize default packages
+    if (packages.length === 0 && (activeOnly === "true" || isActive === "1")) {
+      console.log(
+        "📦 No active packages found, checking if packages need initialization...",
+      );
       const totalPackages = await db.collection("ad_packages").countDocuments();
 
       if (totalPackages === 0) {
@@ -117,7 +121,9 @@ export const getAdPackages: RequestHandler = async (req, res) => {
           .sort({ type: 1, price: 1 })
           .toArray();
 
-        console.log(`📦 After initialization, found ${newPackages.length} packages`);
+        console.log(
+          `📦 After initialization, found ${newPackages.length} packages`,
+        );
 
         const response: ApiResponse<AdPackage[]> = {
           success: true,
@@ -125,9 +131,9 @@ export const getAdPackages: RequestHandler = async (req, res) => {
         };
 
         res.set({
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          Pragma: "no-cache",
+          Expires: "0",
         });
 
         return res.json(response);
@@ -141,9 +147,9 @@ export const getAdPackages: RequestHandler = async (req, res) => {
 
     // Add cache-control headers to ensure fresh data
     res.set({
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Pragma': 'no-cache',
-      'Expires': '0'
+      "Cache-Control": "no-cache, no-store, must-revalidate",
+      Pragma: "no-cache",
+      Expires: "0",
     });
 
     res.json(response);
@@ -152,7 +158,7 @@ export const getAdPackages: RequestHandler = async (req, res) => {
     res.status(500).json({
       success: false,
       error: "Failed to fetch packages",
-      message: error instanceof Error ? error.message : "Unknown error"
+      message: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
@@ -202,7 +208,9 @@ export const createPackage: RequestHandler = async (req, res) => {
     const result = await db.collection("ad_packages").insertOne(packageData);
 
     // Get the created package with the ID
-    const createdPackage = await db.collection("ad_packages").findOne({ _id: result.insertedId });
+    const createdPackage = await db
+      .collection("ad_packages")
+      .findOne({ _id: result.insertedId });
 
     const response: ApiResponse<AdPackage> = {
       success: true,
@@ -243,7 +251,9 @@ export const updatePackage: RequestHandler = async (req, res) => {
     }
 
     // Get the updated package
-    const updatedPackage = await db.collection("ad_packages").findOne({ _id: new ObjectId(packageId) });
+    const updatedPackage = await db
+      .collection("ad_packages")
+      .findOne({ _id: new ObjectId(packageId) });
 
     const response: ApiResponse<AdPackage> = {
       success: true,

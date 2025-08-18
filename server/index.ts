@@ -407,6 +407,13 @@ import {
   updateTicketStatus,
 } from "./routes/tickets";
 
+// Enquiries routes
+import {
+  submitEnquiry,
+  getEnquiries,
+  updateEnquiryStatus,
+} from "./routes/enquiries";
+
 // Other Services routes
 import {
   getAllOtherServices,
@@ -1580,6 +1587,21 @@ export function createServer() {
     removeFromFavorites,
   );
   app.get("/api/favorites/:propertyId/check", authenticateToken, checkFavorite);
+
+  // Enquiries routes
+  app.post("/api/enquiries", submitEnquiry); // Public endpoint for submitting enquiries
+  app.get(
+    "/api/admin/enquiries",
+    authenticateToken,
+    requireAdmin,
+    getEnquiries,
+  );
+  app.put(
+    "/api/admin/enquiries/:id/status",
+    authenticateToken,
+    requireAdmin,
+    updateEnquiryStatus,
+  );
 
   // Tickets (support) routes
   app.post("/api/tickets", authenticateToken, createTicket);

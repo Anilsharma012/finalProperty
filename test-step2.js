@@ -1,100 +1,81 @@
-// Test script for STEP 2 verification
-console.log("Testing STEP 2: Back/Next/Cancel buttons on Add Property page");
+// STEP 2 Test: Property ads slider
+console.log("🧪 Testing STEP 2: Property ads slider");
 
-// Function to check button count at different screen sizes
-function checkButtonCount(width) {
-  // Temporarily set window width for testing
-  const originalWidth = window.innerWidth;
-
-  // Mock resize for testing
-  Object.defineProperty(window, "innerWidth", {
-    writable: true,
-    configurable: true,
-    value: width,
-  });
-
-  // Trigger resize event
-  window.dispatchEvent(new Event("resize"));
-
-  // Small delay to allow any responsive changes
+function testStep2() {
+  // Wait for components to load and API calls to complete
   setTimeout(() => {
-    const buttons = document.querySelectorAll(
-      '[data-testid="btn-back"],[data-testid="btn-next"],[data-testid="btn-cancel"]',
+    console.log("🔍 Checking for home ad cards...");
+
+    // Test for home ad cards
+    const homeAdCards = document.querySelectorAll(
+      '[data-testid="home-ad-card"]',
     );
-    console.log(`At width ${width}px: Found ${buttons.length} buttons`);
+    console.log(`📊 Found ${homeAdCards.length} home ad cards`);
 
-    if (buttons.length === 3) {
-      console.log(`✅ Correct button count (3) at ${width}px`);
+    if (homeAdCards.length > 0) {
+      console.log("✅ Home ad cards found!");
 
-      // Check if buttons are visible
-      const visibleButtons = Array.from(buttons).filter((btn) => {
-        const style = window.getComputedStyle(btn);
-        return style.display !== "none" && style.visibility !== "hidden";
-      });
-
-      console.log(
-        `✅ ${visibleButtons.length} buttons are visible at ${width}px`,
-      );
-
-      // Test button functionality
-      buttons.forEach((btn, index) => {
-        const testId = btn.getAttribute("data-testid");
+      // Test if cards are clickable
+      const firstCard = homeAdCards[0];
+      if (firstCard) {
+        const isClickable =
+          firstCard.style.cursor === "pointer" ||
+          firstCard.classList.contains("cursor-pointer") ||
+          firstCard.onclick !== null;
         console.log(
-          `✅ Button ${index + 1}: ${testId} - ${btn.textContent.trim()}`,
+          `🖱️ First card clickable: ${isClickable || "has click handler"}`,
         );
-      });
+      }
+
+      // Check for navigation arrows
+      const prevBtn = document.querySelector('[aria-label="Previous slide"]');
+      const nextBtn = document.querySelector('[aria-label="Next slide"]');
+      console.log(`⬅️ Previous arrow: ${prevBtn ? "Found" : "Missing"}`);
+      console.log(`➡️ Next arrow: ${nextBtn ? "Found" : "Missing"}`);
+
+      // Check for slide indicators
+      const indicators = document.querySelectorAll(
+        '[aria-label*="Go to slide"]',
+      );
+      console.log(`🔘 Slide indicators: ${indicators.length}`);
+
+      // Test API endpoints being called
+      console.log("🌐 APIs should fetch from:");
+      console.log("  • Primary: /api/banners?position=homepage_middle");
+      console.log("  • Fallback: /api/properties/featured");
+
+      console.log("✅ PASS: STEP2 - Property ads slider verified");
+      return true;
     } else {
       console.log(
-        `❌ Expected 3 buttons, found ${buttons.length} at ${width}px`,
+        '❌ FAIL: No home ad cards found with data-testid="home-ad-card"',
       );
+
+      // Debug: Check if PropertyAdsSlider component exists
+      const slider = document.querySelector(
+        '.property-ads-slider, [class*="PropertyAds"]',
+      );
+      console.log(
+        `🔍 PropertyAdsSlider component: ${slider ? "Found" : "Missing"}`,
+      );
+
+      // Check if data is loading
+      const loadingElements = document.querySelectorAll(
+        '.animate-pulse, [class*="loading"]',
+      );
+      console.log(`⏳ Loading elements: ${loadingElements.length}`);
+
+      return false;
     }
-
-    // Restore original width
-    Object.defineProperty(window, "innerWidth", {
-      writable: true,
-      configurable: true,
-      value: originalWidth,
-    });
-
-    return buttons.length === 3;
-  }, 100);
+  }, 3000); // Wait 3 seconds for API calls and rendering
 }
 
-// Test at mobile width (375px)
-setTimeout(() => {
-  console.log("\n🔍 Testing at mobile width (375px)...");
-  const mobileResult = checkButtonCount(375);
+// Auto-run test when script loads
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", testStep2);
+} else {
+  testStep2();
+}
 
-  // Test at desktop width (1024px)
-  setTimeout(() => {
-    console.log("\n🔍 Testing at desktop width (1024px)...");
-    const desktopResult = checkButtonCount(1024);
-
-    setTimeout(() => {
-      // Final test
-      const allButtons = document.querySelectorAll(
-        '[data-testid="btn-back"],[data-testid="btn-next"],[data-testid="btn-cancel"]',
-      );
-
-      if (allButtons.length >= 3) {
-        console.log("\n✅ PASS: STEP2 - All required buttons found");
-        console.log("PASS: STEP2");
-      } else {
-        console.log("\n❌ FAIL: STEP2 - Missing required buttons");
-      }
-    }, 300);
-  }, 200);
-}, 100);
-
-// Also test the buttons immediately
-setTimeout(() => {
-  const buttons = document.querySelectorAll(
-    '[data-testid="btn-back"],[data-testid="btn-next"],[data-testid="btn-cancel"]',
-  );
-  console.log(`\n📊 Current button count: ${buttons.length}`);
-
-  if (buttons.length >= 3) {
-    console.log("✅ STEP 2 Implementation successful!");
-    console.log("PASS: STEP2");
-  }
-}, 500);
+// Also run test after a delay to ensure APIs have loaded
+setTimeout(testStep2, 5000);

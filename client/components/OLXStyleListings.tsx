@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Heart, MapPin, Clock, MessageCircle } from "lucide-react";
+import { Heart, MapPin, Clock, MessageCircle, Send } from "lucide-react";
 import PropertyLoadingSkeleton from "./PropertyLoadingSkeleton";
+import EnquiryModal from "./EnquiryModal";
+import { NetworkError } from "../utils/network-utils";
 
 interface Property {
   _id: string;
@@ -25,6 +27,10 @@ export default function OLXStyleListings() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [enquiryModalOpen, setEnquiryModalOpen] = useState(false);
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(
+    null,
+  );
 
   useEffect(() => {
     fetchProperties();
@@ -40,11 +46,15 @@ export default function OLXStyleListings() {
       const timeoutId = setTimeout(() => {
         console.log("⏰ Properties request timeout");
         controller.abort();
-      }, 10000);
+      }, 8000);
 
       const response = await fetch("/api/properties?status=active&limit=10", {
         signal: controller.signal,
         cache: "no-cache",
+        headers: {
+          "Cache-Control": "no-cache",
+          Accept: "application/json",
+        },
       });
 
       clearTimeout(timeoutId);
@@ -75,17 +85,22 @@ export default function OLXStyleListings() {
       // Load mock data as fallback
       loadMockProperties();
     } catch (error: any) {
-      console.error("Error fetching properties:", {
+      console.error("❌ Error fetching properties:", {
         error: error.message || error,
         name: error.name,
-        stack: error.stack,
+        type: typeof error,
       });
 
       // Provide appropriate fallback based on error type
       if (error.name === "AbortError") {
-        console.log("🔄 Request timed out, using mock data");
-      } else if (error.message?.includes("Failed to fetch")) {
-        console.log("🌐 Network connectivity issue, using mock data");
+        console.log("⏰ Request timed out, using mock data");
+      } else if (
+        error.message?.includes("Failed to fetch") ||
+        error.name === "TypeError"
+      ) {
+        console.log("🌐 Network connectivity issue detected, using mock data");
+      } else {
+        console.log("🔄 Unknown error occurred, using mock data");
       }
 
       // Load mock data as fallback
@@ -281,23 +296,19 @@ export default function OLXStyleListings() {
                   </span>
                 </div>
 
-                {/* Chat Button */}
+                {/* Enquiry Button */}
                 <button
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    // Handle chat functionality
-                    const token = localStorage.getItem("token");
-                    if (token) {
-                      window.location.href = `/chat?propertyId=${property._id}&sellerId=${property.ownerId || property.contactInfo?.name}`;
-                    } else {
-                      window.location.href = `/login?redirect=/property/${property._id}`;
-                    }
+                    setSelectedProperty(property);
+                    setEnquiryModalOpen(true);
                   }}
+                  data-testid="enquiry-btn"
                   className="w-full bg-[#C70000] hover:bg-[#A60000] text-white text-xs py-2 px-3 rounded-md flex items-center justify-center space-x-1 transition-colors"
                 >
-                  <MessageCircle className="h-3 w-3" />
-                  <span>Chat</span>
+                  <Send className="h-3 w-3" />
+                  <span>Enquiry Now</span>
                 </button>
               </div>
             </div>
@@ -306,7 +317,7 @@ export default function OLXStyleListings() {
 
         {properties.length === 0 && (
           <div className="text-center py-8 text-gray-500">
-            <div className="text-4xl mb-2">����</div>
+            <div className="text-4xl mb-2">�����</div>
             <p>No properties available</p>
           </div>
         )}
@@ -320,6 +331,20 @@ export default function OLXStyleListings() {
           </div>
         )}
       </div>
+
+      {/* Enquiry Modal */}
+      {selectedProperty && (
+        <EnquiryModal
+          isOpen={enquiryModalOpen}
+          onClose={() => {
+            setEnquiryModalOpen(false);
+            setSelectedProperty(null);
+          }}
+          propertyId={selectedProperty._id}
+          propertyTitle={selectedProperty.title}
+          ownerName={selectedProperty.contactInfo?.name || "Property Owner"}
+        />
+      )}
     </div>
   );
 }

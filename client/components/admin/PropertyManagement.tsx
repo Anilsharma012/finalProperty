@@ -32,12 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import {
   Dialog,
   DialogContent,
@@ -165,9 +160,11 @@ export default function PropertyManagement() {
       });
 
       if (response.ok) {
-        setProperties(properties.map(property => 
-          property._id === propertyId ? { ...property, status } : property
-        ));
+        setProperties(
+          properties.map((property) =>
+            property._id === propertyId ? { ...property, status } : property,
+          ),
+        );
       } else {
         const data = await response.json();
         setError(data.error || "Failed to update property status");
@@ -179,7 +176,8 @@ export default function PropertyManagement() {
   };
 
   const deleteProperty = async (propertyId: string) => {
-    if (!token || !confirm("Are you sure you want to delete this property?")) return;
+    if (!token || !confirm("Are you sure you want to delete this property?"))
+      return;
 
     try {
       const response = await fetch(`/api/admin/properties/${propertyId}`, {
@@ -188,7 +186,9 @@ export default function PropertyManagement() {
       });
 
       if (response.ok) {
-        setProperties(properties.filter(property => property._id !== propertyId));
+        setProperties(
+          properties.filter((property) => property._id !== propertyId),
+        );
       } else {
         const data = await response.json();
         setError(data.error || "Failed to delete property");
@@ -212,15 +212,20 @@ export default function PropertyManagement() {
   const handleEditProperty = (property: any) => {
     setSelectedProperty(property);
     setFormData({
-      title: property.title,
-      description: property.description,
-      price: property.price.toString(),
-      priceType: property.priceType,
-      propertyType: property.propertyType,
-      subCategory: property.subCategory,
-      location: property.location,
-      contactInfo: property.contactInfo,
-      status: property.status,
+      title: property.title || "",
+      description: property.description || "",
+      price: (property.price || 0).toString(),
+      priceType: property.priceType || "sale",
+      propertyType: property.propertyType || "",
+      subCategory: property.subCategory || "",
+      location: property.location || {
+        address: "",
+        city: "",
+        state: "",
+        pincode: "",
+      },
+      contactInfo: property.contactInfo || { name: "", phone: "", email: "" },
+      status: property.status || "pending",
     });
     setSelectedImages([]);
     setShowEditDialog(true);
@@ -237,26 +242,35 @@ export default function PropertyManagement() {
       const submitData = new FormData();
 
       // Add property data
-      Object.keys(formData).forEach(key => {
-        if (key === 'location' || key === 'contactInfo') {
-          submitData.append(key, JSON.stringify(formData[key as keyof typeof formData]));
+      Object.keys(formData).forEach((key) => {
+        if (key === "location" || key === "contactInfo") {
+          submitData.append(
+            key,
+            JSON.stringify(formData[key as keyof typeof formData]),
+          );
         } else {
-          submitData.append(key, formData[key as keyof typeof formData] as string);
+          submitData.append(
+            key,
+            formData[key as keyof typeof formData] as string,
+          );
         }
       });
 
       // Add new images if any
       selectedImages.forEach((image, index) => {
-        submitData.append('images', image);
+        submitData.append("images", image);
       });
 
-      const response = await fetch(`/api/admin/properties/${selectedProperty._id}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        `/api/admin/properties/${selectedProperty._id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: submitData,
         },
-        body: submitData,
-      });
+      );
 
       const data = await response.json();
 
@@ -297,7 +311,8 @@ export default function PropertyManagement() {
   };
 
   const handleDeleteProperty = async (propertyId: string) => {
-    if (!token || !confirm("Are you sure you want to delete this property?")) return;
+    if (!token || !confirm("Are you sure you want to delete this property?"))
+      return;
 
     try {
       const response = await fetch(`/api/admin/properties/${propertyId}`, {
@@ -306,7 +321,9 @@ export default function PropertyManagement() {
       });
 
       if (response.ok) {
-        setProperties(properties.filter(property => property._id !== propertyId));
+        setProperties(
+          properties.filter((property) => property._id !== propertyId),
+        );
         alert("Property deleted successfully!");
       } else {
         const data = await response.json();
@@ -342,17 +359,23 @@ export default function PropertyManagement() {
       const submitData = new FormData();
 
       // Add property data
-      Object.keys(formData).forEach(key => {
-        if (key === 'location' || key === 'contactInfo') {
-          submitData.append(key, JSON.stringify(formData[key as keyof typeof formData]));
+      Object.keys(formData).forEach((key) => {
+        if (key === "location" || key === "contactInfo") {
+          submitData.append(
+            key,
+            JSON.stringify(formData[key as keyof typeof formData]),
+          );
         } else {
-          submitData.append(key, formData[key as keyof typeof formData] as string);
+          submitData.append(
+            key,
+            formData[key as keyof typeof formData] as string,
+          );
         }
       });
 
       // Add images
       selectedImages.forEach((image, index) => {
-        submitData.append('images', image);
+        submitData.append("images", image);
       });
 
       const response = await fetch("/api/admin/properties", {
@@ -399,10 +422,12 @@ export default function PropertyManagement() {
     }
   };
 
-  const filteredProperties = properties.filter(property => {
-    const matchesSearch = property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         property.location.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         property.contactInfo.name.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredProperties = properties.filter((property) => {
+    const searchLower = searchTerm.toLowerCase();
+    const matchesSearch =
+      (property.title?.toLowerCase() || "").includes(searchLower) ||
+      (property.location?.address?.toLowerCase() || "").includes(searchLower) ||
+      (property.contactInfo?.name?.toLowerCase() || "").includes(searchLower);
 
     let matchesPromotion = true;
     if (selectedPromotion === "paid") {
@@ -447,8 +472,12 @@ export default function PropertyManagement() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-2xl font-bold text-gray-900">Property Management</h3>
-          <p className="text-gray-600">Manage all property listings and advertisements</p>
+          <h3 className="text-2xl font-bold text-gray-900">
+            Property Management
+          </h3>
+          <p className="text-gray-600">
+            Manage all property listings and advertisements
+          </p>
         </div>
         <Button
           onClick={() => setShowCreateDialog(true)}
@@ -463,7 +492,9 @@ export default function PropertyManagement() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Properties</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Properties
+            </CardTitle>
             <Home className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -473,36 +504,42 @@ export default function PropertyManagement() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Properties</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Active Properties
+            </CardTitle>
             <Home className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {properties.filter(p => p.status === "active").length}
+              {properties.filter((p) => p.status === "active").length}
             </div>
             <p className="text-xs text-muted-foreground">Live listings</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Review</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Pending Review
+            </CardTitle>
             <Home className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {properties.filter(p => p.status === "pending").length}
+              {properties.filter((p) => p.status === "pending").length}
             </div>
             <p className="text-xs text-muted-foreground">Awaiting approval</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Sold Properties</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Sold Properties
+            </CardTitle>
             <Home className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {properties.filter(p => p.status === "sold").length}
+              {properties.filter((p) => p.status === "sold").length}
             </div>
             <p className="text-xs text-muted-foreground">Completed sales</p>
           </CardContent>
@@ -574,36 +611,51 @@ export default function PropertyManagement() {
                         <Home className="h-6 w-6 text-gray-500" />
                       </div>
                       <div>
-                        <p className="font-semibold">{property.title}</p>
+                        <p className="font-semibold">
+                          {property.title || "Untitled Property"}
+                        </p>
                         <p className="text-sm text-gray-500">
-                          ID: {property._id.slice(-6)}
+                          ID: {property._id?.slice(-6) || "N/A"}
                         </p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
                     <div>
-                      <p className="font-medium capitalize">{property.propertyType}</p>
-                      <p className="text-sm text-gray-500 capitalize">{property.subCategory}</p>
+                      <p className="font-medium capitalize">
+                        {property.propertyType || "N/A"}
+                      </p>
+                      <p className="text-sm text-gray-500 capitalize">
+                        {property.subCategory || "N/A"}
+                      </p>
                     </div>
                   </TableCell>
                   <TableCell>
                     <span className="font-semibold">
-                      ₹{(property.price / 100000).toFixed(1)}L
+                      ₹
+                      {property.price
+                        ? (property.price / 100000).toFixed(1)
+                        : "0"}
+                      L
                     </span>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-1">
                       <MapPin className="h-4 w-4 text-gray-400" />
                       <span className="text-sm">
-                        {property.location.city}, {property.location.state}
+                        {property.location?.city || "N/A"},{" "}
+                        {property.location?.state || "N/A"}
                       </span>
                     </div>
                   </TableCell>
                   <TableCell>
                     <div>
-                      <p className="font-medium">{property.contactInfo.name}</p>
-                      <p className="text-sm text-gray-500">{property.contactInfo.phone}</p>
+                      <p className="font-medium">
+                        {property.contactInfo?.name || "N/A"}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {property.contactInfo?.phone || "N/A"}
+                      </p>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -619,7 +671,7 @@ export default function PropertyManagement() {
                               : "bg-gray-100 text-gray-800"
                       }
                     >
-                      {property.status}
+                      {property.status || "unknown"}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -641,11 +693,19 @@ export default function PropertyManagement() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => updatePropertyStatus(
-                          property._id,
-                          property.status === "active" ? "inactive" : "active"
-                        )}
-                        className={property.status === "active" ? "text-red-600" : "text-green-600"}
+                        onClick={() =>
+                          updatePropertyStatus(
+                            property._id,
+                            property.status === "active"
+                              ? "inactive"
+                              : "active",
+                          )
+                        }
+                        className={
+                          property.status === "active"
+                            ? "text-red-600"
+                            : "text-green-600"
+                        }
                       >
                         <Star className="h-4 w-4" />
                       </Button>
@@ -663,7 +723,10 @@ export default function PropertyManagement() {
               ))}
               {filteredProperties.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-gray-500 py-8">
+                  <TableCell
+                    colSpan={7}
+                    className="text-center text-gray-500 py-8"
+                  >
                     No properties found
                   </TableCell>
                 </TableRow>
@@ -677,7 +740,7 @@ export default function PropertyManagement() {
       {pagination.pages > 1 && (
         <div className="flex justify-between items-center">
           <p className="text-sm text-gray-700">
-            Showing {((pagination.page - 1) * pagination.limit) + 1} to{" "}
+            Showing {(pagination.page - 1) * pagination.limit + 1} to{" "}
             {Math.min(pagination.page * pagination.limit, pagination.total)} of{" "}
             {pagination.total} results
           </p>
@@ -685,7 +748,9 @@ export default function PropertyManagement() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setPagination({ ...pagination, page: pagination.page - 1 })}
+              onClick={() =>
+                setPagination({ ...pagination, page: pagination.page - 1 })
+              }
               disabled={pagination.page === 1}
             >
               Previous
@@ -693,7 +758,9 @@ export default function PropertyManagement() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setPagination({ ...pagination, page: pagination.page + 1 })}
+              onClick={() =>
+                setPagination({ ...pagination, page: pagination.page + 1 })
+              }
               disabled={pagination.page === pagination.pages}
             >
               Next
@@ -717,7 +784,9 @@ export default function PropertyManagement() {
                 </label>
                 <Input
                   value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, title: e.target.value })
+                  }
                   placeholder="Enter property title"
                 />
               </div>
@@ -725,7 +794,12 @@ export default function PropertyManagement() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Property Type *
                 </label>
-                <Select value={formData.propertyType} onValueChange={(value) => setFormData({ ...formData, propertyType: value })}>
+                <Select
+                  value={formData.propertyType}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, propertyType: value })
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -744,7 +818,9 @@ export default function PropertyManagement() {
               </label>
               <Textarea
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
                 placeholder="Enter property description"
                 rows={3}
               />
@@ -758,7 +834,9 @@ export default function PropertyManagement() {
                 <Input
                   type="number"
                   value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, price: e.target.value })
+                  }
                   placeholder="Enter price"
                 />
               </div>
@@ -766,7 +844,12 @@ export default function PropertyManagement() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Price Type *
                 </label>
-                <Select value={formData.priceType} onValueChange={(value: "sale" | "rent") => setFormData({ ...formData, priceType: value })}>
+                <Select
+                  value={formData.priceType}
+                  onValueChange={(value: "sale" | "rent") =>
+                    setFormData({ ...formData, priceType: value })
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -784,10 +867,12 @@ export default function PropertyManagement() {
               </label>
               <Textarea
                 value={formData.location.address}
-                onChange={(e) => setFormData({
-                  ...formData,
-                  location: { ...formData.location, address: e.target.value }
-                })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    location: { ...formData.location, address: e.target.value },
+                  })
+                }
                 placeholder="Enter complete address"
                 rows={2}
               />
@@ -800,10 +885,15 @@ export default function PropertyManagement() {
                 </label>
                 <Input
                   value={formData.contactInfo.name}
-                  onChange={(e) => setFormData({
-                    ...formData,
-                    contactInfo: { ...formData.contactInfo, name: e.target.value }
-                  })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      contactInfo: {
+                        ...formData.contactInfo,
+                        name: e.target.value,
+                      },
+                    })
+                  }
                   placeholder="Enter contact name"
                 />
               </div>
@@ -813,10 +903,15 @@ export default function PropertyManagement() {
                 </label>
                 <Input
                   value={formData.contactInfo.phone}
-                  onChange={(e) => setFormData({
-                    ...formData,
-                    contactInfo: { ...formData.contactInfo, phone: e.target.value }
-                  })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      contactInfo: {
+                        ...formData.contactInfo,
+                        phone: e.target.value,
+                      },
+                    })
+                  }
                   placeholder="Enter phone number"
                 />
               </div>
@@ -827,10 +922,15 @@ export default function PropertyManagement() {
                 <Input
                   type="email"
                   value={formData.contactInfo.email}
-                  onChange={(e) => setFormData({
-                    ...formData,
-                    contactInfo: { ...formData.contactInfo, email: e.target.value }
-                  })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      contactInfo: {
+                        ...formData.contactInfo,
+                        email: e.target.value,
+                      },
+                    })
+                  }
                   placeholder="Enter email"
                 />
               </div>
@@ -893,7 +993,12 @@ export default function PropertyManagement() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Status
               </label>
-              <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
+              <Select
+                value={formData.status}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, status: value })
+                }
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -916,7 +1021,12 @@ export default function PropertyManagement() {
               </Button>
               <Button
                 onClick={handleCreateProperty}
-                disabled={saving || !formData.title || !formData.description || !formData.price}
+                disabled={
+                  saving ||
+                  !formData.title ||
+                  !formData.description ||
+                  !formData.price
+                }
                 className="bg-[#C70000] hover:bg-[#A50000]"
               >
                 {saving ? "Creating..." : "Create Property"}
@@ -937,40 +1047,68 @@ export default function PropertyManagement() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-700">Title:</label>
+                  <label className="text-sm font-medium text-gray-700">
+                    Title:
+                  </label>
                   <p className="text-gray-900">{selectedProperty.title}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700">Type:</label>
-                  <p className="text-gray-900 capitalize">{selectedProperty.propertyType} - {selectedProperty.subCategory}</p>
+                  <label className="text-sm font-medium text-gray-700">
+                    Type:
+                  </label>
+                  <p className="text-gray-900 capitalize">
+                    {selectedProperty.propertyType} -{" "}
+                    {selectedProperty.subCategory}
+                  </p>
                 </div>
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-700">Description:</label>
+                <label className="text-sm font-medium text-gray-700">
+                  Description:
+                </label>
                 <p className="text-gray-900">{selectedProperty.description}</p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-700">Price:</label>
-                  <p className="text-gray-900">₹{selectedProperty.price?.toLocaleString()} ({selectedProperty.priceType})</p>
+                  <label className="text-sm font-medium text-gray-700">
+                    Price:
+                  </label>
+                  <p className="text-gray-900">
+                    ₹{selectedProperty.price?.toLocaleString()} (
+                    {selectedProperty.priceType})
+                  </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700">Status:</label>
-                  <Badge className={selectedProperty.status === "active" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}>
+                  <label className="text-sm font-medium text-gray-700">
+                    Status:
+                  </label>
+                  <Badge
+                    className={
+                      selectedProperty.status === "active"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-gray-100 text-gray-800"
+                    }
+                  >
                     {selectedProperty.status}
                   </Badge>
                 </div>
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-700">Location:</label>
-                <p className="text-gray-900">{selectedProperty.location?.address}</p>
+                <label className="text-sm font-medium text-gray-700">
+                  Location:
+                </label>
+                <p className="text-gray-900">
+                  {selectedProperty.location?.address}
+                </p>
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-700">Contact Information:</label>
+                <label className="text-sm font-medium text-gray-700">
+                  Contact Information:
+                </label>
                 <div className="mt-1 space-y-1">
                   <p>Name: {selectedProperty.contactInfo?.name}</p>
                   <p>Phone: {selectedProperty.contactInfo?.phone}</p>
@@ -978,21 +1116,26 @@ export default function PropertyManagement() {
                 </div>
               </div>
 
-              {selectedProperty.images && selectedProperty.images.length > 0 && (
-                <div>
-                  <label className="text-sm font-medium text-gray-700">Images:</label>
-                  <div className="grid grid-cols-4 gap-2 mt-2">
-                    {selectedProperty.images.map((image: string, index: number) => (
-                      <img
-                        key={index}
-                        src={image}
-                        alt={`Property ${index + 1}`}
-                        className="w-full h-20 object-cover rounded border"
-                      />
-                    ))}
+              {selectedProperty.images &&
+                selectedProperty.images.length > 0 && (
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">
+                      Images:
+                    </label>
+                    <div className="grid grid-cols-4 gap-2 mt-2">
+                      {selectedProperty.images.map(
+                        (image: string, index: number) => (
+                          <img
+                            key={index}
+                            src={image}
+                            alt={`Property ${index + 1}`}
+                            className="w-full h-20 object-cover rounded border"
+                          />
+                        ),
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
           )}
         </DialogContent>
@@ -1013,7 +1156,9 @@ export default function PropertyManagement() {
                 </label>
                 <Input
                   value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, title: e.target.value })
+                  }
                   placeholder="Enter property title"
                 />
               </div>
@@ -1021,7 +1166,12 @@ export default function PropertyManagement() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Property Type *
                 </label>
-                <Select value={formData.propertyType} onValueChange={(value) => setFormData({ ...formData, propertyType: value })}>
+                <Select
+                  value={formData.propertyType}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, propertyType: value })
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -1040,7 +1190,9 @@ export default function PropertyManagement() {
               </label>
               <Textarea
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
                 placeholder="Enter property description"
                 rows={3}
               />
@@ -1054,7 +1206,9 @@ export default function PropertyManagement() {
                 <Input
                   type="number"
                   value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, price: e.target.value })
+                  }
                   placeholder="Enter price"
                 />
               </div>
@@ -1062,7 +1216,12 @@ export default function PropertyManagement() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Price Type *
                 </label>
-                <Select value={formData.priceType} onValueChange={(value: "sale" | "rent") => setFormData({ ...formData, priceType: value })}>
+                <Select
+                  value={formData.priceType}
+                  onValueChange={(value: "sale" | "rent") =>
+                    setFormData({ ...formData, priceType: value })
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -1080,10 +1239,12 @@ export default function PropertyManagement() {
               </label>
               <Textarea
                 value={formData.location.address}
-                onChange={(e) => setFormData({
-                  ...formData,
-                  location: { ...formData.location, address: e.target.value }
-                })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    location: { ...formData.location, address: e.target.value },
+                  })
+                }
                 placeholder="Enter complete address"
                 rows={2}
               />
@@ -1143,7 +1304,12 @@ export default function PropertyManagement() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Status
               </label>
-              <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
+              <Select
+                value={formData.status}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, status: value })
+                }
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -1169,7 +1335,12 @@ export default function PropertyManagement() {
               </Button>
               <Button
                 onClick={handleUpdateProperty}
-                disabled={saving || !formData.title || !formData.description || !formData.price}
+                disabled={
+                  saving ||
+                  !formData.title ||
+                  !formData.description ||
+                  !formData.price
+                }
                 className="bg-[#C70000] hover:bg-[#A50000]"
               >
                 {saving ? "Updating..." : "Update Property"}

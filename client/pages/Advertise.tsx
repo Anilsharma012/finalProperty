@@ -33,7 +33,7 @@ export default function Advertise() {
       setError(null);
 
       // Use the global API function as specified by user - get ALL packages for advertise page
-      const response = await (window as any).api("/plans?isActive=true");
+      const response = await (window as any).api("/plans?isActive=1");
       const data = response.ok
         ? response.json
         : { success: false, error: "Failed to fetch plans" };
@@ -147,13 +147,13 @@ export default function Advertise() {
                       key={pkg._id}
                       data-testid="plan-card"
                       className={`relative rounded-xl border-2 overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-105 ${
-                        pkg.premium
+                        pkg.type === "premium"
                           ? "border-orange-300 transform scale-105 shadow-lg"
                           : "border-gray-200"
                       }`}
                     >
                       {/* Premium Badge */}
-                      {pkg.premium && (
+                      {pkg.type === "premium" && (
                         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                           <div className="bg-orange-500 text-white px-4 py-1 rounded-full text-sm font-semibold flex items-center">
                             <Crown className="h-4 w-4 mr-1" />

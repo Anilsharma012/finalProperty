@@ -1,7 +1,15 @@
 import { useState } from "react";
-import { Heart, MapPin, Phone, Calendar, MessageCircle } from "lucide-react";
+import {
+  Heart,
+  MapPin,
+  Phone,
+  Calendar,
+  MessageCircle,
+  Send,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import ChatModal from "./ChatModal";
+import EnquiryModal from "./EnquiryModal";
 
 const featuredProperties = [
   {
@@ -66,20 +74,12 @@ const freshRecommendations = [
 ];
 
 export default function PropertyListings() {
-  const [chatModalOpen, setChatModalOpen] = useState(false);
+  const [enquiryModalOpen, setEnquiryModalOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<any>(null);
 
-  const handleStartChat = (property: any) => {
-    // Check if user is logged in
-    const token = localStorage.getItem("auth_token");
-    if (!token) {
-      // Redirect to login
-      window.location.href = "/login";
-      return;
-    }
-
+  const handleEnquiry = (property: any) => {
     setSelectedProperty(property);
-    setChatModalOpen(true);
+    setEnquiryModalOpen(true);
   };
 
   return (
@@ -139,10 +139,11 @@ export default function PropertyListings() {
                           size="sm"
                           variant="outline"
                           className="h-6 px-2 text-xs border-[#C70000] text-[#C70000]"
-                          onClick={() => handleStartChat(property)}
+                          onClick={() => handleEnquiry(property)}
+                          data-testid="enquiry-btn"
                         >
-                          <MessageCircle className="h-3 w-3 mr-1" />
-                          Chat
+                          <Send className="h-3 w-3 mr-1" />
+                          Enquiry Now
                         </Button>
                         <Button
                           size="sm"
@@ -191,11 +192,13 @@ export default function PropertyListings() {
                   <button className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md">
                     <Heart className="h-4 w-4 text-gray-600" />
                   </button>
-                  <div className={`absolute top-3 left-3 text-white px-2 py-1 rounded-md text-xs font-bold ${
-                    property.premium
-                      ? "bg-gradient-to-r from-orange-500 to-red-600"
-                      : "bg-[#C70000]"
-                  }`}>
+                  <div
+                    className={`absolute top-3 left-3 text-white px-2 py-1 rounded-md text-xs font-bold ${
+                      property.premium
+                        ? "bg-gradient-to-r from-orange-500 to-red-600"
+                        : "bg-[#C70000]"
+                    }`}
+                  >
                     {property.premium ? "AP Premium" : "Featured"}
                   </div>
                 </div>
@@ -224,10 +227,11 @@ export default function PropertyListings() {
                       size="sm"
                       variant="outline"
                       className="flex-1 border-[#C70000] text-[#C70000]"
-                      onClick={() => handleStartChat(property)}
+                      onClick={() => handleEnquiry(property)}
+                      data-testid="enquiry-btn"
                     >
-                      <MessageCircle className="h-3 w-3 mr-1" />
-                      Chat
+                      <Send className="h-3 w-3 mr-1" />
+                      Enquiry Now
                     </Button>
                     <Button
                       size="sm"
@@ -243,20 +247,17 @@ export default function PropertyListings() {
         </div>
       </section>
 
-      {/* Chat Modal */}
+      {/* Enquiry Modal */}
       {selectedProperty && (
-        <ChatModal
-          isOpen={chatModalOpen}
+        <EnquiryModal
+          isOpen={enquiryModalOpen}
           onClose={() => {
-            setChatModalOpen(false);
+            setEnquiryModalOpen(false);
             setSelectedProperty(null);
           }}
+          propertyId={selectedProperty.id.toString()}
           propertyTitle={selectedProperty.title}
-          propertyPrice={selectedProperty.price}
-          propertyImage={selectedProperty.image}
-          sellerId="seller1" // This would come from the property data
-          sellerName="Property Owner"
-          propertyId={selectedProperty.id}
+          ownerName="Property Owner"
         />
       )}
     </div>
