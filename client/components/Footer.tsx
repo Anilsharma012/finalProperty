@@ -206,6 +206,30 @@ export default function Footer() {
       }
     };
 
+    // Handle page published events
+    const handlePagePublished = (event: any) => {
+      try {
+        console.log("📄 Page published event received:", event.detail);
+        fetchFooterData().catch((error) => {
+          console.warn("🚨 Page published fetch failed:", error?.message);
+        });
+      } catch (error) {
+        console.warn("❌ Page published handler error:", error?.message);
+      }
+    };
+
+    // Handle page unpublished events
+    const handlePageUnpublished = (event: any) => {
+      try {
+        console.log("📄 Page unpublished event received:", event.detail);
+        fetchFooterData().catch((error) => {
+          console.warn("🚨 Page unpublished fetch failed:", error?.message);
+        });
+      } catch (error) {
+        console.warn("❌ Page unpublished handler error:", error?.message);
+      }
+    };
+
     // Listen for online/offline events
     const handleOnline = () => {
       try {
