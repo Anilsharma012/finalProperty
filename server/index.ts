@@ -304,6 +304,7 @@ import {
   updateStaffStatus,
   updateStaffPassword,
   getRolesAndPermissions,
+  getAvailablePermissions,
 } from "./routes/staff";
 
 // Notification management routes
