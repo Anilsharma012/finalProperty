@@ -213,10 +213,24 @@ export default function ContentManagement() {
           setTimeout(() => setSuccessMessage(""), 5000);
           console.log("✅ Page update successful");
 
-          // Trigger footer refresh if page is published
-          if (formData.status === "published") {
-            console.log("🔄 Triggering footer refresh for updated published page");
+          // Trigger footer refresh if page is published or was previously published
+          const wasPublished = selectedPage?.status === "published";
+          const isPublished = formData.status === "published";
+
+          if (isPublished || wasPublished) {
+            console.log("🔄 Triggering footer refresh for updated page");
             window.dispatchEvent(new CustomEvent('footerUpdate'));
+            window.dispatchEvent(new CustomEvent('footerRefresh'));
+
+            if (isPublished) {
+              window.dispatchEvent(new CustomEvent('pagePublished', {
+                detail: { pageId: selectedPage?._id, title: formData.title, slug: formData.slug }
+              }));
+            } else if (wasPublished && !isPublished) {
+              window.dispatchEvent(new CustomEvent('pageUnpublished', {
+                detail: { pageId: selectedPage?._id, title: formData.title, slug: formData.slug }
+              }));
+            }
           }
         } else {
           setError(data.error || "Failed to update page");
