@@ -362,8 +362,12 @@ export default function StaffManagement() {
           resetForm();
           setShowEditDialog(false);
           setSelectedStaff(null);
+          setError(""); // Clear any previous errors
+          setSuccess("Staff member updated successfully!");
+          setTimeout(() => setSuccess(""), 3000);
         } else {
           setError(data.error || "Failed to update staff member");
+          // Don't close dialog on error so user can fix the issue
         }
       } else {
         setError("Failed to update staff member");
