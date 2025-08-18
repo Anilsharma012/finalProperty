@@ -418,20 +418,6 @@ export default function DynamicFooter() {
   };
 
   const renderFooterLink = (link: FooterLink) => {
-    const linkProps = link.isExternal
-      ? {
-          href: link.url,
-          target: "_blank",
-          rel: "noopener noreferrer",
-          className:
-            "text-red-200 hover:text-white transition-colors duration-200 text-sm flex items-center",
-        }
-      : {
-          to: link.url,
-          className:
-            "text-red-200 hover:text-white transition-colors duration-200 text-sm",
-        };
-
     const content = (
       <>
         {link.title}
@@ -442,9 +428,21 @@ export default function DynamicFooter() {
     return (
       <li key={link._id}>
         {link.isExternal ? (
-          <a {...linkProps}>{content}</a>
+          <a
+            href={link.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-red-200 hover:text-white transition-colors duration-200 text-sm flex items-center"
+          >
+            {content}
+          </a>
         ) : (
-          <Link {...linkProps}>{content}</Link>
+          <Link
+            to={link.url}
+            className="text-red-200 hover:text-white transition-colors duration-200 text-sm"
+          >
+            {content}
+          </Link>
         )}
       </li>
     );
