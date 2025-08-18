@@ -1315,6 +1315,12 @@ export function createServer() {
     requireAdmin,
     getRolesAndPermissions,
   );
+  app.get(
+    "/api/admin/staff/permissions",
+    authenticateToken,
+    requireAdmin,
+    getAvailablePermissions,
+  );
 
   // Notification management routes
   app.get(
