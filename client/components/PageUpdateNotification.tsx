@@ -136,7 +136,7 @@ export default function PageUpdateNotification() {
                   onClick={refreshPage}
                   className="text-xs h-6 px-2"
                 >
-                  <Refresh className="h-3 w-3 mr-1" />
+                  <RefreshCw className="h-3 w-3 mr-1" />
                   Refresh
                 </Button>
                 <span className="text-xs text-gray-400">
