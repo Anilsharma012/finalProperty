@@ -155,6 +155,9 @@ function App() {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
+
+            {/* Global Components */}
+            <PageUpdateNotification />
           </TooltipProvider>
         </AuthProvider>
       </QueryClientProvider>
