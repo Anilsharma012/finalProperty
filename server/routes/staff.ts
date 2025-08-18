@@ -106,7 +106,7 @@ export const createStaff: RequestHandler = async (req, res) => {
       });
     }
 
-    // Check if email already exists
+    // Check if email already exists in users collection
     const existingUser = await db
       .collection("users")
       .findOne({ email });
@@ -114,7 +114,7 @@ export const createStaff: RequestHandler = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        error: "User with this email already exists",
+        error: `User with email ${email} already exists. Please use a different email address.`,
       });
     }
 
