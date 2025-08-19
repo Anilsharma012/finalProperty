@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../hooks/useAuth';
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../../hooks/useAuth";
 import {
   Send,
   TestTube,
@@ -9,19 +9,19 @@ import {
   Loader,
   Crown,
   MessageSquare,
-  Bell
-} from 'lucide-react';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Textarea } from '../ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+  Bell,
+} from "lucide-react";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select';
+} from "../ui/select";
 
 interface User {
   _id: string;
@@ -33,13 +33,13 @@ interface User {
 export default function TestSellerNotification() {
   const { token } = useAuth();
   const [sellers, setSellers] = useState<User[]>([]);
-  const [selectedSeller, setSelectedSeller] = useState('');
-  const [notificationType, setNotificationType] = useState('general');
-  const [title, setTitle] = useState('');
-  const [message, setMessage] = useState('');
+  const [selectedSeller, setSelectedSeller] = useState("");
+  const [notificationType, setNotificationType] = useState("general");
+  const [title, setTitle] = useState("");
+  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState('');
-  const [error, setError] = useState('');
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchSellers();
@@ -49,63 +49,68 @@ export default function TestSellerNotification() {
     if (!token) return;
 
     try {
-      const response = await fetch('/api/admin/notifications/users?userType=seller', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const response = await fetch(
+        "/api/admin/notifications/users?userType=seller",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
       const data = await response.json();
       if (data.success) {
         setSellers(data.data.users || []);
       }
     } catch (error) {
-      console.error('Error fetching sellers:', error);
+      console.error("Error fetching sellers:", error);
     }
   };
 
   const sendTestNotification = async () => {
     if (!selectedSeller || !title.trim() || !message.trim()) {
-      setError('Please fill in all fields and select a seller');
+      setError("Please fill in all fields and select a seller");
       return;
     }
 
     setLoading(true);
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
 
     try {
-      const response = await fetch('/api/admin/notifications/send', {
-        method: 'POST',
+      const response = await fetch("/api/admin/notifications/send", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           title,
           message,
-          type: 'both', // Send both email and push
-          audience: 'specific',
-          specificUsers: [selectedSeller]
-        })
+          type: "both", // Send both email and push
+          audience: "specific",
+          specificUsers: [selectedSeller],
+        }),
       });
 
       const data = await response.json();
-      
+
       if (data.success) {
-        setSuccess(`Test notification sent successfully to ${sellers.find(s => s._id === selectedSeller)?.name}!`);
+        setSuccess(
+          `Test notification sent successfully to ${sellers.find((s) => s._id === selectedSeller)?.name}!`,
+        );
         // Clear form
-        setTitle('');
-        setMessage('');
-        setSelectedSeller('');
-        
+        setTitle("");
+        setMessage("");
+        setSelectedSeller("");
+
         // Trigger notification update event
-        window.dispatchEvent(new CustomEvent('notificationUpdate'));
+        window.dispatchEvent(new CustomEvent("notificationUpdate"));
       } else {
-        setError(data.error || 'Failed to send notification');
+        setError(data.error || "Failed to send notification");
       }
     } catch (error: any) {
-      setError('Network error: ' + error.message);
+      setError("Network error: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -113,25 +118,33 @@ export default function TestSellerNotification() {
 
   const fillQuickMessage = (type: string) => {
     switch (type) {
-      case 'welcome':
-        setTitle('Welcome to Aashish Property!');
-        setMessage('Welcome to our platform! Your seller account is now active. Start posting properties and reach thousands of potential buyers.');
+      case "welcome":
+        setTitle("Welcome to Aashish Property!");
+        setMessage(
+          "Welcome to our platform! Your seller account is now active. Start posting properties and reach thousands of potential buyers.",
+        );
         break;
-      case 'premium':
-        setTitle('Upgrade to Premium Plan');
-        setMessage('Get 3x more visibility for your properties with our Premium Plan! Your listings will be featured at the top and reach more buyers. Upgrade now for just ₹999/month.');
+      case "premium":
+        setTitle("Upgrade to Premium Plan");
+        setMessage(
+          "Get 3x more visibility for your properties with our Premium Plan! Your listings will be featured at the top and reach more buyers. Upgrade now for just ₹999/month.",
+        );
         break;
-      case 'property_approved':
-        setTitle('Property Approved!');
-        setMessage('Great news! Your property listing has been approved and is now live on our platform. Buyers can now view and contact you about this property.');
+      case "property_approved":
+        setTitle("Property Approved!");
+        setMessage(
+          "Great news! Your property listing has been approved and is now live on our platform. Buyers can now view and contact you about this property.",
+        );
         break;
-      case 'tips':
-        setTitle('Property Listing Tips');
-        setMessage('💡 Tip: Add high-quality photos and detailed descriptions to get 5x more inquiries! Properties with 5+ photos get contacted 3x more often.');
+      case "tips":
+        setTitle("Property Listing Tips");
+        setMessage(
+          "💡 Tip: Add high-quality photos and detailed descriptions to get 5x more inquiries! Properties with 5+ photos get contacted 3x more often.",
+        );
         break;
       default:
-        setTitle('');
-        setMessage('');
+        setTitle("");
+        setMessage("");
     }
   };
 
@@ -164,10 +177,12 @@ export default function TestSellerNotification() {
 
         {/* Quick message templates */}
         <div>
-          <label className="block text-sm font-medium mb-2">Quick Templates:</label>
+          <label className="block text-sm font-medium mb-2">
+            Quick Templates:
+          </label>
           <div className="grid grid-cols-2 gap-2">
             <Button
-              onClick={() => fillQuickMessage('welcome')}
+              onClick={() => fillQuickMessage("welcome")}
               variant="outline"
               size="sm"
               className="text-xs"
@@ -176,7 +191,7 @@ export default function TestSellerNotification() {
               Welcome
             </Button>
             <Button
-              onClick={() => fillQuickMessage('premium')}
+              onClick={() => fillQuickMessage("premium")}
               variant="outline"
               size="sm"
               className="text-xs"
@@ -185,7 +200,7 @@ export default function TestSellerNotification() {
               Premium Offer
             </Button>
             <Button
-              onClick={() => fillQuickMessage('property_approved')}
+              onClick={() => fillQuickMessage("property_approved")}
               variant="outline"
               size="sm"
               className="text-xs"
@@ -194,7 +209,7 @@ export default function TestSellerNotification() {
               Approved
             </Button>
             <Button
-              onClick={() => fillQuickMessage('tips')}
+              onClick={() => fillQuickMessage("tips")}
               variant="outline"
               size="sm"
               className="text-xs"
@@ -207,7 +222,9 @@ export default function TestSellerNotification() {
 
         {/* Seller selection */}
         <div>
-          <label className="block text-sm font-medium mb-2">Send to Seller:</label>
+          <label className="block text-sm font-medium mb-2">
+            Send to Seller:
+          </label>
           <Select value={selectedSeller} onValueChange={setSelectedSeller}>
             <SelectTrigger>
               <SelectValue placeholder="Select a seller to test..." />
@@ -254,7 +271,9 @@ export default function TestSellerNotification() {
         {/* Send button */}
         <Button
           onClick={sendTestNotification}
-          disabled={loading || !selectedSeller || !title.trim() || !message.trim()}
+          disabled={
+            loading || !selectedSeller || !title.trim() || !message.trim()
+          }
           className="w-full bg-[#C70000] hover:bg-[#A60000]"
         >
           {loading ? (
@@ -271,7 +290,8 @@ export default function TestSellerNotification() {
         </Button>
 
         <div className="text-xs text-gray-500 mt-2">
-          ℹ️ This will send a real notification to the selected seller. They will see it in their dashboard immediately.
+          ℹ️ This will send a real notification to the selected seller. They
+          will see it in their dashboard immediately.
         </div>
       </CardContent>
     </Card>

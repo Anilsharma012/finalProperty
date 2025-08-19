@@ -480,7 +480,9 @@ export function createServer() {
 
         // Log and block unauthorized origins
         console.log("❌ CORS blocked for origin:", origin);
-        return callback(new Error(`CORS policy violation: Origin ${origin} not allowed`));
+        return callback(
+          new Error(`CORS policy violation: Origin ${origin} not allowed`),
+        );
       },
       credentials: true,
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
@@ -491,7 +493,7 @@ export function createServer() {
         "Accept",
         "Origin",
         "Access-Control-Request-Method",
-        "Access-Control-Request-Headers"
+        "Access-Control-Request-Headers",
       ],
     }),
   );
@@ -573,7 +575,9 @@ export function createServer() {
         cors: {
           allowedOrigins,
           requestOrigin: req.get("origin"),
-          isOriginAllowed: !req.get("origin") || allowedOrigins.includes(req.get("origin") || ""),
+          isOriginAllowed:
+            !req.get("origin") ||
+            allowedOrigins.includes(req.get("origin") || ""),
         },
         timestamp: new Date().toISOString(),
       };

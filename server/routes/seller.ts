@@ -40,125 +40,147 @@ export const getSellerNotifications: RequestHandler = async (req, res) => {
     console.log(`📬 Fetching notifications for seller: ${sellerId}`);
 
     // Get all types of notifications and messages for this seller
-    const [adminNotifications, userNotifications, conversations, unreadMessages] = await Promise.all([
+    const [
+      adminNotifications,
+      userNotifications,
+      conversations,
+      unreadMessages,
+    ] = await Promise.all([
       // 1. Admin notifications (push notifications, premium plans, general messages)
-      db.collection("notifications").find({
-        $or: [
-          { userId: new ObjectId(sellerId) },
-          { sellerId: new ObjectId(sellerId) },
-          { targetUserId: new ObjectId(sellerId) },
-          {
-            audience: { $in: ["sellers", "all"] }
-          },
-          {
-            audience: "specific",
-            specificUsers: { $in: [sellerId] }
-          }
-        ]
-      }).sort({ createdAt: -1 }).toArray(),
+      db
+        .collection("notifications")
+        .find({
+          $or: [
+            { userId: new ObjectId(sellerId) },
+            { sellerId: new ObjectId(sellerId) },
+            { targetUserId: new ObjectId(sellerId) },
+            {
+              audience: { $in: ["sellers", "all"] },
+            },
+            {
+              audience: "specific",
+              specificUsers: { $in: [sellerId] },
+            },
+          ],
+        })
+        .sort({ createdAt: -1 })
+        .toArray(),
 
       // 2. Individual user notifications sent by admin
-      db.collection("user_notifications").find({
-        userId: new ObjectId(sellerId)
-      }).sort({ sentAt: -1 }).toArray(),
+      db
+        .collection("user_notifications")
+        .find({
+          userId: new ObjectId(sellerId),
+        })
+        .sort({ sentAt: -1 })
+        .toArray(),
 
       // 3. Property-based conversations where seller is involved
-      db.collection("conversations").aggregate([
-        {
-          $match: {
-            $or: [
-              { seller: new ObjectId(sellerId) },
-              { participants: sellerId }
-            ]
-          }
-        },
-        {
-          $lookup: {
-            from: "properties",
-            localField: "property",
-            foreignField: "_id",
-            as: "propertyData"
-          }
-        },
-        {
-          $lookup: {
-            from: "users",
-            localField: "buyer",
-            foreignField: "_id",
-            as: "buyerData"
-          }
-        },
-        {
-          $lookup: {
-            from: "messages",
-            localField: "_id",
-            foreignField: "conversationId",
-            as: "messages"
-          }
-        },
-        {
-          $addFields: {
-            lastMessage: {
-              $arrayElemAt: [
-                {
-                  $sortArray: {
-                    input: "$messages",
-                    sortBy: { createdAt: -1 }
-                  }
-                },
-                0
-              ]
+      db
+        .collection("conversations")
+        .aggregate([
+          {
+            $match: {
+              $or: [
+                { seller: new ObjectId(sellerId) },
+                { participants: sellerId },
+              ],
             },
-            unreadCount: {
-              $size: {
-                $filter: {
-                  input: "$messages",
-                  cond: {
-                    $and: [
-                      { $ne: ["$$this.senderId", sellerId] },
-                      {
-                        $not: {
-                          $in: [
-                            sellerId,
-                            {
-                              $map: {
-                                input: "$$this.readBy",
-                                as: "reader",
-                                in: "$$reader.userId"
-                              }
-                            }
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                }
-              }
-            }
-          }
-        }
-      ]).toArray(),
+          },
+          {
+            $lookup: {
+              from: "properties",
+              localField: "property",
+              foreignField: "_id",
+              as: "propertyData",
+            },
+          },
+          {
+            $lookup: {
+              from: "users",
+              localField: "buyer",
+              foreignField: "_id",
+              as: "buyerData",
+            },
+          },
+          {
+            $lookup: {
+              from: "messages",
+              localField: "_id",
+              foreignField: "conversationId",
+              as: "messages",
+            },
+          },
+          {
+            $addFields: {
+              lastMessage: {
+                $arrayElemAt: [
+                  {
+                    $sortArray: {
+                      input: "$messages",
+                      sortBy: { createdAt: -1 },
+                    },
+                  },
+                  0,
+                ],
+              },
+              unreadCount: {
+                $size: {
+                  $filter: {
+                    input: "$messages",
+                    cond: {
+                      $and: [
+                        { $ne: ["$$this.senderId", sellerId] },
+                        {
+                          $not: {
+                            $in: [
+                              sellerId,
+                              {
+                                $map: {
+                                  input: "$$this.readBy",
+                                  as: "reader",
+                                  in: "$$reader.userId",
+                                },
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+              },
+            },
+          },
+        ])
+        .toArray(),
 
       // 4. Direct messages to seller (admin replies, etc.)
-      db.collection("messages").find({
-        $or: [
-          { receiverId: sellerId },
-          { targetUserId: sellerId },
-          {
-            conversationId: { $exists: false },
-            recipientId: sellerId
-          }
-        ]
-      }).sort({ createdAt: -1 }).toArray()
+      db
+        .collection("messages")
+        .find({
+          $or: [
+            { receiverId: sellerId },
+            { targetUserId: sellerId },
+            {
+              conversationId: { $exists: false },
+              recipientId: sellerId,
+            },
+          ],
+        })
+        .sort({ createdAt: -1 })
+        .toArray(),
     ]);
 
-    console.log(`📊 Found: ${adminNotifications.length} admin notifications, ${userNotifications.length} user notifications, ${conversations.length} conversations, ${unreadMessages.length} direct messages`);
+    console.log(
+      `📊 Found: ${adminNotifications.length} admin notifications, ${userNotifications.length} user notifications, ${conversations.length} conversations, ${unreadMessages.length} direct messages`,
+    );
 
     // Combine all notifications into a unified format
     const unifiedNotifications = [];
 
     // Add admin notifications
-    adminNotifications.forEach(notification => {
+    adminNotifications.forEach((notification) => {
       unifiedNotifications.push({
         id: notification._id,
         title: notification.title || "Admin Notification",
@@ -170,12 +192,12 @@ export const getSellerNotifications: RequestHandler = async (req, res) => {
         createdAt: notification.createdAt || notification.sentAt,
         source: "admin_notification",
         priority: notification.priority || "normal",
-        propertyId: notification.propertyId || null
+        propertyId: notification.propertyId || null,
       });
     });
 
     // Add user notifications (sent by admin to specific users)
-    userNotifications.forEach(notification => {
+    userNotifications.forEach((notification) => {
       unifiedNotifications.push({
         id: notification._id,
         title: notification.title || "Message from Admin",
@@ -187,20 +209,22 @@ export const getSellerNotifications: RequestHandler = async (req, res) => {
         createdAt: notification.sentAt,
         source: "user_notification",
         priority: "normal",
-        propertyId: null
+        propertyId: null,
       });
     });
 
     // Add conversation-based messages
-    conversations.forEach(conversation => {
+    conversations.forEach((conversation) => {
       if (conversation.lastMessage && conversation.unreadCount > 0) {
         const property = conversation.propertyData?.[0];
         const buyer = conversation.buyerData?.[0];
 
         unifiedNotifications.push({
           id: conversation._id,
-          title: `New message about ${property?.title || 'your property'}`,
-          message: conversation.lastMessage.message || conversation.lastMessage.content,
+          title: `New message about ${property?.title || "your property"}`,
+          message:
+            conversation.lastMessage.message ||
+            conversation.lastMessage.content,
           type: "property_inquiry",
           sender_role: conversation.lastMessage.senderType || "buyer",
           sender_name: buyer?.name || "User",
@@ -210,13 +234,13 @@ export const getSellerNotifications: RequestHandler = async (req, res) => {
           propertyId: property?._id,
           propertyTitle: property?.title,
           conversationId: conversation._id,
-          unreadCount: conversation.unreadCount
+          unreadCount: conversation.unreadCount,
         });
       }
     });
 
     // Add direct messages
-    unreadMessages.forEach(message => {
+    unreadMessages.forEach((message) => {
       unifiedNotifications.push({
         id: message._id,
         title: message.title || "Direct Message",
@@ -227,16 +251,19 @@ export const getSellerNotifications: RequestHandler = async (req, res) => {
         isRead: message.isRead || false,
         createdAt: message.createdAt,
         source: "direct_message",
-        priority: message.priority || "normal"
+        priority: message.priority || "normal",
       });
     });
 
     // Sort by creation date (newest first)
-    unifiedNotifications.sort((a, b) =>
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    unifiedNotifications.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
 
-    console.log(`📬 Total unified notifications: ${unifiedNotifications.length}`);
+    console.log(
+      `📬 Total unified notifications: ${unifiedNotifications.length}`,
+    );
 
     // If no notifications exist, create sample notifications
     if (unifiedNotifications.length === 0) {
@@ -245,29 +272,31 @@ export const getSellerNotifications: RequestHandler = async (req, res) => {
           sellerId: new ObjectId(sellerId),
           userId: new ObjectId(sellerId),
           title: "Welcome to Seller Dashboard",
-          message: "Your seller account has been successfully activated. You can now start posting properties and managing inquiries!",
+          message:
+            "Your seller account has been successfully activated. You can now start posting properties and managing inquiries!",
           type: "welcome",
           priority: "high",
           isRead: false,
           createdAt: new Date(),
-          senderType: "admin"
+          senderType: "admin",
         },
         {
           sellerId: new ObjectId(sellerId),
           userId: new ObjectId(sellerId),
           title: "Premium Plan Available",
-          message: "Upgrade to our premium plan to get more visibility for your properties and priority support.",
+          message:
+            "Upgrade to our premium plan to get more visibility for your properties and priority support.",
           type: "premium_offer",
           priority: "normal",
           isRead: false,
           createdAt: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
-          senderType: "admin"
-        }
+          senderType: "admin",
+        },
       ];
 
       await db.collection("notifications").insertMany(sampleNotifications);
 
-      const sampleUnified = sampleNotifications.map(notif => ({
+      const sampleUnified = sampleNotifications.map((notif) => ({
         id: notif._id || new ObjectId(),
         title: notif.title,
         message: notif.message,
@@ -277,14 +306,14 @@ export const getSellerNotifications: RequestHandler = async (req, res) => {
         isRead: notif.isRead,
         createdAt: notif.createdAt,
         source: "admin_notification",
-        priority: notif.priority
+        priority: notif.priority,
       }));
 
       return res.json({
         success: true,
         data: sampleUnified,
         total: sampleUnified.length,
-        unreadCount: sampleUnified.filter(n => !n.isRead).length
+        unreadCount: sampleUnified.filter((n) => !n.isRead).length,
       });
     }
 
@@ -292,7 +321,7 @@ export const getSellerNotifications: RequestHandler = async (req, res) => {
       success: true,
       data: unifiedNotifications,
       total: unifiedNotifications.length,
-      unreadCount: unifiedNotifications.filter(n => !n.isRead).length
+      unreadCount: unifiedNotifications.filter((n) => !n.isRead).length,
     };
 
     res.json(response);
@@ -301,7 +330,7 @@ export const getSellerNotifications: RequestHandler = async (req, res) => {
     res.status(500).json({
       success: false,
       error: "Failed to fetch notifications",
-      details: error.message
+      details: error.message,
     });
   }
 };
@@ -321,11 +350,11 @@ export const markNotificationAsRead: RequestHandler = async (req, res) => {
     }
 
     await db.collection("notifications").updateOne(
-      { 
-        _id: new ObjectId(notificationId), 
-        sellerId: new ObjectId(sellerId) 
+      {
+        _id: new ObjectId(notificationId),
+        sellerId: new ObjectId(sellerId),
       },
-      { $set: { isRead: true, readAt: new Date() } }
+      { $set: { isRead: true, readAt: new Date() } },
     );
 
     res.json({
@@ -390,16 +419,20 @@ export const getSellerMessages: RequestHandler = async (req, res) => {
     const enhancedMessages = await Promise.all(
       messages.map(async (message) => {
         // Get buyer details
-        const buyer = await db.collection("users").findOne(
-          { _id: message.buyerId },
-          { projection: { name: 1, email: 1, phone: 1 } }
-        );
+        const buyer = await db
+          .collection("users")
+          .findOne(
+            { _id: message.buyerId },
+            { projection: { name: 1, email: 1, phone: 1 } },
+          );
 
         // Get property details
-        const property = await db.collection("properties").findOne(
-          { _id: message.propertyId },
-          { projection: { title: 1, price: 1 } }
-        );
+        const property = await db
+          .collection("properties")
+          .findOne(
+            { _id: message.propertyId },
+            { projection: { title: 1, price: 1 } },
+          );
 
         return {
           ...message,
@@ -411,7 +444,7 @@ export const getSellerMessages: RequestHandler = async (req, res) => {
           timestamp: message.createdAt,
           isRead: message.isRead || false,
         };
-      })
+      }),
     );
 
     const response: ApiResponse<any[]> = {
@@ -435,12 +468,15 @@ export const getSellerPackages: RequestHandler = async (req, res) => {
     const db = getDatabase();
 
     // Get packages from unified database or create sample ones
-    let packages = await db.collection("packages").find({
-      $or: [
-        { targetUserType: "seller" },
-        { category: "advertisement" } // Legacy support
-      ]
-    }).toArray();
+    let packages = await db
+      .collection("packages")
+      .find({
+        $or: [
+          { targetUserType: "seller" },
+          { category: "advertisement" }, // Legacy support
+        ],
+      })
+      .toArray();
 
     if (packages.length === 0) {
       // Create sample packages
@@ -452,7 +488,7 @@ export const getSellerPackages: RequestHandler = async (req, res) => {
             "Post up to 5 properties",
             "Basic listing visibility",
             "Email support",
-            "Valid for 30 days"
+            "Valid for 30 days",
           ],
           duration: 30,
           type: "basic",
@@ -468,7 +504,7 @@ export const getSellerPackages: RequestHandler = async (req, res) => {
             "Priority in search results",
             "Phone & email support",
             "Property promotion tools",
-            "Valid for 60 days"
+            "Valid for 60 days",
           ],
           duration: 60,
           type: "premium",
@@ -485,7 +521,7 @@ export const getSellerPackages: RequestHandler = async (req, res) => {
             "Dedicated account manager",
             "Advanced analytics",
             "Priority customer support",
-            "Valid for 90 days"
+            "Valid for 90 days",
           ],
           duration: 90,
           type: "elite",
@@ -524,8 +560,8 @@ export const getSellerPayments: RequestHandler = async (req, res) => {
       .find({
         $or: [
           { userId: new ObjectId(sellerId), userType: "seller" },
-          { sellerId: new ObjectId(sellerId) } // Support legacy format
-        ]
+          { sellerId: new ObjectId(sellerId) }, // Support legacy format
+        ],
       })
       .sort({ createdAt: -1 })
       .toArray();
@@ -550,7 +586,8 @@ export const updateSellerProfile: RequestHandler = async (req, res) => {
   try {
     const db = getDatabase();
     const sellerId = (req as any).userId;
-    const { name, email, phone, emailNotifications, pushNotifications } = req.body;
+    const { name, email, phone, emailNotifications, pushNotifications } =
+      req.body;
 
     // Validate required fields
     if (!name || !email) {
@@ -585,7 +622,7 @@ export const updateSellerProfile: RequestHandler = async (req, res) => {
           pushNotifications: pushNotifications ?? true,
           updatedAt: new Date(),
         },
-      }
+      },
     );
 
     res.json({
@@ -628,7 +665,10 @@ export const changeSellerPassword: RequestHandler = async (req, res) => {
     }
 
     // Verify current password
-    const isValidPassword = await bcrypt.compare(currentPassword, user.password);
+    const isValidPassword = await bcrypt.compare(
+      currentPassword,
+      user.password,
+    );
     if (!isValidPassword) {
       return res.status(400).json({
         success: false,
@@ -647,7 +687,7 @@ export const changeSellerPassword: RequestHandler = async (req, res) => {
           password: hashedNewPassword,
           updatedAt: new Date(),
         },
-      }
+      },
     );
 
     res.json({
@@ -711,11 +751,13 @@ export const purchasePackage: RequestHandler = async (req, res) => {
         $set: {
           currentPackage: packageDetails.name,
           packageType: packageDetails.type,
-          packageExpiresAt: new Date(Date.now() + packageDetails.duration * 24 * 60 * 60 * 1000),
+          packageExpiresAt: new Date(
+            Date.now() + packageDetails.duration * 24 * 60 * 60 * 1000,
+          ),
           isPremium: packageDetails.type !== "basic",
           updatedAt: new Date(),
         },
-      }
+      },
     );
 
     // Create notification for successful purchase
@@ -764,8 +806,8 @@ export const getSellerStats: RequestHandler = async (req, res) => {
       .countDocuments({
         $or: [
           { userId: new ObjectId(sellerId), userType: "seller", isRead: false },
-          { sellerId: new ObjectId(sellerId), isRead: false } // Support legacy format
-        ]
+          { sellerId: new ObjectId(sellerId), isRead: false }, // Support legacy format
+        ],
       });
 
     // Get messages stats
@@ -779,14 +821,20 @@ export const getSellerStats: RequestHandler = async (req, res) => {
     // Calculate stats
     const stats = {
       totalProperties: properties.length,
-      pendingApproval: properties.filter(p => p.approvalStatus === 'pending').length,
-      approved: properties.filter(p => p.approvalStatus === 'approved').length,
-      rejected: properties.filter(p => p.approvalStatus === 'rejected').length,
+      pendingApproval: properties.filter((p) => p.approvalStatus === "pending")
+        .length,
+      approved: properties.filter((p) => p.approvalStatus === "approved")
+        .length,
+      rejected: properties.filter((p) => p.approvalStatus === "rejected")
+        .length,
       totalViews: properties.reduce((sum, prop) => sum + (prop.views || 0), 0),
-      totalInquiries: properties.reduce((sum, prop) => sum + (prop.inquiries || 0), 0),
+      totalInquiries: properties.reduce(
+        (sum, prop) => sum + (prop.inquiries || 0),
+        0,
+      ),
       unreadNotifications,
       unreadMessages,
-      premiumListings: properties.filter(p => p.isPremium).length,
+      premiumListings: properties.filter((p) => p.isPremium).length,
       profileViews: Math.floor(Math.random() * 500) + 100, // Mock data
     };
 

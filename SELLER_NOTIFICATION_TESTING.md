@@ -11,13 +11,14 @@ Fixed the issue where **Admin messages, notifications, chat replies, and premium
 The endpoint now returns **ALL** types of messages for sellers:
 
 - ✅ **Admin Notifications** (from notifications collection)
-- ✅ **User-Specific Notifications** (from user_notifications collection)  
+- ✅ **User-Specific Notifications** (from user_notifications collection)
 - ✅ **Property-Based Chat Messages** (from conversations/messages)
 - ✅ **Direct Messages** (admin replies, premium offers)
 - ✅ **Premium Plan Suggestions**
 - ✅ **Property Approval Messages**
 
 **API Response Format:**
+
 ```json
 {
   "success": true,
@@ -63,10 +64,12 @@ The endpoint now returns **ALL** types of messages for sellers:
 ### **STEP 1: Test Admin to Seller Notifications**
 
 1. **Login as Admin:**
+
    - Go to `/admin`
    - Navigate to **System Settings → Test Seller Notifications**
 
 2. **Send Test Notification:**
+
    - Select a seller from dropdown
    - Choose a quick template (Welcome, Premium Offer, etc.) OR write custom message
    - Click "Send Test Notification"
@@ -82,6 +85,7 @@ The endpoint now returns **ALL** types of messages for sellers:
 ### **STEP 2: Test Property-Based Conversations**
 
 1. **Create Property Inquiry:**
+
    - As a buyer, view any property
    - Send a message/inquiry to the seller
 
@@ -95,6 +99,7 @@ The endpoint now returns **ALL** types of messages for sellers:
 ### **STEP 3: Test Admin Bulk Notifications**
 
 1. **Send Bulk Notification:**
+
    - Admin → Notifications → Send Notification
    - Target: "Sellers" or "All Users"
    - Send premium plan offer or general announcement
@@ -106,13 +111,14 @@ The endpoint now returns **ALL** types of messages for sellers:
 ### **STEP 4: Test Real-Time Updates**
 
 1. **Open Seller Dashboard** in one browser tab
-2. **Send notification from Admin** in another tab  
+2. **Send notification from Admin** in another tab
 3. **Wait up to 10 seconds**
 4. ✅ **Expected:** Notification appears automatically without page refresh
 
 ### **STEP 5: Test Premium Plan Notifications**
 
 1. **Admin sends premium plan offer:**
+
    - Use "Premium Offer" template in Test Seller Notifications
    - Or send via Notifications module targeting sellers
 
@@ -123,18 +129,21 @@ The endpoint now returns **ALL** types of messages for sellers:
 ## 🔍 **DEBUGGING ENDPOINTS**
 
 ### **Check Seller Notifications:**
+
 ```bash
 GET /api/seller/notifications
 Authorization: Bearer <seller_token>
 ```
 
 ### **Check All Notifications (Admin):**
-```bash  
+
+```bash
 GET /api/admin/notifications
 Authorization: Bearer <admin_token>
 ```
 
 ### **Send Test Notification (Admin):**
+
 ```bash
 POST /api/admin/notifications/send
 Authorization: Bearer <admin_token>
@@ -144,7 +153,7 @@ Content-Type: application/json
   "title": "Test Message",
   "message": "This is a test notification",
   "type": "both",
-  "audience": "specific", 
+  "audience": "specific",
   "specificUsers": ["seller_user_id"]
 }
 ```
@@ -154,7 +163,7 @@ Content-Type: application/json
 The system now consolidates notifications from:
 
 1. **`notifications` collection** - Admin broadcast notifications
-2. **`user_notifications` collection** - Individual user notifications  
+2. **`user_notifications` collection** - Individual user notifications
 3. **`conversations` collection** - Property-based chat conversations
 4. **`messages` collection** - Direct messages and replies
 
@@ -172,11 +181,13 @@ The system now consolidates notifications from:
 ## 🔧 **ADMIN CONTROLS**
 
 **System Settings → Test Seller Notifications:**
+
 - Send test messages to specific sellers
 - Use quick templates for common scenarios
 - Real-time delivery verification
 
 **Notifications → Send Notification:**
+
 - Bulk messaging to seller groups
 - Premium plan promotions
 - System announcements
