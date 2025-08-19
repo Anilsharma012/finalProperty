@@ -1096,6 +1096,8 @@ export default function Admin() {
           return <AdminSettings />;
         case "testing":
           return <AdminTestingDashboard />;
+        case "test-seller-notifications":
+          return <TestSellerNotification />;
         case "system-update":
           return <SystemUpdate />;
         case "auth-debug":
