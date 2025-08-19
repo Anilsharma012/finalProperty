@@ -152,7 +152,7 @@ export const getSellerNotifications: RequestHandler = async (req, res) => {
       }).sort({ createdAt: -1 }).toArray()
     ]);
 
-    console.log(`📊 Found: ${adminNotifications.length} admin notifications, ${conversations.length} conversations, ${unreadMessages.length} direct messages`);
+    console.log(`📊 Found: ${adminNotifications.length} admin notifications, ${userNotifications.length} user notifications, ${conversations.length} conversations, ${unreadMessages.length} direct messages`);
 
     // Combine all notifications into a unified format
     const unifiedNotifications = [];
