@@ -37,51 +37,240 @@ export const getSellerNotifications: RequestHandler = async (req, res) => {
     const db = getDatabase();
     const sellerId = (req as any).userId;
 
-    // Get notifications for this seller from unified collection
-    const notifications = await db
-      .collection("notifications")
-      .find({
-        $or: [
-          { userId: new ObjectId(sellerId), userType: "seller" },
-          { sellerId: new ObjectId(sellerId) } // Support legacy format
-        ]
-      })
-      .sort({ createdAt: -1 })
-      .toArray();
+    console.log(`📬 Fetching notifications for seller: ${sellerId}`);
 
-    // Create some sample notifications if none exist
-    if (notifications.length === 0) {
+    // Get all types of notifications and messages for this seller
+    const [adminNotifications, conversations, unreadMessages] = await Promise.all([
+      // 1. Admin notifications (push notifications, premium plans, general messages)
+      db.collection("notifications").find({
+        $or: [
+          { userId: new ObjectId(sellerId) },
+          { sellerId: new ObjectId(sellerId) },
+          { targetUserId: new ObjectId(sellerId) },
+          {
+            audience: { $in: ["sellers", "all"] }
+          },
+          {
+            audience: "specific",
+            specificUsers: { $in: [sellerId] }
+          }
+        ]
+      }).sort({ createdAt: -1 }).toArray(),
+
+      // 2. Property-based conversations where seller is involved
+      db.collection("conversations").aggregate([
+        {
+          $match: {
+            $or: [
+              { seller: new ObjectId(sellerId) },
+              { participants: sellerId }
+            ]
+          }
+        },
+        {
+          $lookup: {
+            from: "properties",
+            localField: "property",
+            foreignField: "_id",
+            as: "propertyData"
+          }
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "buyer",
+            foreignField: "_id",
+            as: "buyerData"
+          }
+        },
+        {
+          $lookup: {
+            from: "messages",
+            localField: "_id",
+            foreignField: "conversationId",
+            as: "messages"
+          }
+        },
+        {
+          $addFields: {
+            lastMessage: {
+              $arrayElemAt: [
+                {
+                  $sortArray: {
+                    input: "$messages",
+                    sortBy: { createdAt: -1 }
+                  }
+                },
+                0
+              ]
+            },
+            unreadCount: {
+              $size: {
+                $filter: {
+                  input: "$messages",
+                  cond: {
+                    $and: [
+                      { $ne: ["$$this.senderId", sellerId] },
+                      {
+                        $not: {
+                          $in: [
+                            sellerId,
+                            {
+                              $map: {
+                                input: "$$this.readBy",
+                                as: "reader",
+                                in: "$$reader.userId"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]).toArray(),
+
+      // 3. Direct messages to seller (admin replies, etc.)
+      db.collection("messages").find({
+        $or: [
+          { receiverId: sellerId },
+          { targetUserId: sellerId },
+          {
+            conversationId: { $exists: false },
+            recipientId: sellerId
+          }
+        ]
+      }).sort({ createdAt: -1 }).toArray()
+    ]);
+
+    console.log(`📊 Found: ${adminNotifications.length} admin notifications, ${conversations.length} conversations, ${unreadMessages.length} direct messages`);
+
+    // Combine all notifications into a unified format
+    const unifiedNotifications = [];
+
+    // Add admin notifications
+    adminNotifications.forEach(notification => {
+      unifiedNotifications.push({
+        id: notification._id,
+        title: notification.title || "Admin Notification",
+        message: notification.message,
+        type: notification.type || "admin_notification",
+        sender_role: "admin",
+        sender_name: "Admin",
+        isRead: notification.isRead || false,
+        createdAt: notification.createdAt || notification.sentAt,
+        source: "admin_notification",
+        priority: notification.priority || "normal",
+        propertyId: notification.propertyId || null
+      });
+    });
+
+    // Add conversation-based messages
+    conversations.forEach(conversation => {
+      if (conversation.lastMessage && conversation.unreadCount > 0) {
+        const property = conversation.propertyData?.[0];
+        const buyer = conversation.buyerData?.[0];
+
+        unifiedNotifications.push({
+          id: conversation._id,
+          title: `New message about ${property?.title || 'your property'}`,
+          message: conversation.lastMessage.message || conversation.lastMessage.content,
+          type: "property_inquiry",
+          sender_role: conversation.lastMessage.senderType || "buyer",
+          sender_name: buyer?.name || "User",
+          isRead: false,
+          createdAt: conversation.lastMessage.createdAt,
+          source: "conversation",
+          propertyId: property?._id,
+          propertyTitle: property?.title,
+          conversationId: conversation._id,
+          unreadCount: conversation.unreadCount
+        });
+      }
+    });
+
+    // Add direct messages
+    unreadMessages.forEach(message => {
+      unifiedNotifications.push({
+        id: message._id,
+        title: message.title || "Direct Message",
+        message: message.message || message.content,
+        type: message.type || "direct_message",
+        sender_role: message.senderType || "admin",
+        sender_name: message.senderName || "Admin",
+        isRead: message.isRead || false,
+        createdAt: message.createdAt,
+        source: "direct_message",
+        priority: message.priority || "normal"
+      });
+    });
+
+    // Sort by creation date (newest first)
+    unifiedNotifications.sort((a, b) =>
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+
+    console.log(`📬 Total unified notifications: ${unifiedNotifications.length}`);
+
+    // If no notifications exist, create sample notifications
+    if (unifiedNotifications.length === 0) {
       const sampleNotifications = [
         {
           sellerId: new ObjectId(sellerId),
+          userId: new ObjectId(sellerId),
           title: "Welcome to Seller Dashboard",
-          message: "Your seller account has been successfully activated. You can now start posting properties!",
-          type: "account",
+          message: "Your seller account has been successfully activated. You can now start posting properties and managing inquiries!",
+          type: "welcome",
+          priority: "high",
           isRead: false,
           createdAt: new Date(),
+          senderType: "admin"
         },
         {
           sellerId: new ObjectId(sellerId),
-          title: "Property Approval Guidelines",
-          message: "Please ensure your property listings follow our guidelines for faster approval.",
-          type: "general",
+          userId: new ObjectId(sellerId),
+          title: "Premium Plan Available",
+          message: "Upgrade to our premium plan to get more visibility for your properties and priority support.",
+          type: "premium_offer",
+          priority: "normal",
           isRead: false,
-          createdAt: new Date(),
-        },
+          createdAt: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
+          senderType: "admin"
+        }
       ];
 
       await db.collection("notifications").insertMany(sampleNotifications);
-      
-      const response: ApiResponse<any[]> = {
+
+      const sampleUnified = sampleNotifications.map(notif => ({
+        id: notif._id || new ObjectId(),
+        title: notif.title,
+        message: notif.message,
+        type: notif.type,
+        sender_role: "admin",
+        sender_name: "Admin",
+        isRead: notif.isRead,
+        createdAt: notif.createdAt,
+        source: "admin_notification",
+        priority: notif.priority
+      }));
+
+      return res.json({
         success: true,
-        data: sampleNotifications,
-      };
-      return res.json(response);
+        data: sampleUnified,
+        total: sampleUnified.length,
+        unreadCount: sampleUnified.filter(n => !n.isRead).length
+      });
     }
 
-    const response: ApiResponse<any[]> = {
+    const response: ApiResponse<any> = {
       success: true,
-      data: notifications,
+      data: unifiedNotifications,
+      total: unifiedNotifications.length,
+      unreadCount: unifiedNotifications.filter(n => !n.isRead).length
     };
 
     res.json(response);
@@ -90,6 +279,7 @@ export const getSellerNotifications: RequestHandler = async (req, res) => {
     res.status(500).json({
       success: false,
       error: "Failed to fetch notifications",
+      details: error.message
     });
   }
 };
