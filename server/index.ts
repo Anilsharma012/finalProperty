@@ -450,21 +450,40 @@ export function createServer() {
   const app = express();
 
   const allowedOrigins = [
-    "https://aproperty.netlify.app",
-    "http://localhost:5173",
-    "https://295329d1a890466f9bcbc004dd730a35-0776d79bc1304d9390d1d56e1.fly.dev",
+    "https://aproperty.netlify.app", // Keep Netlify for backwards compatibility
+    "http://localhost:5173", // Development
+    "https://295329d1a890466f9bcbc004dd730a35-0776d79bc1304d9390d1d56e1.fly.dev", // Fly.dev
+    "https://aashish.posttrr.com", // Hostinger production domain
+    "http://aashish.posttrr.com", // HTTP fallback (will redirect to HTTPS)
   ];
 
   app.use(
     cors({
       origin: function (origin, callback) {
-        // Temporarily allow all origins for debugging
-        console.log("🔍 CORS request from origin:", origin);
-        callback(null, true);
+        // Allow requests with no origin (like mobile apps, Postman, server-to-server)
+        if (!origin) return callback(null, true);
+
+        // Check if the origin is in our allowed list
+        if (allowedOrigins.includes(origin)) {
+          console.log("✅ CORS allowed for origin:", origin);
+          return callback(null, true);
+        }
+
+        // Log and block unauthorized origins
+        console.log("❌ CORS blocked for origin:", origin);
+        return callback(new Error(`CORS policy violation: Origin ${origin} not allowed`));
       },
       credentials: true,
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      allowedHeaders: ["Content-Type", "Authorization"],
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+      allowedHeaders: [
+        "Content-Type",
+        "Authorization",
+        "X-Requested-With",
+        "Accept",
+        "Origin",
+        "Access-Control-Request-Method",
+        "Access-Control-Request-Headers"
+      ],
     }),
   );
 
@@ -484,7 +503,7 @@ export function createServer() {
       console.log("Server will continue with limited functionality");
     });
 
-  // Health check with database status
+  // Health check with database status and CORS info
   app.get("/api/ping", async (req, res) => {
     const startTime = Date.now();
 
@@ -541,6 +560,11 @@ export function createServer() {
           ip: req.ip || req.connection.remoteAddress,
           method: req.method,
           url: req.url,
+        },
+        cors: {
+          allowedOrigins,
+          requestOrigin: req.get("origin"),
+          isOriginAllowed: !req.get("origin") || allowedOrigins.includes(req.get("origin") || ""),
         },
         timestamp: new Date().toISOString(),
       };
