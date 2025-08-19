@@ -62,7 +62,7 @@ export const getSellerNotifications: RequestHandler = async (req, res) => {
         userId: new ObjectId(sellerId)
       }).sort({ sentAt: -1 }).toArray(),
 
-      // 2. Property-based conversations where seller is involved
+      // 3. Property-based conversations where seller is involved
       db.collection("conversations").aggregate([
         {
           $match: {
