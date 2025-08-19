@@ -51,11 +51,27 @@ export default function SellerNotifications() {
 
   useEffect(() => {
     fetchNotifications();
-    
-    // Set up auto-refresh every 30 seconds
-    const interval = setInterval(fetchNotifications, 30000);
-    
-    return () => clearInterval(interval);
+
+    // Set up auto-refresh every 10 seconds for real-time updates
+    const interval = setInterval(() => fetchNotifications(true), 10000);
+
+    // Listen for notification events
+    const handleNotificationUpdate = () => {
+      console.log('🔔 Notification update event received');
+      fetchNotifications(true);
+    };
+
+    // Listen for admin notification events
+    window.addEventListener('adminNotification', handleNotificationUpdate);
+    window.addEventListener('newMessage', handleNotificationUpdate);
+    window.addEventListener('notificationUpdate', handleNotificationUpdate);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('adminNotification', handleNotificationUpdate);
+      window.removeEventListener('newMessage', handleNotificationUpdate);
+      window.removeEventListener('notificationUpdate', handleNotificationUpdate);
+    };
   }, [token]);
 
   const fetchNotifications = async (silent = false) => {
