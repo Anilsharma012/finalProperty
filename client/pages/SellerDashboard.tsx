@@ -308,6 +308,9 @@ export default function SellerDashboard() {
           </CardContent>
         </Card>
 
+        {/* Messages & Notifications */}
+        <SellerNotifications />
+
         {/* User Profile */}
         <Card>
           <CardHeader>
