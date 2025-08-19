@@ -33,6 +33,7 @@ import {
   Activity,
   Plus,
   Edit,
+  Bell,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
