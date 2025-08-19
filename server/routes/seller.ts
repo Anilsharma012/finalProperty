@@ -174,6 +174,23 @@ export const getSellerNotifications: RequestHandler = async (req, res) => {
       });
     });
 
+    // Add user notifications (sent by admin to specific users)
+    userNotifications.forEach(notification => {
+      unifiedNotifications.push({
+        id: notification._id,
+        title: notification.title || "Message from Admin",
+        message: notification.message,
+        type: notification.type || "admin_message",
+        sender_role: "admin",
+        sender_name: "Admin",
+        isRead: !!notification.readAt,
+        createdAt: notification.sentAt,
+        source: "user_notification",
+        priority: "normal",
+        propertyId: null
+      });
+    });
+
     // Add conversation-based messages
     conversations.forEach(conversation => {
       if (conversation.lastMessage && conversation.unreadCount > 0) {
