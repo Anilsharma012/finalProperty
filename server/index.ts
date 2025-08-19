@@ -452,7 +452,8 @@ export function createServer() {
   const allowedOrigins = [
     "https://aproperty.netlify.app", // Keep Netlify for backwards compatibility
     "http://localhost:5173", // Development
-    "https://295329d1a890466f9bcbc004dd730a35-0776d79bc1304d9390d1d56e1.fly.dev", // Fly.dev
+    "https://295329d1a890466f9bcbc004dd730a35-0776d79bc1304d9390d1d56e1.fly.dev", // Old Fly.dev
+    "https://880833dcecc84a92861ca2f5c11ffbe5-ddcc24fd377b44659b202fb89.fly.dev", // Current Fly.dev
     "https://aashish.posttrr.com", // Hostinger production domain
     "http://aashish.posttrr.com", // HTTP fallback (will redirect to HTTPS)
   ];
@@ -462,6 +463,14 @@ export function createServer() {
       origin: function (origin, callback) {
         // Allow requests with no origin (like mobile apps, Postman, server-to-server)
         if (!origin) return callback(null, true);
+
+        // In development, allow any localhost or fly.dev origin
+        if (process.env.NODE_ENV !== "production") {
+          if (origin?.includes("localhost") || origin?.includes(".fly.dev")) {
+            console.log("✅ CORS allowed for development origin:", origin);
+            return callback(null, true);
+          }
+        }
 
         // Check if the origin is in our allowed list
         if (allowedOrigins.includes(origin)) {
