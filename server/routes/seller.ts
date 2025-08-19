@@ -139,7 +139,7 @@ export const getSellerNotifications: RequestHandler = async (req, res) => {
         }
       ]).toArray(),
 
-      // 3. Direct messages to seller (admin replies, etc.)
+      // 4. Direct messages to seller (admin replies, etc.)
       db.collection("messages").find({
         $or: [
           { receiverId: sellerId },
