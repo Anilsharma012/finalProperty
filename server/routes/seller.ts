@@ -40,7 +40,7 @@ export const getSellerNotifications: RequestHandler = async (req, res) => {
     console.log(`📬 Fetching notifications for seller: ${sellerId}`);
 
     // Get all types of notifications and messages for this seller
-    const [adminNotifications, conversations, unreadMessages] = await Promise.all([
+    const [adminNotifications, userNotifications, conversations, unreadMessages] = await Promise.all([
       // 1. Admin notifications (push notifications, premium plans, general messages)
       db.collection("notifications").find({
         $or: [
@@ -56,6 +56,11 @@ export const getSellerNotifications: RequestHandler = async (req, res) => {
           }
         ]
       }).sort({ createdAt: -1 }).toArray(),
+
+      // 2. Individual user notifications sent by admin
+      db.collection("user_notifications").find({
+        userId: new ObjectId(sellerId)
+      }).sort({ sentAt: -1 }).toArray(),
 
       // 2. Property-based conversations where seller is involved
       db.collection("conversations").aggregate([
