@@ -113,7 +113,12 @@ class PhonePeService {
       }
 
       if (!this.config) {
-        throw new Error("PhonePe configuration not available");
+        throw new Error("PhonePe configuration not available. Please check admin settings.");
+      }
+
+      // Validate required config fields
+      if (!this.config.merchantId || !this.config.saltKey || !this.config.saltIndex) {
+        throw new Error("PhonePe configuration is incomplete. Please check merchantId, saltKey, and saltIndex in admin settings.");
       }
 
       const merchantTransactionId = this.generateTransactionId();
@@ -132,27 +137,13 @@ class PhonePeService {
         },
       };
 
-      // Convert to base64
-      const payloadString = JSON.stringify(paymentRequest);
-      const base64Payload = btoa(payloadString);
-
-      // Generate checksum
-      const endpoint = "/pg/v1/pay";
-      const checksum = this.generateChecksum(base64Payload, endpoint);
-
-      // API URL
-      const apiUrl = this.config.testMode
-        ? "https://api-preprod.phonepe.com/apis/pg-sandbox"
-        : "https://api.phonepe.com/apis/hermes";
-
-      console.log("PhonePe payment request:", {
-        url: `${apiUrl}/pg/v1/pay`,
-        checksum: checksum.substring(0, 20) + "...",
-        payload: paymentRequest
-      });
-
       // First, create transaction in our backend
       const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error("Authentication required. Please login again.");
+      }
+
+      console.log("🔄 Creating PhonePe transaction...");
       const createTxnResponse = await fetch("/api/payments/phonepe/transaction", {
         method: "POST",
         headers: {
@@ -171,8 +162,31 @@ class PhonePeService {
       });
 
       if (!createTxnResponse.ok) {
-        throw new Error(`Failed to create transaction: ${createTxnResponse.status}`);
+        const errorData = await createTxnResponse.json().catch(() => ({}));
+        throw new Error(errorData.error || `Failed to create transaction: ${createTxnResponse.status}`);
       }
+
+      const txnResult = await createTxnResponse.json();
+      if (!txnResult.success) {
+        throw new Error(txnResult.error || "Failed to create transaction");
+      }
+
+      console.log("✅ Transaction created successfully");
+
+      // Convert to base64
+      const payloadString = JSON.stringify(paymentRequest);
+      const base64Payload = btoa(payloadString);
+
+      // Generate checksum
+      const endpoint = "/pg/v1/pay";
+      const checksum = this.generateChecksum(base64Payload, endpoint);
+
+      // API URL
+      const apiUrl = this.config.testMode
+        ? "https://api-preprod.phonepe.com/apis/pg-sandbox"
+        : "https://api.phonepe.com/apis/hermes";
+
+      console.log("🔄 Initiating PhonePe payment...");
 
       // Make payment request to PhonePe
       const response = await fetch(`${apiUrl}/pg/v1/pay`, {
@@ -190,7 +204,8 @@ class PhonePeService {
       console.log("PhonePe API response status:", response.status);
 
       if (!response.ok) {
-        throw new Error(`PhonePe API error: ${response.status} ${response.statusText}`);
+        const errorText = await response.text().catch(() => "Unknown error");
+        throw new Error(`PhonePe API error: ${response.status} ${response.statusText}. ${errorText}`);
       }
 
       const responseData = await response.json();
@@ -208,18 +223,21 @@ class PhonePeService {
           }),
         );
 
+        console.log("✅ PhonePe payment initiated successfully");
         return {
           success: true,
           data: responseData.data,
         };
       } else {
+        const errorMsg = responseData.message || responseData.code || "Payment initiation failed";
+        console.error("❌ PhonePe payment failed:", errorMsg);
         return {
           success: false,
-          error: responseData.message || responseData.code || "Payment initiation failed",
+          error: errorMsg,
         };
       }
     } catch (error: any) {
-      console.error("PhonePe payment error:", error);
+      console.error("❌ PhonePe payment error:", error);
       return {
         success: false,
         error: error.message || "Failed to initiate PhonePe payment",
