@@ -259,12 +259,30 @@ export const updateStaff: RequestHandler = async (req, res) => {
     const { staffId } = req.params;
     const updateData = req.body;
 
+    console.log("🔄 UpdateStaff called with:", { staffId, updateData });
+
     if (!ObjectId.isValid(staffId)) {
+      console.error("❌ Invalid staff ID provided:", staffId);
       return res.status(400).json({
         success: false,
         error: "Invalid staff ID",
       });
     }
+
+    // Check if staff member exists first
+    const existingStaff = await db.collection("users").findOne({
+      _id: new ObjectId(staffId)
+    });
+
+    if (!existingStaff) {
+      console.error("❌ Staff member not found in database:", staffId);
+      return res.status(404).json({
+        success: false,
+        error: "Staff member not found",
+      });
+    }
+
+    console.log("✅ Found existing staff:", existingStaff._id);
 
     // Remove sensitive fields from update
     delete updateData._id;
