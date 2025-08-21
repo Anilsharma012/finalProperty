@@ -454,6 +454,7 @@ export function createServer() {
     "http://localhost:5173", // Development
     "https://295329d1a890466f9bcbc004dd730a35-0776d79bc1304d9390d1d56e1.fly.dev", // Old Fly.dev
     "https://880833dcecc84a92861ca2f5c11ffbe5-ddcc24fd377b44659b202fb89.fly.dev", // Current Fly.dev
+    "https://880833dcecc84a92861ca2f5c11ffbe5-ddcc24fd377b44659b202fb89.fly.dev.projects.builder.codes", // Builder.io environment
     "https://aashish.posttrr.com", // Hostinger production domain
     "http://aashish.posttrr.com", // HTTP fallback (will redirect to HTTPS)
   ];
@@ -536,7 +537,7 @@ export function createServer() {
         dbError = error.message;
         try {
           // If database not initialized, try to connect
-          console.log("���� Database not initialized, attempting connection...");
+          console.log("🔄 Database not initialized, attempting connection...");
           const connection = await connectToDatabase();
           db = connection.db;
           await db.admin().ping();
