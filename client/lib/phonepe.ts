@@ -26,14 +26,48 @@ class PhonePeService {
 
   async loadConfig(): Promise<PhonePeConfig> {
     try {
-      const response = await fetch("/api/admin/settings/phonepe");
+      // Get auth token from localStorage
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        throw new Error("Authentication token not found. Please login again.");
+      }
+
+      const response = await fetch("/api/admin/settings/phonepe", {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Authentication failed. Please login again.");
+        } else if (response.status === 403) {
+          throw new Error("Access denied. Admin privileges required.");
+        }
+        throw new Error(`Failed to load PhonePe config: ${response.status} ${response.statusText}`);
+      }
+
       const data = await response.json();
+      console.log("PhonePe config response:", data);
 
       if (data.success && data.data.enabled) {
+        // Validate required fields
+        if (!data.data.merchantId || !data.data.saltKey || !data.data.saltIndex) {
+          throw new Error("PhonePe configuration is incomplete. Please check merchantId, saltKey, and saltIndex in admin settings.");
+        }
+
         this.config = data.data;
+        console.log("PhonePe config loaded successfully:", {
+          enabled: this.config.enabled,
+          testMode: this.config.testMode,
+          hasMerchantId: !!this.config.merchantId,
+          hasSaltKey: !!this.config.saltKey
+        });
         return this.config;
       } else {
-        throw new Error("PhonePe is not enabled or configured");
+        throw new Error("PhonePe is not enabled. Please enable it in admin settings.");
       }
     } catch (error) {
       console.error("Error loading PhonePe config:", error);
@@ -111,19 +145,56 @@ class PhonePeService {
         ? "https://api-preprod.phonepe.com/apis/pg-sandbox"
         : "https://api.phonepe.com/apis/hermes";
 
-      // Make payment request
+      console.log("PhonePe payment request:", {
+        url: `${apiUrl}/pg/v1/pay`,
+        checksum: checksum.substring(0, 20) + "...",
+        payload: paymentRequest
+      });
+
+      // First, create transaction in our backend
+      const token = localStorage.getItem('token');
+      const createTxnResponse = await fetch("/api/payments/phonepe/transaction", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          packageId: paymentData.packageId,
+          propertyId: paymentData.propertyId,
+          paymentMethod: "phonepe",
+          paymentDetails: {
+            merchantTransactionId,
+            amount: paymentData.amount
+          }
+        })
+      });
+
+      if (!createTxnResponse.ok) {
+        throw new Error(`Failed to create transaction: ${createTxnResponse.status}`);
+      }
+
+      // Make payment request to PhonePe
       const response = await fetch(`${apiUrl}/pg/v1/pay`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "X-VERIFY": checksum,
+          "X-MERCHANT-ID": this.config.merchantId,
         },
         body: JSON.stringify({
           request: base64Payload,
         }),
       });
 
+      console.log("PhonePe API response status:", response.status);
+
+      if (!response.ok) {
+        throw new Error(`PhonePe API error: ${response.status} ${response.statusText}`);
+      }
+
       const responseData = await response.json();
+      console.log("PhonePe API response:", responseData);
 
       if (responseData.success) {
         // Store transaction details locally
@@ -144,7 +215,7 @@ class PhonePeService {
       } else {
         return {
           success: false,
-          error: responseData.message || "Payment initiation failed",
+          error: responseData.message || responseData.code || "Payment initiation failed",
         };
       }
     } catch (error: any) {
