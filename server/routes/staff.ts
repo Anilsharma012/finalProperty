@@ -324,16 +324,27 @@ export const updateStaff: RequestHandler = async (req, res) => {
 
     updateData.updatedAt = new Date();
 
+    console.log("🔄 Updating staff with data:", updateData);
+
     const result = await db
       .collection("users")
       .updateOne({ _id: new ObjectId(staffId) }, { $set: updateData });
 
+    console.log("📊 Update result:", {
+      matchedCount: result.matchedCount,
+      modifiedCount: result.modifiedCount,
+      acknowledged: result.acknowledged
+    });
+
     if (result.matchedCount === 0) {
+      console.error("❌ Staff member not found during update, staffId:", staffId);
       return res.status(404).json({
         success: false,
         error: "Staff member not found",
       });
     }
+
+    console.log("✅ Staff member updated successfully:", staffId);
 
     const response: ApiResponse<{ message: string }> = {
       success: true,
