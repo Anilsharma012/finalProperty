@@ -17,15 +17,36 @@ const getPhonePeConfig = async (): Promise<PhonePeConfig | null> => {
     const db = getDatabase();
     const settings = await db.collection("admin_settings").findOne({});
 
+    console.log("📋 PhonePe config check:", {
+      hasSettings: !!settings,
+      hasPayment: !!(settings?.payment),
+      hasPhonePe: !!(settings?.payment?.phonePe),
+      enabled: settings?.payment?.phonePe?.enabled
+    });
+
     if (
       settings &&
       settings.payment &&
       settings.payment.phonePe &&
       settings.payment.phonePe.enabled
     ) {
-      return settings.payment.phonePe as PhonePeConfig;
+      const config = settings.payment.phonePe as PhonePeConfig;
+
+      // Validate required fields
+      if (!config.merchantId || !config.saltKey || !config.saltIndex) {
+        console.error("❌ PhonePe configuration incomplete:", {
+          hasMerchantId: !!config.merchantId,
+          hasSaltKey: !!config.saltKey,
+          hasSaltIndex: !!config.saltIndex
+        });
+        return null;
+      }
+
+      console.log("✅ PhonePe config validated successfully");
+      return config;
     }
 
+    console.log("❌ PhonePe not enabled or configured");
     return null;
   } catch (error) {
     console.error("Error getting PhonePe config:", error);
@@ -237,18 +258,66 @@ export const createPhonePeTransaction: RequestHandler = async (req, res) => {
     const { packageId, propertyId, paymentMethod, paymentDetails } = req.body;
     const userId = (req as any).userId;
 
+    console.log("🔄 Creating PhonePe transaction:", {
+      userId,
+      packageId,
+      propertyId,
+      paymentMethod,
+      paymentDetails
+    });
+
+    // Validate required fields
+    if (!packageId || !paymentMethod || !paymentDetails) {
+      return res.status(400).json({
+        success: false,
+        error: "Missing required fields: packageId, paymentMethod, paymentDetails",
+      });
+    }
+
+    if (!paymentDetails.merchantTransactionId) {
+      return res.status(400).json({
+        success: false,
+        error: "Missing merchantTransactionId in paymentDetails",
+      });
+    }
+
     const db = getDatabase();
 
-    // Get package details
+    // Check PhonePe configuration
+    const phonePeConfig = await getPhonePeConfig();
+    if (!phonePeConfig) {
+      return res.status(400).json({
+        success: false,
+        error: "PhonePe is not configured or enabled. Please check admin settings.",
+      });
+    }
+
+    // Get package details with ObjectId validation
+    let packageObjectId;
+    try {
+      packageObjectId = new ObjectId(packageId);
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid package ID format",
+      });
+    }
+
     const packageData = await db
       .collection("ad_packages")
-      .findOne({ _id: packageId });
+      .findOne({ _id: packageObjectId });
     if (!packageData) {
       return res.status(404).json({
         success: false,
         error: "Package not found",
       });
     }
+
+    console.log("✅ Package found:", {
+      id: packageData._id,
+      name: packageData.name,
+      price: packageData.price
+    });
 
     // Create transaction record
     const transaction = {
