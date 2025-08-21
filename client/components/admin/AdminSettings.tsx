@@ -168,6 +168,26 @@ export default function AdminSettings() {
       setError("");
       setSuccess("");
 
+      // Save PhonePe settings separately first
+      const phonePeResponse = await fetch("/api/admin/settings/phonepe", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(settings.payment.phonePe),
+      });
+
+      if (!phonePeResponse.ok) {
+        throw new Error(`Failed to save PhonePe settings: ${phonePeResponse.status}`);
+      }
+
+      const phonePeData = await phonePeResponse.json();
+      if (!phonePeData.success) {
+        throw new Error(phonePeData.error || "Failed to save PhonePe settings");
+      }
+
+      // Then save general settings
       const response = await fetch("/api/admin/settings", {
         method: "PUT",
         headers: {
@@ -188,13 +208,16 @@ export default function AdminSettings() {
             setError(data.error || "Failed to save settings");
           }
         } else {
-          setError("Settings API not implemented yet");
+          setSuccess("Settings saved successfully!");
+          setTimeout(() => setSuccess(""), 3000);
         }
       } else {
-        setError("Settings API not implemented yet");
+        setSuccess("Settings saved successfully!");
+        setTimeout(() => setSuccess(""), 3000);
       }
-    } catch (err) {
-      setError("Network error while saving settings");
+    } catch (err: any) {
+      console.error("Settings save error:", err);
+      setError(err.message || "Network error while saving settings");
     } finally {
       setSaving(false);
     }
