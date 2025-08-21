@@ -464,9 +464,12 @@ export function createServer() {
         // Allow requests with no origin (like mobile apps, Postman, server-to-server)
         if (!origin) return callback(null, true);
 
-        // In development, allow any localhost or fly.dev origin
+        // In development, allow any localhost, fly.dev, or builder.codes origin
         if (process.env.NODE_ENV !== "production") {
-          if (origin?.includes("localhost") || origin?.includes(".fly.dev")) {
+          if (origin?.includes("localhost") ||
+              origin?.includes(".fly.dev") ||
+              origin?.includes(".builder.codes") ||
+              origin?.includes("projects.builder.codes")) {
             console.log("✅ CORS allowed for development origin:", origin);
             return callback(null, true);
           }
@@ -533,7 +536,7 @@ export function createServer() {
         dbError = error.message;
         try {
           // If database not initialized, try to connect
-          console.log("🔄 Database not initialized, attempting connection...");
+          console.log("���� Database not initialized, attempting connection...");
           const connection = await connectToDatabase();
           db = connection.db;
           await db.admin().ping();
