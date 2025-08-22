@@ -390,6 +390,14 @@ import {
 } from "./routes/footer";
 import { testFooterData } from "./routes/footerTest";
 
+// Contact form routes
+import {
+  submitContactForm,
+  getContactSubmissions,
+  updateContactStatus,
+  getContactStats,
+} from "./routes/contact";
+
 // Custom fields routes
 import {
   getAllCustomFields,
