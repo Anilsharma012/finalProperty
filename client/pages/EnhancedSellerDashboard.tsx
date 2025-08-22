@@ -440,7 +440,7 @@ export default function EnhancedSellerDashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card key="stats-pending">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Pending</CardTitle>
               <Clock className="h-4 w-4 text-yellow-500" />
@@ -452,7 +452,7 @@ export default function EnhancedSellerDashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card key="stats-approved">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Approved</CardTitle>
               <CheckCircle className="h-4 w-4 text-green-500" />
@@ -464,7 +464,7 @@ export default function EnhancedSellerDashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card key="stats-views">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Views</CardTitle>
               <Eye className="h-4 w-4 text-blue-500" />
@@ -476,7 +476,7 @@ export default function EnhancedSellerDashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card key="stats-messages">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Messages</CardTitle>
               <MessageSquare className="h-4 w-4 text-purple-500" />
@@ -488,7 +488,7 @@ export default function EnhancedSellerDashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card key="stats-profile-views">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 Profile Views
@@ -502,7 +502,7 @@ export default function EnhancedSellerDashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card key="stats-premium">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Premium</CardTitle>
               <Crown className="h-4 w-4 text-amber-500" />
@@ -514,7 +514,7 @@ export default function EnhancedSellerDashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card key="stats-inquiries">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Inquiries</CardTitle>
               <TrendingUp className="h-4 w-4 text-green-500" />
