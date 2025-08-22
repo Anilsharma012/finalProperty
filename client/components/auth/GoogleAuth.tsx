@@ -2,13 +2,7 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { Alert, AlertDescription } from "../ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { 
-  Mail, 
-  CheckCircle, 
-  AlertCircle,
-  Shield,
-  Chrome
-} from "lucide-react";
+import { Mail, CheckCircle, AlertCircle, Shield, Chrome } from "lucide-react";
 import { signInWithGoogle } from "../../lib/firebase";
 import { useFirebaseAuth } from "../../hooks/useFirebaseAuth";
 
@@ -17,49 +11,52 @@ interface GoogleAuthProps {
   onSuccess?: () => void;
   onError?: (error: string) => void;
   className?: string;
-  variant?: 'card' | 'button';
+  variant?: "card" | "button";
 }
 
-export default function GoogleAuth({ 
-  userType = "buyer", 
-  onSuccess, 
+export default function GoogleAuth({
+  userType = "buyer",
+  onSuccess,
   onError,
   className = "",
-  variant = 'card'
+  variant = "card",
 }: GoogleAuthProps) {
   const { loginWithFirebase } = useFirebaseAuth();
-  
+
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleGoogleLogin = async () => {
     setLoading(true);
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
 
     try {
-      console.log('Starting Google authentication...');
-      
+      console.log("Starting Google authentication...");
+
       // Sign in with Google popup
       const firebaseUser = await signInWithGoogle();
-      console.log('Google authentication successful, Firebase user:', firebaseUser.uid);
-      
+      console.log(
+        "Google authentication successful, Firebase user:",
+        firebaseUser.uid,
+      );
+
       // Login with Firebase (this will create or update the user profile)
       await loginWithFirebase(firebaseUser, userType);
-      
-      setSuccess('Successfully signed in with Google!');
-      
+
+      setSuccess("Successfully signed in with Google!");
+
       // Call success callback
       if (onSuccess) {
         setTimeout(onSuccess, 1000);
       }
-      
     } catch (error: any) {
-      console.error('Google authentication failed:', error);
-      const errorMessage = error.message || 'Google authentication failed. Please try again.';
+      console.error("Google authentication failed:", error);
+      const errorMessage =
+        error.message || "Google authentication failed. Please try again.";
       setError(errorMessage);
-      
+
       if (onError) {
         onError(errorMessage);
       }
@@ -68,7 +65,7 @@ export default function GoogleAuth({
     }
   };
 
-  if (variant === 'button') {
+  if (variant === "button") {
     return (
       <div className={className}>
         {/* Error Alert */}
@@ -91,7 +88,7 @@ export default function GoogleAuth({
           </Alert>
         )}
 
-        <Button 
+        <Button
           onClick={handleGoogleLogin}
           className="w-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400"
           disabled={loading}
@@ -137,9 +134,7 @@ export default function GoogleAuth({
       {error && (
         <Alert className="mb-4 border-red-200 bg-red-50">
           <AlertCircle className="h-4 w-4" />
-          <AlertDescription className="text-red-800">
-            {error}
-          </AlertDescription>
+          <AlertDescription className="text-red-800">{error}</AlertDescription>
         </Alert>
       )}
 
@@ -163,7 +158,7 @@ export default function GoogleAuth({
             Quick and secure authentication with your Google account
           </p>
         </CardHeader>
-        
+
         <CardContent className="space-y-4">
           {/* Benefits */}
           <div className="bg-gray-50 rounded-lg p-4 space-y-2">
@@ -188,7 +183,7 @@ export default function GoogleAuth({
           </div>
 
           {/* Google Sign-In Button */}
-          <Button 
+          <Button
             onClick={handleGoogleLogin}
             className="w-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md transition-all duration-200"
             disabled={loading}
@@ -232,12 +227,18 @@ export default function GoogleAuth({
 
           {/* Privacy notice */}
           <p className="text-xs text-gray-500 text-center">
-            By signing in with Google, you agree to our{' '}
-            <a href="/terms-conditions" className="text-[#C70000] hover:underline">
+            By signing in with Google, you agree to our{" "}
+            <a
+              href="/terms-conditions"
+              className="text-[#C70000] hover:underline"
+            >
               Terms of Service
-            </a>{' '}
-            and{' '}
-            <a href="/privacy-policy" className="text-[#C70000] hover:underline">
+            </a>{" "}
+            and{" "}
+            <a
+              href="/privacy-policy"
+              className="text-[#C70000] hover:underline"
+            >
               Privacy Policy
             </a>
           </p>

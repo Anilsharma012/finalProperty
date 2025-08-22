@@ -34,12 +34,17 @@ interface FirebaseAuthContextType {
   isAuthenticated: boolean;
   loading: boolean;
   login: (token: string, user: User) => void;
-  loginWithFirebase: (firebaseUser: FirebaseUser, userType?: string) => Promise<void>;
+  loginWithFirebase: (
+    firebaseUser: FirebaseUser,
+    userType?: string,
+  ) => Promise<void>;
   logout: () => Promise<void>;
   updateUserProfile: (updates: Partial<User>) => Promise<void>;
 }
 
-const FirebaseAuthContext = createContext<FirebaseAuthContextType | undefined>(undefined);
+const FirebaseAuthContext = createContext<FirebaseAuthContextType | undefined>(
+  undefined,
+);
 
 export const FirebaseAuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -72,22 +77,22 @@ export const FirebaseAuthProvider = ({ children }: { children: ReactNode }) => {
     const unsubscribe = onAuthStateChange(async (firebaseUser) => {
       console.log("Firebase auth state changed:", !!firebaseUser);
       setFirebaseUser(firebaseUser);
-      
+
       if (firebaseUser) {
         // User is signed in with Firebase
         try {
           // Get Firebase ID token
           const idToken = await firebaseUser.getIdToken();
-          
+
           // Check if we have user data in Firestore
           const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
-          
+
           if (userDoc.exists()) {
             // User exists in Firestore, use that data
             const userData = userDoc.data() as User;
             setUser(userData);
             setToken(idToken);
-            
+
             // Update localStorage
             localStorage.setItem("token", idToken);
             localStorage.setItem("user", JSON.stringify(userData));
@@ -103,7 +108,7 @@ export const FirebaseAuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(null);
         setToken(null);
       }
-      
+
       setLoading(false);
     });
 
@@ -119,19 +124,22 @@ export const FirebaseAuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Firebase login handler
-  const loginWithFirebase = async (firebaseUser: FirebaseUser, userType: string = "buyer") => {
+  const loginWithFirebase = async (
+    firebaseUser: FirebaseUser,
+    userType: string = "buyer",
+  ) => {
     try {
       setLoading(true);
-      
+
       // Get Firebase ID token
       const idToken = await firebaseUser.getIdToken();
-      
+
       // Check if user exists in Firestore
       const userDocRef = doc(db, "users", firebaseUser.uid);
       const userDoc = await getDoc(userDocRef);
-      
+
       let userData: User;
-      
+
       if (userDoc.exists()) {
         // Existing user
         userData = userDoc.data() as User;
@@ -141,31 +149,39 @@ export const FirebaseAuthProvider = ({ children }: { children: ReactNode }) => {
         userData = {
           id: firebaseUser.uid,
           firebaseUid: firebaseUser.uid,
-          name: firebaseUser.displayName || extractNameFromPhone(firebaseUser.phoneNumber) || "User",
+          name:
+            firebaseUser.displayName ||
+            extractNameFromPhone(firebaseUser.phoneNumber) ||
+            "User",
           email: firebaseUser.email || "",
           phone: firebaseUser.phoneNumber || "",
-          userType: userType as "buyer" | "seller" | "agent" | "admin" | "staff",
+          userType: userType as
+            | "buyer"
+            | "seller"
+            | "agent"
+            | "admin"
+            | "staff",
           isFirstLogin: true,
           lastLogin: new Date().toISOString(),
         };
-        
+
         // Save to Firestore
         await setDoc(userDocRef, userData);
         console.log("New Firebase user profile created");
       }
-      
+
       // Update last login
       userData.lastLogin = new Date().toISOString();
       await setDoc(userDocRef, userData, { merge: true });
-      
+
       // Update local state
       setUser(userData);
       setToken(idToken);
-      
+
       // Update localStorage
       localStorage.setItem("token", idToken);
       localStorage.setItem("user", JSON.stringify(userData));
-      
+
       console.log("Firebase login completed successfully");
     } catch (error) {
       console.error("Error in Firebase login:", error);
@@ -180,18 +196,18 @@ export const FirebaseAuthProvider = ({ children }: { children: ReactNode }) => {
     if (!user || !firebaseUser) {
       throw new Error("No user authenticated");
     }
-    
+
     try {
       const updatedUser = { ...user, ...updates };
-      
+
       // Update Firestore
       const userDocRef = doc(db, "users", firebaseUser.uid);
       await setDoc(userDocRef, updatedUser, { merge: true });
-      
+
       // Update local state
       setUser(updatedUser);
       localStorage.setItem("user", JSON.stringify(updatedUser));
-      
+
       console.log("User profile updated successfully");
     } catch (error) {
       console.error("Error updating user profile:", error);
@@ -206,16 +222,16 @@ export const FirebaseAuthProvider = ({ children }: { children: ReactNode }) => {
       if (firebaseUser) {
         await signOutUser();
       }
-      
+
       // Clear local storage
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-      
+
       // Clear state
       setToken(null);
       setUser(null);
       setFirebaseUser(null);
-      
+
       console.log("Logout completed successfully");
     } catch (error) {
       console.error("Error during logout:", error);
@@ -245,7 +261,9 @@ export const FirebaseAuthProvider = ({ children }: { children: ReactNode }) => {
 export const useFirebaseAuth = () => {
   const context = useContext(FirebaseAuthContext);
   if (context === undefined) {
-    throw new Error("useFirebaseAuth must be used within a FirebaseAuthProvider");
+    throw new Error(
+      "useFirebaseAuth must be used within a FirebaseAuthProvider",
+    );
   }
   return context;
 };

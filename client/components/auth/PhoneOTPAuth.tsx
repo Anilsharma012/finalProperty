@@ -3,14 +3,14 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Alert, AlertDescription } from "../ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { 
-  Phone, 
-  MessageSquare, 
-  ArrowLeft, 
-  Clock, 
-  CheckCircle, 
+import {
+  Phone,
+  MessageSquare,
+  ArrowLeft,
+  Clock,
+  CheckCircle,
   AlertCircle,
-  Shield
+  Shield,
 } from "lucide-react";
 import { PhoneAuthService } from "../../lib/firebase";
 import { useFirebaseAuth } from "../../hooks/useFirebaseAuth";
@@ -22,21 +22,21 @@ interface PhoneOTPAuthProps {
   className?: string;
 }
 
-export default function PhoneOTPAuth({ 
-  userType = "buyer", 
-  onSuccess, 
+export default function PhoneOTPAuth({
+  userType = "buyer",
+  onSuccess,
   onError,
-  className = "" 
+  className = "",
 }: PhoneOTPAuthProps) {
   const { loginWithFirebase } = useFirebaseAuth();
   const phoneAuthService = useRef(new PhoneAuthService());
-  
-  const [step, setStep] = useState<'phone' | 'otp'>('phone');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [otpCode, setOtpCode] = useState('');
+
+  const [step, setStep] = useState<"phone" | "otp">("phone");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [otpCode, setOtpCode] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [otpTimer, setOtpTimer] = useState(0);
   const [recaptchaInitialized, setRecaptchaInitialized] = useState(false);
 
@@ -45,7 +45,7 @@ export default function PhoneOTPAuth({
     let interval: NodeJS.Timeout;
     if (otpTimer > 0) {
       interval = setInterval(() => {
-        setOtpTimer(time => time - 1);
+        setOtpTimer((time) => time - 1);
       }, 1000);
     }
     return () => clearInterval(interval);
@@ -62,70 +62,73 @@ export default function PhoneOTPAuth({
 
   const initializeRecaptcha = async () => {
     try {
-      await phoneAuthService.current.initializeRecaptcha('recaptcha-container');
+      await phoneAuthService.current.initializeRecaptcha("recaptcha-container");
       setRecaptchaInitialized(true);
-      console.log('reCAPTCHA initialized successfully');
+      console.log("reCAPTCHA initialized successfully");
     } catch (error) {
-      console.error('Failed to initialize reCAPTCHA:', error);
-      setError('Failed to initialize security verification. Please refresh the page.');
+      console.error("Failed to initialize reCAPTCHA:", error);
+      setError(
+        "Failed to initialize security verification. Please refresh the page.",
+      );
     }
   };
 
   const formatPhoneNumber = (phone: string): string => {
     // Remove all non-digits
-    const digitsOnly = phone.replace(/\D/g, '');
-    
+    const digitsOnly = phone.replace(/\D/g, "");
+
     // Add +91 if not present
     if (digitsOnly.length === 10) {
       return `+91${digitsOnly}`;
-    } else if (digitsOnly.length === 12 && digitsOnly.startsWith('91')) {
+    } else if (digitsOnly.length === 12 && digitsOnly.startsWith("91")) {
       return `+${digitsOnly}`;
-    } else if (digitsOnly.length === 13 && digitsOnly.startsWith('91')) {
+    } else if (digitsOnly.length === 13 && digitsOnly.startsWith("91")) {
       return `+${digitsOnly.substring(0, 12)}`;
     }
-    
-    return phone.startsWith('+') ? phone : `+91${phone}`;
+
+    return phone.startsWith("+") ? phone : `+91${phone}`;
   };
 
   const validatePhoneNumber = (phone: string): boolean => {
-    const digitsOnly = phone.replace(/\D/g, '');
+    const digitsOnly = phone.replace(/\D/g, "");
     return digitsOnly.length === 10 && /^[6-9]\d{9}$/.test(digitsOnly);
   };
 
   const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validatePhoneNumber(phoneNumber)) {
-      setError('Please enter a valid 10-digit Indian mobile number');
+      setError("Please enter a valid 10-digit Indian mobile number");
       return;
     }
 
     if (!recaptchaInitialized) {
-      setError('Security verification not ready. Please wait or refresh the page.');
+      setError(
+        "Security verification not ready. Please wait or refresh the page.",
+      );
       return;
     }
 
     setLoading(true);
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
 
     try {
       const formattedPhone = formatPhoneNumber(phoneNumber);
-      console.log('Sending OTP to:', formattedPhone);
-      
+      console.log("Sending OTP to:", formattedPhone);
+
       await phoneAuthService.current.sendOTP(formattedPhone);
-      
-      setStep('otp');
+
+      setStep("otp");
       setOtpTimer(60);
-      setSuccess('OTP sent successfully! Please check your phone.');
-      
+      setSuccess("OTP sent successfully! Please check your phone.");
+
       // Hide success message after 3 seconds
-      setTimeout(() => setSuccess(''), 3000);
-      
+      setTimeout(() => setSuccess(""), 3000);
     } catch (error: any) {
-      console.error('Failed to send OTP:', error);
-      setError(error.message || 'Failed to send OTP. Please try again.');
-      
+      console.error("Failed to send OTP:", error);
+      setError(error.message || "Failed to send OTP. Please try again.");
+
       // Re-initialize reCAPTCHA on error
       setTimeout(() => {
         initializeRecaptcha();
@@ -137,38 +140,40 @@ export default function PhoneOTPAuth({
 
   const handleVerifyOTP = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (otpCode.length !== 6) {
-      setError('Please enter a valid 6-digit OTP');
+      setError("Please enter a valid 6-digit OTP");
       return;
     }
 
     setLoading(true);
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
 
     try {
-      console.log('Verifying OTP:', otpCode);
-      
+      console.log("Verifying OTP:", otpCode);
+
       // Verify OTP with Firebase
       const firebaseUser = await phoneAuthService.current.verifyOTP(otpCode);
-      console.log('OTP verified successfully, Firebase user:', firebaseUser.uid);
-      
+      console.log(
+        "OTP verified successfully, Firebase user:",
+        firebaseUser.uid,
+      );
+
       // Login with Firebase
       await loginWithFirebase(firebaseUser, userType);
-      
-      setSuccess('Phone number verified successfully!');
-      
+
+      setSuccess("Phone number verified successfully!");
+
       // Call success callback
       if (onSuccess) {
         onSuccess();
       }
-      
     } catch (error: any) {
-      console.error('OTP verification failed:', error);
-      const errorMessage = error.message || 'Invalid OTP. Please try again.';
+      console.error("OTP verification failed:", error);
+      const errorMessage = error.message || "Invalid OTP. Please try again.";
       setError(errorMessage);
-      
+
       if (onError) {
         onError(errorMessage);
       }
@@ -179,35 +184,34 @@ export default function PhoneOTPAuth({
 
   const handleResendOTP = async () => {
     if (otpTimer > 0) return;
-    
-    setOtpCode('');
-    setError('');
-    setSuccess('');
-    
+
+    setOtpCode("");
+    setError("");
+    setSuccess("");
+
     try {
       setLoading(true);
       const formattedPhone = formatPhoneNumber(phoneNumber);
       await phoneAuthService.current.sendOTP(formattedPhone);
-      
+
       setOtpTimer(60);
-      setSuccess('OTP resent successfully!');
-      setTimeout(() => setSuccess(''), 3000);
-      
+      setSuccess("OTP resent successfully!");
+      setTimeout(() => setSuccess(""), 3000);
     } catch (error: any) {
-      console.error('Failed to resend OTP:', error);
-      setError(error.message || 'Failed to resend OTP. Please try again.');
+      console.error("Failed to resend OTP:", error);
+      setError(error.message || "Failed to resend OTP. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleBackToPhone = () => {
-    setStep('phone');
-    setOtpCode('');
-    setError('');
-    setSuccess('');
+    setStep("phone");
+    setOtpCode("");
+    setError("");
+    setSuccess("");
     phoneAuthService.current.clearRecaptcha();
-    
+
     // Re-initialize reCAPTCHA
     setTimeout(() => {
       initializeRecaptcha();
@@ -220,9 +224,7 @@ export default function PhoneOTPAuth({
       {error && (
         <Alert className="mb-4 border-red-200 bg-red-50">
           <AlertCircle className="h-4 w-4" />
-          <AlertDescription className="text-red-800">
-            {error}
-          </AlertDescription>
+          <AlertDescription className="text-red-800">{error}</AlertDescription>
         </Alert>
       )}
 
@@ -237,7 +239,7 @@ export default function PhoneOTPAuth({
       )}
 
       {/* Phone Number Step */}
-      {step === 'phone' && (
+      {step === "phone" && (
         <Card>
           <CardHeader className="text-center">
             <div className="w-16 h-16 bg-[#C70000] rounded-full flex items-center justify-center mx-auto mb-4">
@@ -248,7 +250,7 @@ export default function PhoneOTPAuth({
               We'll send you a verification code via SMS
             </p>
           </CardHeader>
-          
+
           <CardContent>
             <form onSubmit={handleSendOTP} className="space-y-4">
               <div>
@@ -264,9 +266,11 @@ export default function PhoneOTPAuth({
                     placeholder="9876543210"
                     value={phoneNumber}
                     onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '').substring(0, 10);
+                      const value = e.target.value
+                        .replace(/\D/g, "")
+                        .substring(0, 10);
                       setPhoneNumber(value);
-                      setError('');
+                      setError("");
                     }}
                     className="rounded-l-none"
                     required
@@ -280,20 +284,29 @@ export default function PhoneOTPAuth({
 
               {/* reCAPTCHA container */}
               <div className="flex justify-center">
-                <div id="recaptcha-container" className="flex justify-center"></div>
+                <div
+                  id="recaptcha-container"
+                  className="flex justify-center"
+                ></div>
               </div>
 
               {!recaptchaInitialized && (
                 <div className="flex items-center justify-center space-x-2 text-gray-500">
                   <Shield className="h-4 w-4" />
-                  <span className="text-sm">Initializing security verification...</span>
+                  <span className="text-sm">
+                    Initializing security verification...
+                  </span>
                 </div>
               )}
 
               <Button
                 type="submit"
                 className="w-full bg-[#C70000] hover:bg-[#A60000] text-white"
-                disabled={!validatePhoneNumber(phoneNumber) || loading || !recaptchaInitialized}
+                disabled={
+                  !validatePhoneNumber(phoneNumber) ||
+                  loading ||
+                  !recaptchaInitialized
+                }
               >
                 {loading ? (
                   <div className="flex items-center">
@@ -310,7 +323,7 @@ export default function PhoneOTPAuth({
       )}
 
       {/* OTP Verification Step */}
-      {step === 'otp' && (
+      {step === "otp" && (
         <Card>
           <CardHeader className="text-center">
             <div className="w-16 h-16 bg-[#C70000] rounded-full flex items-center justify-center mx-auto mb-4">
@@ -321,7 +334,7 @@ export default function PhoneOTPAuth({
               We sent a 6-digit code to +91 {phoneNumber}
             </p>
           </CardHeader>
-          
+
           <CardContent>
             <form onSubmit={handleVerifyOTP} className="space-y-4">
               <div>
@@ -333,9 +346,11 @@ export default function PhoneOTPAuth({
                   placeholder="123456"
                   value={otpCode}
                   onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, '').substring(0, 6);
+                    const value = e.target.value
+                      .replace(/\D/g, "")
+                      .substring(0, 6);
                     setOtpCode(value);
-                    setError('');
+                    setError("");
                   }}
                   className="text-center text-lg tracking-widest font-mono"
                   maxLength={6}

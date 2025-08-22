@@ -9,11 +9,11 @@ interface ProtectedRouteProps {
   requireAuth?: boolean;
 }
 
-export default function ProtectedRoute({ 
-  children, 
+export default function ProtectedRoute({
+  children,
   requiredUserTypes = [],
   fallbackPath = "/firebase-auth",
-  requireAuth = true
+  requireAuth = true,
 }: ProtectedRouteProps) {
   const { isAuthenticated, user, loading } = useFirebaseAuth();
   const location = useLocation();
@@ -46,9 +46,9 @@ export default function ProtectedRoute({
         buyer: "/buyer-dashboard",
         agent: "/agent-dashboard",
         admin: "/admin",
-        staff: "/staff-dashboard"
+        staff: "/staff-dashboard",
       };
-      
+
       const userDashboard = dashboardRoutes[user.userType] || "/";
       return <Navigate to={userDashboard} replace />;
     }
@@ -60,8 +60,8 @@ export default function ProtectedRoute({
 
 // Higher-order component for protecting routes based on user types
 export const withAuth = (
-  Component: React.ComponentType<any>, 
-  options: Omit<ProtectedRouteProps, 'children'> = {}
+  Component: React.ComponentType<any>,
+  options: Omit<ProtectedRouteProps, "children"> = {},
 ) => {
   return function AuthenticatedComponent(props: any) {
     return (
@@ -74,33 +74,23 @@ export const withAuth = (
 
 // Specific protected route components for common use cases
 export const SellerProtectedRoute = ({ children }: { children: ReactNode }) => (
-  <ProtectedRoute requiredUserTypes={["seller"]}>
-    {children}
-  </ProtectedRoute>
+  <ProtectedRoute requiredUserTypes={["seller"]}>{children}</ProtectedRoute>
 );
 
 export const BuyerProtectedRoute = ({ children }: { children: ReactNode }) => (
-  <ProtectedRoute requiredUserTypes={["buyer"]}>
-    {children}
-  </ProtectedRoute>
+  <ProtectedRoute requiredUserTypes={["buyer"]}>{children}</ProtectedRoute>
 );
 
 export const AgentProtectedRoute = ({ children }: { children: ReactNode }) => (
-  <ProtectedRoute requiredUserTypes={["agent"]}>
-    {children}
-  </ProtectedRoute>
+  <ProtectedRoute requiredUserTypes={["agent"]}>{children}</ProtectedRoute>
 );
 
 export const AdminProtectedRoute = ({ children }: { children: ReactNode }) => (
-  <ProtectedRoute requiredUserTypes={["admin"]}>
-    {children}
-  </ProtectedRoute>
+  <ProtectedRoute requiredUserTypes={["admin"]}>{children}</ProtectedRoute>
 );
 
 export const StaffProtectedRoute = ({ children }: { children: ReactNode }) => (
-  <ProtectedRoute requiredUserTypes={["staff"]}>
-    {children}
-  </ProtectedRoute>
+  <ProtectedRoute requiredUserTypes={["staff"]}>{children}</ProtectedRoute>
 );
 
 // Component for redirecting authenticated users away from auth pages
@@ -125,9 +115,9 @@ export function PublicOnlyRoute({ children }: { children: ReactNode }) {
       buyer: "/buyer-dashboard",
       agent: "/agent-dashboard",
       admin: "/admin",
-      staff: "/staff-dashboard"
+      staff: "/staff-dashboard",
     };
-    
+
     const userDashboard = dashboardRoutes[user.userType] || "/";
     return <Navigate to={userDashboard} replace />;
   }

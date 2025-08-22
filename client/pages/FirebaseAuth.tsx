@@ -2,20 +2,30 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useFirebaseAuth } from "../hooks/useFirebaseAuth";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
 import { Badge } from "../components/ui/badge";
-import { 
-  ArrowLeft, 
-  Home, 
-  UserCheck, 
-  Shield, 
-  Phone, 
+import {
+  ArrowLeft,
+  Home,
+  UserCheck,
+  Shield,
+  Phone,
   Mail,
   Smartphone,
   Chrome,
   CheckCircle,
-  Star
+  Star,
 } from "lucide-react";
 import PhoneOTPAuth from "../components/auth/PhoneOTPAuth";
 import GoogleAuth from "../components/auth/GoogleAuth";
@@ -24,13 +34,13 @@ const FirebaseAuth = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { isAuthenticated, user, loading } = useFirebaseAuth();
-  
-  const [authMethod, setAuthMethod] = useState<'phone' | 'google'>('phone');
-  const [userType, setUserType] = useState('buyer');
+
+  const [authMethod, setAuthMethod] = useState<"phone" | "google">("phone");
+  const [userType, setUserType] = useState("buyer");
 
   // Get user type from URL or default to buyer
   useEffect(() => {
-    const type = searchParams.get('type') || 'buyer';
+    const type = searchParams.get("type") || "buyer";
     setUserType(type);
   }, [searchParams]);
 
@@ -39,23 +49,24 @@ const FirebaseAuth = () => {
     if (!loading && isAuthenticated && user) {
       const dashboardRoutes = {
         seller: "/seller-dashboard",
-        buyer: "/buyer-dashboard", 
+        buyer: "/buyer-dashboard",
         agent: "/agent-dashboard",
-        admin: "/admin"
+        admin: "/admin",
       };
-      
-      const targetRoute = dashboardRoutes[user.userType as keyof typeof dashboardRoutes] || "/";
+
+      const targetRoute =
+        dashboardRoutes[user.userType as keyof typeof dashboardRoutes] || "/";
       navigate(targetRoute);
     }
   }, [isAuthenticated, user, loading, navigate]);
 
   const handleAuthSuccess = () => {
     // Navigation will be handled by the useEffect above
-    console.log('Authentication successful, redirecting...');
+    console.log("Authentication successful, redirecting...");
   };
 
   const handleAuthError = (error: string) => {
-    console.error('Authentication error:', error);
+    console.error("Authentication error:", error);
   };
 
   const getUserTypeInfo = (type: string) => {
@@ -65,24 +76,39 @@ const FirebaseAuth = () => {
         description: "Find your dream home",
         icon: Home,
         color: "bg-blue-500",
-        benefits: ["Browse properties", "Save favorites", "Contact sellers directly", "Get market insights"]
+        benefits: [
+          "Browse properties",
+          "Save favorites",
+          "Contact sellers directly",
+          "Get market insights",
+        ],
       },
       seller: {
-        title: "Property Seller", 
+        title: "Property Seller",
         description: "List and sell properties",
         icon: UserCheck,
         color: "bg-green-500",
-        benefits: ["List unlimited properties", "Manage inquiries", "Track performance", "Professional tools"]
+        benefits: [
+          "List unlimited properties",
+          "Manage inquiries",
+          "Track performance",
+          "Professional tools",
+        ],
       },
       agent: {
         title: "Real Estate Agent",
         description: "Grow your business",
         icon: Shield,
-        color: "bg-purple-500", 
-        benefits: ["Manage client portfolio", "Lead generation", "Commission tracking", "Professional profile"]
-      }
+        color: "bg-purple-500",
+        benefits: [
+          "Manage client portfolio",
+          "Lead generation",
+          "Commission tracking",
+          "Professional profile",
+        ],
+      },
     };
-    
+
     return types[type as keyof typeof types] || types.buyer;
   };
 
@@ -119,18 +145,23 @@ const FirebaseAuth = () => {
       <div className="relative py-12 bg-gradient-to-r from-[#C70000] to-[#A50000] text-white">
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center mb-4">
-            <div className={`w-16 h-16 ${typeInfo.color} rounded-full flex items-center justify-center mr-4`}>
+            <div
+              className={`w-16 h-16 ${typeInfo.color} rounded-full flex items-center justify-center mr-4`}
+            >
               <IconComponent className="h-8 w-8 text-white" />
             </div>
             <div className="text-left">
-              <Badge variant="secondary" className="mb-2 bg-white/20 text-white">
+              <Badge
+                variant="secondary"
+                className="mb-2 bg-white/20 text-white"
+              >
                 {typeInfo.title}
               </Badge>
               <h2 className="text-3xl font-bold">Welcome to Firebase Auth</h2>
               <p className="text-red-100">{typeInfo.description}</p>
             </div>
           </div>
-          
+
           <p className="text-xl mb-8 max-w-2xl mx-auto">
             Secure authentication powered by Google Firebase
           </p>
@@ -138,7 +169,10 @@ const FirebaseAuth = () => {
           {/* Benefits */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
             {typeInfo.benefits.map((benefit, index) => (
-              <div key={index} className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+              <div
+                key={index}
+                className="bg-white/10 backdrop-blur-sm rounded-lg p-4"
+              >
                 <CheckCircle className="h-6 w-6 mx-auto mb-2" />
                 <p className="text-sm font-medium">{benefit}</p>
               </div>
@@ -155,21 +189,21 @@ const FirebaseAuth = () => {
             <h3 className="text-lg font-semibold text-center mb-4 text-gray-900">
               Choose your preferred sign-in method
             </h3>
-            
+
             <div className="grid grid-cols-2 gap-3">
               <Button
-                variant={authMethod === 'phone' ? 'default' : 'outline'}
-                onClick={() => setAuthMethod('phone')}
-                className={`${authMethod === 'phone' ? 'bg-[#C70000] text-white' : 'text-gray-700'} flex items-center justify-center space-x-2 py-6`}
+                variant={authMethod === "phone" ? "default" : "outline"}
+                onClick={() => setAuthMethod("phone")}
+                className={`${authMethod === "phone" ? "bg-[#C70000] text-white" : "text-gray-700"} flex items-center justify-center space-x-2 py-6`}
               >
                 <Smartphone className="h-5 w-5" />
                 <span>Phone OTP</span>
               </Button>
-              
+
               <Button
-                variant={authMethod === 'google' ? 'default' : 'outline'}
-                onClick={() => setAuthMethod('google')}
-                className={`${authMethod === 'google' ? 'bg-[#C70000] text-white' : 'text-gray-700'} flex items-center justify-center space-x-2 py-6`}
+                variant={authMethod === "google" ? "default" : "outline"}
+                onClick={() => setAuthMethod("google")}
+                className={`${authMethod === "google" ? "bg-[#C70000] text-white" : "text-gray-700"} flex items-center justify-center space-x-2 py-6`}
               >
                 <Chrome className="h-5 w-5" />
                 <span>Google</span>
@@ -179,20 +213,26 @@ const FirebaseAuth = () => {
 
           {/* Authentication Method Description */}
           <div className="mb-6 text-center">
-            {authMethod === 'phone' ? (
+            {authMethod === "phone" ? (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <Phone className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                <h4 className="font-semibold text-blue-900 mb-1">Phone Number Authentication</h4>
+                <h4 className="font-semibold text-blue-900 mb-1">
+                  Phone Number Authentication
+                </h4>
                 <p className="text-sm text-blue-700">
-                  Secure login using SMS OTP verification. Your phone number will be verified via Firebase.
+                  Secure login using SMS OTP verification. Your phone number
+                  will be verified via Firebase.
                 </p>
               </div>
             ) : (
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <Mail className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                <h4 className="font-semibold text-green-900 mb-1">Google Authentication</h4>
+                <h4 className="font-semibold text-green-900 mb-1">
+                  Google Authentication
+                </h4>
                 <p className="text-sm text-green-700">
-                  Quick and secure sign-in using your Google account. No passwords to remember.
+                  Quick and secure sign-in using your Google account. No
+                  passwords to remember.
                 </p>
               </div>
             )}
@@ -200,15 +240,15 @@ const FirebaseAuth = () => {
 
           {/* Authentication Components */}
           <div className="space-y-6">
-            {authMethod === 'phone' && (
-              <PhoneOTPAuth 
+            {authMethod === "phone" && (
+              <PhoneOTPAuth
                 userType={userType}
                 onSuccess={handleAuthSuccess}
                 onError={handleAuthError}
               />
             )}
-            
-            {authMethod === 'google' && (
+
+            {authMethod === "google" && (
               <GoogleAuth
                 userType={userType}
                 onSuccess={handleAuthSuccess}
@@ -225,10 +265,12 @@ const FirebaseAuth = () => {
             </p>
             <Button
               variant="ghost"
-              onClick={() => setAuthMethod(authMethod === 'phone' ? 'google' : 'phone')}
+              onClick={() =>
+                setAuthMethod(authMethod === "phone" ? "google" : "phone")
+              }
               className="text-[#C70000] hover:text-[#A50000] hover:bg-red-50"
             >
-              {authMethod === 'phone' ? (
+              {authMethod === "phone" ? (
                 <>
                   <Chrome className="h-4 w-4 mr-2" />
                   Try Google Sign-In
@@ -274,14 +316,14 @@ const FirebaseAuth = () => {
               Not a {typeInfo.title.toLowerCase()}?
             </p>
             <div className="flex justify-center space-x-2">
-              {['buyer', 'seller', 'agent'].map((type) => (
+              {["buyer", "seller", "agent"].map((type) => (
                 <Link
                   key={type}
                   to={`/firebase-auth?type=${type}`}
                   className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                     type === userType
-                      ? 'bg-[#C70000] text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      ? "bg-[#C70000] text-white"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                   }`}
                 >
                   {getUserTypeInfo(type).title}
@@ -293,12 +335,18 @@ const FirebaseAuth = () => {
           {/* Footer Links */}
           <div className="mt-8 text-center space-y-2">
             <p className="text-xs text-gray-500">
-              By signing in, you agree to our{' '}
-              <Link to="/terms-conditions" className="text-[#C70000] hover:underline">
+              By signing in, you agree to our{" "}
+              <Link
+                to="/terms-conditions"
+                className="text-[#C70000] hover:underline"
+              >
                 Terms of Service
-              </Link>{' '}
-              and{' '}
-              <Link to="/privacy-policy" className="text-[#C70000] hover:underline">
+              </Link>{" "}
+              and{" "}
+              <Link
+                to="/privacy-policy"
+                className="text-[#C70000] hover:underline"
+              >
                 Privacy Policy
               </Link>
             </p>

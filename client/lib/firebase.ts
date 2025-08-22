@@ -1,17 +1,17 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { 
-  getAuth, 
-  GoogleAuthProvider, 
-  RecaptchaVerifier, 
+import {
+  getAuth,
+  GoogleAuthProvider,
+  RecaptchaVerifier,
   signInWithPhoneNumber,
   signInWithPopup,
   signOut,
   onAuthStateChanged,
   User as FirebaseUser,
   ConfirmationResult,
-  AuthError
+  AuthError,
 } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
@@ -24,7 +24,7 @@ const firebaseConfig = {
   storageBucket: "aashish-properties.firebasestorage.app",
   messagingSenderId: "1074799820866",
   appId: "1:1074799820866:web:60035a614911eb876faddb",
-  measurementId: "G-WJS8TWNW00"
+  measurementId: "G-WJS8TWNW00",
 };
 
 // Initialize Firebase
@@ -38,7 +38,7 @@ export const db = getFirestore(app);
 
 // Initialize Analytics (only in browser environment)
 let analytics;
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   analytics = getAnalytics(app);
 }
 export { analytics };
@@ -46,7 +46,7 @@ export { analytics };
 // Google Auth Provider
 export const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({
-  prompt: 'select_account'
+  prompt: "select_account",
 });
 
 // Phone Auth helpers
@@ -63,27 +63,30 @@ export class PhoneAuthService {
         }
 
         this.recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
-          size: 'normal',
+          size: "normal",
           callback: () => {
-            console.log('reCAPTCHA solved');
+            console.log("reCAPTCHA solved");
             resolve();
           },
-          'expired-callback': () => {
-            console.log('reCAPTCHA expired');
-            reject(new Error('reCAPTCHA expired'));
+          "expired-callback": () => {
+            console.log("reCAPTCHA expired");
+            reject(new Error("reCAPTCHA expired"));
           },
-          'error-callback': (error: any) => {
-            console.error('reCAPTCHA error:', error);
+          "error-callback": (error: any) => {
+            console.error("reCAPTCHA error:", error);
             reject(error);
-          }
+          },
         });
 
-        this.recaptchaVerifier.render().then(() => {
-          console.log('reCAPTCHA rendered successfully');
-          resolve();
-        }).catch(reject);
+        this.recaptchaVerifier
+          .render()
+          .then(() => {
+            console.log("reCAPTCHA rendered successfully");
+            resolve();
+          })
+          .catch(reject);
       } catch (error) {
-        console.error('Failed to initialize reCAPTCHA:', error);
+        console.error("Failed to initialize reCAPTCHA:", error);
         reject(error);
       }
     });
@@ -92,27 +95,29 @@ export class PhoneAuthService {
   // Send OTP to phone number
   async sendOTP(phoneNumber: string): Promise<ConfirmationResult> {
     if (!this.recaptchaVerifier) {
-      throw new Error('reCAPTCHA not initialized. Call initializeRecaptcha first.');
+      throw new Error(
+        "reCAPTCHA not initialized. Call initializeRecaptcha first.",
+      );
     }
 
     try {
       // Format phone number to include country code
-      const formattedPhoneNumber = phoneNumber.startsWith('+') 
-        ? phoneNumber 
+      const formattedPhoneNumber = phoneNumber.startsWith("+")
+        ? phoneNumber
         : `+91${phoneNumber}`;
 
-      console.log('Sending OTP to:', formattedPhoneNumber);
-      
+      console.log("Sending OTP to:", formattedPhoneNumber);
+
       this.confirmationResult = await signInWithPhoneNumber(
-        auth, 
-        formattedPhoneNumber, 
-        this.recaptchaVerifier
+        auth,
+        formattedPhoneNumber,
+        this.recaptchaVerifier,
       );
-      
-      console.log('OTP sent successfully');
+
+      console.log("OTP sent successfully");
       return this.confirmationResult;
     } catch (error) {
-      console.error('Failed to send OTP:', error);
+      console.error("Failed to send OTP:", error);
       throw this.handleAuthError(error as AuthError);
     }
   }
@@ -120,15 +125,15 @@ export class PhoneAuthService {
   // Verify OTP code
   async verifyOTP(code: string): Promise<FirebaseUser> {
     if (!this.confirmationResult) {
-      throw new Error('No confirmation result available. Send OTP first.');
+      throw new Error("No confirmation result available. Send OTP first.");
     }
 
     try {
       const result = await this.confirmationResult.confirm(code);
-      console.log('Phone authentication successful');
+      console.log("Phone authentication successful");
       return result.user;
     } catch (error) {
-      console.error('OTP verification failed:', error);
+      console.error("OTP verification failed:", error);
       throw this.handleAuthError(error as AuthError);
     }
   }
@@ -144,37 +149,37 @@ export class PhoneAuthService {
 
   // Handle auth errors with user-friendly messages
   private handleAuthError(error: AuthError): Error {
-    let message = 'Authentication failed';
-    
+    let message = "Authentication failed";
+
     switch (error.code) {
-      case 'auth/invalid-phone-number':
-        message = 'Invalid phone number. Please check and try again.';
+      case "auth/invalid-phone-number":
+        message = "Invalid phone number. Please check and try again.";
         break;
-      case 'auth/missing-phone-number':
-        message = 'Phone number is required.';
+      case "auth/missing-phone-number":
+        message = "Phone number is required.";
         break;
-      case 'auth/quota-exceeded':
-        message = 'SMS quota exceeded. Please try again later.';
+      case "auth/quota-exceeded":
+        message = "SMS quota exceeded. Please try again later.";
         break;
-      case 'auth/invalid-verification-code':
-        message = 'Invalid verification code. Please check and try again.';
+      case "auth/invalid-verification-code":
+        message = "Invalid verification code. Please check and try again.";
         break;
-      case 'auth/code-expired':
-        message = 'Verification code has expired. Please request a new one.';
+      case "auth/code-expired":
+        message = "Verification code has expired. Please request a new one.";
         break;
-      case 'auth/too-many-requests':
-        message = 'Too many attempts. Please try again later.';
+      case "auth/too-many-requests":
+        message = "Too many attempts. Please try again later.";
         break;
-      case 'auth/operation-not-allowed':
-        message = 'Phone authentication is not enabled.';
+      case "auth/operation-not-allowed":
+        message = "Phone authentication is not enabled.";
         break;
-      case 'auth/captcha-check-failed':
-        message = 'reCAPTCHA verification failed. Please try again.';
+      case "auth/captcha-check-failed":
+        message = "reCAPTCHA verification failed. Please try again.";
         break;
       default:
-        message = error.message || 'Authentication failed';
+        message = error.message || "Authentication failed";
     }
-    
+
     return new Error(message);
   }
 }
@@ -183,33 +188,34 @@ export class PhoneAuthService {
 export const signInWithGoogle = async (): Promise<FirebaseUser> => {
   try {
     const result = await signInWithPopup(auth, googleProvider);
-    console.log('Google authentication successful');
+    console.log("Google authentication successful");
     return result.user;
   } catch (error) {
-    console.error('Google authentication failed:', error);
+    console.error("Google authentication failed:", error);
     const authError = error as AuthError;
-    
-    let message = 'Google authentication failed';
+
+    let message = "Google authentication failed";
     switch (authError.code) {
-      case 'auth/popup-closed-by-user':
-        message = 'Authentication cancelled by user';
+      case "auth/popup-closed-by-user":
+        message = "Authentication cancelled by user";
         break;
-      case 'auth/popup-blocked':
-        message = 'Popup blocked by browser. Please allow popups and try again.';
+      case "auth/popup-blocked":
+        message =
+          "Popup blocked by browser. Please allow popups and try again.";
         break;
-      case 'auth/cancelled-popup-request':
-        message = 'Authentication cancelled';
+      case "auth/cancelled-popup-request":
+        message = "Authentication cancelled";
         break;
-      case 'auth/operation-not-allowed':
-        message = 'Google authentication is not enabled';
+      case "auth/operation-not-allowed":
+        message = "Google authentication is not enabled";
         break;
-      case 'auth/unauthorized-domain':
-        message = 'This domain is not authorized for Google authentication';
+      case "auth/unauthorized-domain":
+        message = "This domain is not authorized for Google authentication";
         break;
       default:
-        message = authError.message || 'Google authentication failed';
+        message = authError.message || "Google authentication failed";
     }
-    
+
     throw new Error(message);
   }
 };
@@ -218,15 +224,17 @@ export const signInWithGoogle = async (): Promise<FirebaseUser> => {
 export const signOutUser = async (): Promise<void> => {
   try {
     await signOut(auth);
-    console.log('User signed out successfully');
+    console.log("User signed out successfully");
   } catch (error) {
-    console.error('Sign out failed:', error);
+    console.error("Sign out failed:", error);
     throw error;
   }
 };
 
 // Auth state listener
-export const onAuthStateChange = (callback: (user: FirebaseUser | null) => void) => {
+export const onAuthStateChange = (
+  callback: (user: FirebaseUser | null) => void,
+) => {
   return onAuthStateChanged(auth, callback);
 };
 
