@@ -432,6 +432,22 @@ import {
   updateEnquiryStatus,
 } from "./routes/enquiries";
 
+// Review routes
+import {
+  getPropertyReviews,
+  createReview,
+  updateReview,
+  deleteReview,
+  markReviewHelpful,
+  getAllReviews,
+  updateReviewStatus,
+  replyToReview,
+  deleteAdminReply,
+  getPropertyReviewStats,
+  getUserReviews,
+  uploadReviewImages,
+} from "./routes/reviews";
+
 // Other Services routes
 import {
   getAllOtherServices,
