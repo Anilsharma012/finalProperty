@@ -1062,6 +1062,10 @@ export default function Admin() {
           return <TestimonialManagement />;
         case "seller-review-report":
           return <TestimonialManagement />;
+        case "review-management":
+          return <AdminReviewManagement />;
+        case "reviews":
+          return <AdminReviewManagement />;
         case "slider":
           return <HomepageSliderManagement />;
         case "feature-section":
