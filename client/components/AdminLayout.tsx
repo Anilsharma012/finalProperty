@@ -183,6 +183,29 @@ const menuItems: MenuItem[] = [
     ],
   },
   {
+    id: "reviews",
+    label: "Review Management",
+    icon: Star,
+    children: [
+      {
+        id: "review-management",
+        label: "All Reviews",
+        icon: Star,
+      },
+      {
+        id: "review-moderation",
+        label: "Pending Reviews",
+        icon: AlertTriangle,
+        badge: "new",
+      },
+      {
+        id: "review-analytics",
+        label: "Review Analytics",
+        icon: BarChart3,
+      },
+    ],
+  },
+  {
     id: "home-screen",
     label: "Home Screen Management",
     icon: Home,
