@@ -72,7 +72,8 @@ function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
+        <FirebaseAuthProvider>
+          <AuthProvider>
           <TooltipProvider>
             <Toaster />
             <Sonner />
@@ -132,6 +133,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/user-login" element={<EnhancedUserLogin />} />
                 <Route path="/auth" element={<ComprehensiveAuth />} />
+                <Route path="/firebase-auth" element={<FirebaseAuth />} />
                 <Route path="/user" element={<User />} />
                 <Route path="/user-dashboard" element={<UserDashboard />} />
                 <Route path="/post-property" element={<PostProperty />} />
@@ -179,7 +181,8 @@ function App() {
             {/* Global Components */}
             <PageUpdateNotification />
           </TooltipProvider>
-        </AuthProvider>
+          </AuthProvider>
+        </FirebaseAuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   );
