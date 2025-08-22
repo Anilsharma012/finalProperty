@@ -196,40 +196,50 @@ export default function StaticFooter() {
               <li>
                 <Link
                   to="/about"
-                  className="text-red-200 hover:text-white transition-colors duration-200 text-sm"
+                  className={getLinkClasses("/about")}
+                  aria-current={isActiveLink("/about") ? "page" : undefined}
                 >
+                  <span className={`w-2 h-2 rounded-full mr-2 ${isActiveLink("/about") ? "bg-white" : "bg-red-300"}`}></span>
                   About Us
                 </Link>
               </li>
               <li>
                 <Link
                   to="/contact"
-                  className="text-red-200 hover:text-white transition-colors duration-200 text-sm"
+                  className={getLinkClasses("/contact")}
+                  aria-current={isActiveLink("/contact") ? "page" : undefined}
                 >
+                  <span className={`w-2 h-2 rounded-full mr-2 ${isActiveLink("/contact") ? "bg-white" : "bg-red-300"}`}></span>
                   Contact Us
                 </Link>
               </li>
               <li>
                 <Link
-                  to="/privacy"
-                  className="text-red-200 hover:text-white transition-colors duration-200 text-sm"
+                  to="/privacy-policy"
+                  className={getLinkClasses("/privacy-policy")}
+                  aria-current={isActiveLink("/privacy-policy") ? "page" : undefined}
                 >
+                  <span className={`w-2 h-2 rounded-full mr-2 ${isActiveLink("/privacy-policy") ? "bg-white" : "bg-red-300"}`}></span>
                   Privacy Policy
                 </Link>
               </li>
               <li>
                 <Link
-                  to="/terms"
-                  className="text-red-200 hover:text-white transition-colors duration-200 text-sm"
+                  to="/terms-of-service"
+                  className={getLinkClasses("/terms-of-service")}
+                  aria-current={isActiveLink("/terms-of-service") ? "page" : undefined}
                 >
+                  <span className={`w-2 h-2 rounded-full mr-2 ${isActiveLink("/terms-of-service") ? "bg-white" : "bg-red-300"}`}></span>
                   Terms of Service
                 </Link>
               </li>
               <li>
                 <Link
-                  to="/help"
-                  className="text-red-200 hover:text-white transition-colors duration-200 text-sm"
+                  to="/help-center"
+                  className={getLinkClasses("/help-center")}
+                  aria-current={isActiveLink("/help-center") ? "page" : undefined}
                 >
+                  <span className={`w-2 h-2 rounded-full mr-2 ${isActiveLink("/help-center") ? "bg-white" : "bg-red-300"}`}></span>
                   Help Center
                 </Link>
               </li>
