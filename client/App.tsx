@@ -47,6 +47,13 @@ import StaffLogin from "./pages/StaffLogin";
 import StaffDashboard from "./pages/StaffDashboard";
 import StaffAdmin from "./pages/StaffAdmin";
 import EnhancedSellerDashboard from "./pages/EnhancedSellerDashboard";
+import Settings from "./pages/Settings";
+import Messages from "./pages/Messages";
+import MyProperties from "./pages/MyProperties";
+import Clients from "./pages/Clients";
+import Favorites from "./pages/Favorites";
+import RecentViews from "./pages/RecentViews";
+import Leads from "./pages/Leads";
 import NotFound from "./pages/NotFound";
 import FooterTest from "./pages/FooterTest";
 import FooterDebugPage from "./pages/FooterDebugPage";
@@ -142,6 +149,14 @@ function App() {
                 <Route path="/staff/login" element={<StaffLogin />} />
                 <Route path="/staff-dashboard" element={<StaffDashboard />} />
                 <Route path="/staff-admin" element={<StaffAdmin />} />
+                {/* New Routes for Menu Dashboard Pages */}
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/messages" element={<Messages />} />
+                <Route path="/my-properties" element={<MyProperties />} />
+                <Route path="/clients" element={<Clients />} />
+                <Route path="/favorites" element={<Favorites />} />
+                <Route path="/recent-views" element={<RecentViews />} />
+                <Route path="/leads" element={<Leads />} />
                 {/* Content Pages */}
                 <Route path="/about-us" element={<ContentPage />} />
                 <Route path="/privacy-policy" element={<ContentPage />} />
