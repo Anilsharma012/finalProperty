@@ -158,7 +158,7 @@ function App() {
                 <Route path="/recent-views" element={<RecentViews />} />
                 <Route path="/leads" element={<Leads />} />
                 {/* Content Pages */}
-                <Route path="/about-us" element={<ContentPage />} />
+                <Route path="/about-us-" element={<ContentPage />} />
                 <Route path="/privacy-policy" element={<ContentPage />} />
                 <Route path="/terms-conditions" element={<ContentPage />} />
                 <Route path="/refund-policy" element={<ContentPage />} />
