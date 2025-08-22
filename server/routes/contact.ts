@@ -22,7 +22,8 @@ interface ContactSubmission extends ContactFormData {
 // POST /api/contact - Submit a contact form
 export const submitContactForm: RequestHandler = async (req, res) => {
   try {
-    const { name, email, phone, subject, message } = req.body as ContactFormData;
+    const { name, email, phone, subject, message } =
+      req.body as ContactFormData;
 
     // Validate required fields
     if (!name || !email || !subject || !message) {
@@ -104,12 +105,12 @@ export const submitContactForm: RequestHandler = async (req, res) => {
     const contactCollection = db.collection("contact_submissions");
 
     // Check for spam (rate limiting by IP - max 5 submissions per hour)
-    const ipAddress = req.ip || req.connection.remoteAddress || 'unknown';
+    const ipAddress = req.ip || req.connection.remoteAddress || "unknown";
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-    
+
     const recentSubmissions = await contactCollection.countDocuments({
       ipAddress: ipAddress,
-      createdAt: { $gte: oneHourAgo }
+      createdAt: { $gte: oneHourAgo },
     });
 
     if (recentSubmissions >= 5) {
@@ -124,13 +125,14 @@ export const submitContactForm: RequestHandler = async (req, res) => {
     const duplicateSubmission = await contactCollection.findOne({
       email: email.trim().toLowerCase(),
       subject: subject.trim(),
-      createdAt: { $gte: tenMinutesAgo }
+      createdAt: { $gte: tenMinutesAgo },
     });
 
     if (duplicateSubmission) {
       return res.status(409).json({
         success: false,
-        message: "Duplicate submission detected. Please wait before submitting again.",
+        message:
+          "Duplicate submission detected. Please wait before submitting again.",
       });
     }
 
@@ -143,7 +145,7 @@ export const submitContactForm: RequestHandler = async (req, res) => {
       message: message.trim(),
       status: "new",
       ipAddress: ipAddress,
-      userAgent: req.get('User-Agent'),
+      userAgent: req.get("User-Agent"),
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -161,20 +163,20 @@ export const submitContactForm: RequestHandler = async (req, res) => {
     // Return success response
     res.status(201).json({
       success: true,
-      message: "Contact form submitted successfully. We'll get back to you within 24 hours.",
+      message:
+        "Contact form submitted successfully. We'll get back to you within 24 hours.",
       data: {
         id: result.insertedId.toString(),
         submittedAt: contactSubmission.createdAt,
       },
     });
-
   } catch (error: any) {
     console.error("Error submitting contact form:", error);
-    
+
     res.status(500).json({
       success: false,
       message: "Failed to submit contact form. Please try again later.",
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
@@ -193,7 +195,7 @@ export const getContactSubmissions: RequestHandler = async (req, res) => {
 
     // Build filter
     const filter: any = {};
-    
+
     if (status && ["new", "replied", "closed"].includes(status)) {
       filter.status = status;
     }
@@ -219,23 +221,25 @@ export const getContactSubmissions: RequestHandler = async (req, res) => {
       .toArray();
 
     // Get statistics
-    const stats = await contactCollection.aggregate([
-      {
-        $group: {
-          _id: "$status",
-          count: { $sum: 1 }
-        }
-      }
-    ]).toArray();
+    const stats = await contactCollection
+      .aggregate([
+        {
+          $group: {
+            _id: "$status",
+            count: { $sum: 1 },
+          },
+        },
+      ])
+      .toArray();
 
     const statusCounts = {
       new: 0,
       replied: 0,
       closed: 0,
-      total: total
+      total: total,
     };
 
-    stats.forEach(stat => {
+    stats.forEach((stat) => {
       if (stat._id in statusCounts) {
         statusCounts[stat._id as keyof typeof statusCounts] = stat.count;
       }
@@ -254,13 +258,12 @@ export const getContactSubmissions: RequestHandler = async (req, res) => {
         stats: statusCounts,
       },
     });
-
   } catch (error: any) {
     console.error("Error fetching contact submissions:", error);
     res.status(500).json({
       success: false,
       message: "Failed to fetch contact submissions",
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
@@ -298,7 +301,7 @@ export const updateContactStatus: RequestHandler = async (req, res) => {
           status,
           updatedAt: new Date(),
         },
-      }
+      },
     );
 
     if (result.matchedCount === 0) {
@@ -314,13 +317,12 @@ export const updateContactStatus: RequestHandler = async (req, res) => {
       success: true,
       message: "Contact submission status updated successfully",
     });
-
   } catch (error: any) {
     console.error("Error updating contact submission status:", error);
     res.status(500).json({
       success: false,
       message: "Failed to update contact submission status",
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
@@ -333,23 +335,35 @@ export const getContactStats: RequestHandler = async (req, res) => {
 
     // Get stats for different time periods
     const now = new Date();
-    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const todayStart = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
     const weekStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    const [totalSubmissions, todaySubmissions, weekSubmissions, monthSubmissions, statusBreakdown] = await Promise.all([
+    const [
+      totalSubmissions,
+      todaySubmissions,
+      weekSubmissions,
+      monthSubmissions,
+      statusBreakdown,
+    ] = await Promise.all([
       contactCollection.countDocuments(),
       contactCollection.countDocuments({ createdAt: { $gte: todayStart } }),
       contactCollection.countDocuments({ createdAt: { $gte: weekStart } }),
       contactCollection.countDocuments({ createdAt: { $gte: monthStart } }),
-      contactCollection.aggregate([
-        {
-          $group: {
-            _id: "$status",
-            count: { $sum: 1 }
-          }
-        }
-      ]).toArray()
+      contactCollection
+        .aggregate([
+          {
+            $group: {
+              _id: "$status",
+              count: { $sum: 1 },
+            },
+          },
+        ])
+        .toArray(),
     ]);
 
     const stats = {
@@ -360,11 +374,11 @@ export const getContactStats: RequestHandler = async (req, res) => {
       byStatus: {
         new: 0,
         replied: 0,
-        closed: 0
-      }
+        closed: 0,
+      },
     };
 
-    statusBreakdown.forEach(item => {
+    statusBreakdown.forEach((item) => {
       if (item._id in stats.byStatus) {
         stats.byStatus[item._id as keyof typeof stats.byStatus] = item.count;
       }
@@ -374,13 +388,12 @@ export const getContactStats: RequestHandler = async (req, res) => {
       success: true,
       data: stats,
     });
-
   } catch (error: any) {
     console.error("Error fetching contact stats:", error);
     res.status(500).json({
       success: false,
       message: "Failed to fetch contact statistics",
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };

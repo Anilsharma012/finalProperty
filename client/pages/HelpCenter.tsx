@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { 
-  ArrowLeft, 
-  Search, 
-  HelpCircle, 
-  User, 
-  CreditCard, 
+import {
+  ArrowLeft,
+  Search,
+  HelpCircle,
+  User,
+  CreditCard,
   Settings,
   MessageCircle,
   ChevronDown,
@@ -18,10 +18,15 @@ import {
   Clock,
   BookOpen,
   FileText,
-  ExternalLink
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Badge } from "../components/ui/badge";
 import {
@@ -30,7 +35,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../components/ui/accordion";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
 import OLXStyleHeader from "../components/OLXStyleHeader";
 import StaticFooter from "../components/StaticFooter";
 
@@ -50,24 +60,28 @@ export default function HelpCenter() {
 
   useEffect(() => {
     // Set page title and meta tags for SEO
-    document.title = "Help Center - Aashish Properties | Property Search Support & FAQs";
-    
+    document.title =
+      "Help Center - Aashish Properties | Property Search Support & FAQs";
+
     // Set meta description
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
       metaDescription.setAttribute(
-        "content", 
-        "Get help with property search, account management, and more. Find answers to frequently asked questions about Aashish Properties services."
+        "content",
+        "Get help with property search, account management, and more. Find answers to frequently asked questions about Aashish Properties services.",
       );
     } else {
       const meta = document.createElement("meta");
       meta.name = "description";
-      meta.content = "Get help with property search, account management, and more. Find answers to frequently asked questions about Aashish Properties services.";
+      meta.content =
+        "Get help with property search, account management, and more. Find answers to frequently asked questions about Aashish Properties services.";
       document.head.appendChild(meta);
     }
 
     // Set canonical URL
-    const canonical = document.querySelector('link[rel="canonical"]') || document.createElement("link");
+    const canonical =
+      document.querySelector('link[rel="canonical"]') ||
+      document.createElement("link");
     canonical.setAttribute("rel", "canonical");
     canonical.setAttribute("href", `${window.location.origin}/help-center`);
     if (!document.querySelector('link[rel="canonical"]')) {
@@ -78,20 +92,20 @@ export default function HelpCenter() {
     const jsonLd = {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": window.location.origin
+          position: 1,
+          name: "Home",
+          item: window.location.origin,
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Help Center",
-          "item": `${window.location.origin}/help-center`
-        }
-      ]
+          position: 2,
+          name: "Help Center",
+          item: `${window.location.origin}/help-center`,
+        },
+      ],
     };
 
     const script = document.createElement("script");
@@ -100,19 +114,21 @@ export default function HelpCenter() {
     document.head.appendChild(script);
 
     // Analytics event
-    if (typeof window !== 'undefined' && window.dataLayer) {
+    if (typeof window !== "undefined" && window.dataLayer) {
       window.dataLayer.push({
         event: "page_view",
         path: "/help-center",
-        page_title: "Help Center"
+        page_title: "Help Center",
       });
     }
 
     // Cleanup function
     return () => {
-      const scriptTags = document.querySelectorAll('script[type="application/ld+json"]');
-      scriptTags.forEach(script => {
-        if (script.textContent?.includes('Help Center')) {
+      const scriptTags = document.querySelectorAll(
+        'script[type="application/ld+json"]',
+      );
+      scriptTags.forEach((script) => {
+        if (script.textContent?.includes("Help Center")) {
           script.remove();
         }
       });
@@ -120,31 +136,34 @@ export default function HelpCenter() {
   }, []);
 
   const handleFooterLinkClick = (label: string) => {
-    if (typeof window !== 'undefined' && window.dataLayer) {
+    if (typeof window !== "undefined" && window.dataLayer) {
       window.dataLayer.push({
         event: "footer_link_click",
-        label: label
+        label: label,
       });
     }
   };
 
   const handleSearch = (event: React.FormEvent) => {
     event.preventDefault();
-    
+
     // Analytics event for search
-    if (typeof window !== 'undefined' && window.dataLayer) {
+    if (typeof window !== "undefined" && window.dataLayer) {
       window.dataLayer.push({
         event: "help_center_search",
-        search_query: searchQuery
+        search_query: searchQuery,
       });
     }
 
     // Filter FAQs based on search query
     if (searchQuery.trim()) {
-      const filtered = allFAQs.filter(faq => 
-        faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        faq.answer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        faq.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+      const filtered = allFAQs.filter(
+        (faq) =>
+          faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          faq.answer.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          faq.tags.some((tag) =>
+            tag.toLowerCase().includes(searchQuery.toLowerCase()),
+          ),
       );
       setFilteredFAQs(filtered);
     } else {
@@ -166,140 +185,160 @@ export default function HelpCenter() {
     {
       id: "account-1",
       question: "How do I create an account on Aashish Properties?",
-      answer: "Creating an account is simple! Click the 'Sign Up' button on the top right of our homepage. You can register using your email address, phone number, or social media accounts like Google or Facebook. After registration, verify your email to activate your account and start browsing properties.",
+      answer:
+        "Creating an account is simple! Click the 'Sign Up' button on the top right of our homepage. You can register using your email address, phone number, or social media accounts like Google or Facebook. After registration, verify your email to activate your account and start browsing properties.",
       category: "account",
       tags: ["registration", "signup", "account", "verification"],
-      helpful: 245
+      helpful: 245,
     },
     {
-      id: "account-2", 
+      id: "account-2",
       question: "I forgot my password. How can I reset it?",
-      answer: "Click 'Forgot Password' on the login page and enter your registered email address. We'll send you a secure reset link. Check your spam folder if you don't see the email within 5 minutes. The reset link expires in 24 hours for security.",
+      answer:
+        "Click 'Forgot Password' on the login page and enter your registered email address. We'll send you a secure reset link. Check your spam folder if you don't see the email within 5 minutes. The reset link expires in 24 hours for security.",
       category: "account",
       tags: ["password", "reset", "login", "email"],
-      helpful: 189
+      helpful: 189,
     },
     {
       id: "account-3",
       question: "How do I update my profile information?",
-      answer: "Log into your account and go to 'My Profile' or 'Account Settings'. You can update your name, email, phone number, profile picture, and property preferences. Some changes may require email verification for security.",
+      answer:
+        "Log into your account and go to 'My Profile' or 'Account Settings'. You can update your name, email, phone number, profile picture, and property preferences. Some changes may require email verification for security.",
       category: "account",
       tags: ["profile", "update", "settings", "personal information"],
-      helpful: 156
+      helpful: 156,
     },
-    
+
     // Property Search
     {
       id: "properties-1",
       question: "How do I search for properties in my preferred location?",
-      answer: "Use our advanced search filters on the homepage. Enter your desired location, select property type (residential, commercial, rental), set your budget range, and choose specific amenities. You can also use the map view to explore properties in specific areas of Rohtak.",
+      answer:
+        "Use our advanced search filters on the homepage. Enter your desired location, select property type (residential, commercial, rental), set your budget range, and choose specific amenities. You can also use the map view to explore properties in specific areas of Rohtak.",
       category: "properties",
       tags: ["search", "location", "filters", "map"],
-      helpful: 312
+      helpful: 312,
     },
     {
       id: "properties-2",
       question: "How can I save properties to view later?",
-      answer: "Click the heart icon on any property listing to add it to your favorites. You can access all saved properties from your account dashboard under 'Saved Properties'. You'll also receive notifications if the price changes or the property status updates.",
+      answer:
+        "Click the heart icon on any property listing to add it to your favorites. You can access all saved properties from your account dashboard under 'Saved Properties'. You'll also receive notifications if the price changes or the property status updates.",
       category: "properties",
       tags: ["favorites", "save", "wishlist", "notifications"],
-      helpful: 234
+      helpful: 234,
     },
     {
       id: "properties-3",
       question: "What information is included in property listings?",
-      answer: "Our listings include property details, price, location, photos, floor plans, amenities, nearby facilities, legal documentation status, and contact information for the owner or agent. We verify all listings to ensure accuracy.",
+      answer:
+        "Our listings include property details, price, location, photos, floor plans, amenities, nearby facilities, legal documentation status, and contact information for the owner or agent. We verify all listings to ensure accuracy.",
       category: "properties",
       tags: ["listing", "details", "verification", "information"],
-      helpful: 198
+      helpful: 198,
     },
-    
+
     // Technical Support
     {
       id: "technical-1",
       question: "The website is loading slowly. What should I do?",
-      answer: "First, check your internet connection. Clear your browser cache and cookies, or try a different browser. If the issue persists, try accessing the site from a different device. Contact our technical support if problems continue.",
+      answer:
+        "First, check your internet connection. Clear your browser cache and cookies, or try a different browser. If the issue persists, try accessing the site from a different device. Contact our technical support if problems continue.",
       category: "technical",
       tags: ["slow", "loading", "performance", "browser"],
-      helpful: 87
+      helpful: 87,
     },
     {
       id: "technical-2",
       question: "Can I use Aashish Properties on my mobile phone?",
-      answer: "Yes! Our website is fully mobile-responsive and works great on smartphones and tablets. We also have a mobile app available for download on Android and iOS app stores for an even better mobile experience.",
+      answer:
+        "Yes! Our website is fully mobile-responsive and works great on smartphones and tablets. We also have a mobile app available for download on Android and iOS app stores for an even better mobile experience.",
       category: "technical",
       tags: ["mobile", "app", "responsive", "smartphone"],
-      helpful: 176
+      helpful: 176,
     },
     {
       id: "technical-3",
-      question: "I'm having trouble uploading photos. What are the requirements?",
-      answer: "Photos must be in JPG, PNG, or WebP format, maximum 5MB per image. Ensure your internet connection is stable. We recommend photos be at least 1024x768 pixels for best quality. If you continue having issues, try uploading one photo at a time.",
+      question:
+        "I'm having trouble uploading photos. What are the requirements?",
+      answer:
+        "Photos must be in JPG, PNG, or WebP format, maximum 5MB per image. Ensure your internet connection is stable. We recommend photos be at least 1024x768 pixels for best quality. If you continue having issues, try uploading one photo at a time.",
       category: "technical",
       tags: ["upload", "photos", "images", "format", "size"],
-      helpful: 143
+      helpful: 143,
     },
-    
+
     // Billing & Payments
     {
       id: "billing-1",
       question: "Is it free to search and view properties?",
-      answer: "Yes! Browsing properties, creating an account, and contacting property owners is completely free. We only charge for premium services like featured listings, advanced analytics for property owners, and priority customer support.",
+      answer:
+        "Yes! Browsing properties, creating an account, and contacting property owners is completely free. We only charge for premium services like featured listings, advanced analytics for property owners, and priority customer support.",
       category: "billing",
       tags: ["free", "cost", "pricing", "premium"],
-      helpful: 267
+      helpful: 267,
     },
     {
       id: "billing-2",
       question: "What payment methods do you accept?",
-      answer: "We accept all major credit cards, debit cards, UPI payments, net banking, and digital wallets like Paytm, PhonePe, and Google Pay. All payments are processed securely through encrypted channels.",
-      category: "billing", 
+      answer:
+        "We accept all major credit cards, debit cards, UPI payments, net banking, and digital wallets like Paytm, PhonePe, and Google Pay. All payments are processed securely through encrypted channels.",
+      category: "billing",
       tags: ["payment", "methods", "cards", "UPI", "wallet"],
-      helpful: 134
+      helpful: 134,
     },
-    
+
     // Security & Privacy
     {
       id: "security-1",
       question: "How do you protect my personal information?",
-      answer: "We use industry-standard encryption to protect your data. Personal information is never shared without consent. Our servers are secured with multiple layers of protection. Read our Privacy Policy for complete details on data handling.",
+      answer:
+        "We use industry-standard encryption to protect your data. Personal information is never shared without consent. Our servers are secured with multiple layers of protection. Read our Privacy Policy for complete details on data handling.",
       category: "security",
       tags: ["privacy", "security", "data protection", "encryption"],
-      helpful: 201
+      helpful: 201,
     },
     {
       id: "security-2",
       question: "How can I make my account more secure?",
-      answer: "Use a strong, unique password and enable two-factor authentication in your account settings. Never share your login credentials. Log out from shared devices. Contact us immediately if you notice any suspicious activity.",
-      category: "security", 
+      answer:
+        "Use a strong, unique password and enable two-factor authentication in your account settings. Never share your login credentials. Log out from shared devices. Contact us immediately if you notice any suspicious activity.",
+      category: "security",
       tags: ["security", "password", "two-factor", "authentication"],
-      helpful: 167
-    }
+      helpful: 167,
+    },
   ];
 
   // Update category counts
-  categories.forEach(category => {
+  categories.forEach((category) => {
     if (category.id === "all") {
       category.count = allFAQs.length;
     } else {
-      category.count = allFAQs.filter(faq => faq.category === category.id).length;
+      category.count = allFAQs.filter(
+        (faq) => faq.category === category.id,
+      ).length;
     }
   });
 
   // Filter FAQs based on selected category and search
   useEffect(() => {
-    let filtered = selectedCategory === "all" 
-      ? allFAQs 
-      : allFAQs.filter(faq => faq.category === selectedCategory);
-    
+    let filtered =
+      selectedCategory === "all"
+        ? allFAQs
+        : allFAQs.filter((faq) => faq.category === selectedCategory);
+
     if (searchQuery.trim()) {
-      filtered = filtered.filter(faq => 
-        faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        faq.answer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        faq.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+      filtered = filtered.filter(
+        (faq) =>
+          faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          faq.answer.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          faq.tags.some((tag) =>
+            tag.toLowerCase().includes(searchQuery.toLowerCase()),
+          ),
       );
     }
-    
+
     setFilteredFAQs(filtered);
   }, [selectedCategory, searchQuery]);
 
@@ -310,15 +349,15 @@ export default function HelpCenter() {
       description: "Speak with our experts",
       contact: "+91 9876543210",
       hours: "Mon-Sat 9AM-6PM",
-      href: "tel:+919876543210"
+      href: "tel:+919876543210",
     },
     {
       icon: Mail,
-      title: "Email Support", 
+      title: "Email Support",
       description: "Get detailed help via email",
       contact: "support@aashishproperty.com",
       hours: "24-48 hour response",
-      href: "mailto:support@aashishproperty.com"
+      href: "mailto:support@aashishproperty.com",
     },
     {
       icon: MessageCircle,
@@ -326,23 +365,28 @@ export default function HelpCenter() {
       description: "Instant help from our team",
       contact: "Available Now",
       hours: "Mon-Sat 9AM-6PM",
-      href: "/contact"
-    }
+      href: "/contact",
+    },
   ];
 
   return (
     <div className="min-h-screen bg-gray-50">
       <OLXStyleHeader />
-      
+
       {/* Breadcrumb Navigation */}
-      <nav className="bg-white border-b border-gray-200" aria-label="Breadcrumb">
+      <nav
+        className="bg-white border-b border-gray-200"
+        aria-label="Breadcrumb"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center space-x-2 text-sm text-gray-600">
             <Link to="/" className="hover:text-[#C70000] transition-colors">
               Home
             </Link>
             <span>/</span>
-            <span className="text-gray-900 font-medium" aria-current="page">Help Center</span>
+            <span className="text-gray-900 font-medium" aria-current="page">
+              Help Center
+            </span>
           </div>
         </div>
       </nav>
@@ -350,8 +394,8 @@ export default function HelpCenter() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back Button */}
         <div className="mb-6">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             asChild
             className="text-gray-600 hover:text-[#C70000]"
           >
@@ -371,8 +415,9 @@ export default function HelpCenter() {
             </h1>
           </div>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-8">
-            Find answers to your questions about property search, account management, and more. 
-            Our comprehensive help center is here to assist you.
+            Find answers to your questions about property search, account
+            management, and more. Our comprehensive help center is here to
+            assist you.
           </p>
 
           {/* Search Box */}
@@ -386,7 +431,7 @@ export default function HelpCenter() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-12 pr-4 py-3 text-lg focus:ring-[#C70000] focus:border-[#C70000]"
               />
-              <Button 
+              <Button
                 type="submit"
                 className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#C70000] hover:bg-red-700"
               >
@@ -401,7 +446,9 @@ export default function HelpCenter() {
           <div className="lg:col-span-1">
             <Card className="bg-white shadow-sm sticky top-8">
               <CardHeader>
-                <CardTitle className="text-lg text-gray-900">Browse by Category</CardTitle>
+                <CardTitle className="text-lg text-gray-900">
+                  Browse by Category
+                </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
                 <div className="space-y-1">
@@ -413,7 +460,9 @@ export default function HelpCenter() {
                         handleFooterLinkClick(`help_category_${category.id}`);
                       }}
                       className={`w-full flex items-center justify-between p-3 text-left hover:bg-gray-50 transition-colors ${
-                        selectedCategory === category.id ? 'bg-red-50 border-r-2 border-[#C70000] text-[#C70000]' : 'text-gray-700'
+                        selectedCategory === category.id
+                          ? "bg-red-50 border-r-2 border-[#C70000] text-[#C70000]"
+                          : "text-gray-700"
                       }`}
                     >
                       <div className="flex items-center">
@@ -434,13 +483,14 @@ export default function HelpCenter() {
               <CardContent className="pt-6">
                 <h3 className="font-semibold mb-3">Still Need Help?</h3>
                 <p className="text-red-100 text-sm mb-4">
-                  Can't find what you're looking for? Our support team is here to help.
+                  Can't find what you're looking for? Our support team is here
+                  to help.
                 </p>
-                <Button 
-                  asChild 
-                  variant="secondary" 
+                <Button
+                  asChild
+                  variant="secondary"
                   className="w-full bg-white text-[#C70000] hover:bg-gray-100"
-                  onClick={() => handleFooterLinkClick('help_contact_support')}
+                  onClick={() => handleFooterLinkClick("help_contact_support")}
                 >
                   <Link to="/contact">Contact Support</Link>
                 </Button>
@@ -454,30 +504,30 @@ export default function HelpCenter() {
             <Card className="bg-white shadow-sm">
               <CardHeader>
                 <CardTitle className="text-2xl text-gray-900">
-                  {selectedCategory === "all" 
-                    ? "Frequently Asked Questions" 
-                    : `${categories.find(c => c.id === selectedCategory)?.name} - FAQs`}
+                  {selectedCategory === "all"
+                    ? "Frequently Asked Questions"
+                    : `${categories.find((c) => c.id === selectedCategory)?.name} - FAQs`}
                 </CardTitle>
                 <p className="text-gray-600">
-                  {searchQuery ? (
-                    `Found ${filteredFAQs.length} results for "${searchQuery}"`
-                  ) : (
-                    `${filteredFAQs.length} helpful articles`
-                  )}
+                  {searchQuery
+                    ? `Found ${filteredFAQs.length} results for "${searchQuery}"`
+                    : `${filteredFAQs.length} helpful articles`}
                 </p>
               </CardHeader>
               <CardContent>
                 {filteredFAQs.length > 0 ? (
                   <Accordion type="single" collapsible className="space-y-2">
                     {filteredFAQs.map((faq) => (
-                      <AccordionItem 
-                        key={faq.id} 
+                      <AccordionItem
+                        key={faq.id}
                         value={faq.id}
                         className="border border-gray-200 rounded-lg px-4"
                       >
-                        <AccordionTrigger 
+                        <AccordionTrigger
                           className="text-left hover:no-underline py-4"
-                          onClick={() => handleFooterLinkClick(`help_faq_${faq.id}`)}
+                          onClick={() =>
+                            handleFooterLinkClick(`help_faq_${faq.id}`)
+                          }
                         >
                           <div className="flex items-start justify-between w-full">
                             <span className="font-medium text-gray-900 pr-4">
@@ -498,17 +548,27 @@ export default function HelpCenter() {
                           </div>
                           <div className="flex flex-wrap gap-2 mb-4">
                             {faq.tags.map((tag) => (
-                              <Badge key={tag} variant="outline" className="text-xs">
+                              <Badge
+                                key={tag}
+                                variant="outline"
+                                className="text-xs"
+                              >
                                 {tag}
                               </Badge>
                             ))}
                           </div>
                           <div className="text-sm text-gray-500">
-                            Was this helpful? 
-                            <Button variant="link" className="text-xs h-auto p-1 ml-2">
+                            Was this helpful?
+                            <Button
+                              variant="link"
+                              className="text-xs h-auto p-1 ml-2"
+                            >
                               👍 Yes
                             </Button>
-                            <Button variant="link" className="text-xs h-auto p-1">
+                            <Button
+                              variant="link"
+                              className="text-xs h-auto p-1"
+                            >
                               👎 No
                             </Button>
                           </div>
@@ -519,15 +579,16 @@ export default function HelpCenter() {
                 ) : (
                   <div className="text-center py-12">
                     <HelpCircle className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No results found</h3>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      No results found
+                    </h3>
                     <p className="text-gray-600 mb-4">
-                      {searchQuery 
+                      {searchQuery
                         ? `No articles match "${searchQuery}". Try different keywords or browse categories.`
-                        : "No articles available in this category yet."
-                      }
+                        : "No articles available in this category yet."}
                     </p>
                     <div className="space-y-2">
-                      <Button 
+                      <Button
                         variant="outline"
                         onClick={() => {
                           setSearchQuery("");
@@ -536,10 +597,12 @@ export default function HelpCenter() {
                       >
                         Clear Search
                       </Button>
-                      <Button 
-                        asChild 
+                      <Button
+                        asChild
                         className="bg-[#C70000] hover:bg-red-700"
-                        onClick={() => handleFooterLinkClick('help_no_results_contact')}
+                        onClick={() =>
+                          handleFooterLinkClick("help_no_results_contact")
+                        }
                       >
                         <Link to="/contact">Contact Support</Link>
                       </Button>
@@ -551,32 +614,49 @@ export default function HelpCenter() {
 
             {/* Support Channels */}
             <div className="mt-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Get Personal Support</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                Get Personal Support
+              </h2>
               <div className="grid md:grid-cols-3 gap-6">
                 {supportChannels.map((channel, index) => (
-                  <Card key={index} className="bg-white hover:shadow-lg transition-shadow">
+                  <Card
+                    key={index}
+                    className="bg-white hover:shadow-lg transition-shadow"
+                  >
                     <CardContent className="pt-6">
                       <div className="text-center">
                         <div className="w-12 h-12 bg-[#C70000] rounded-lg flex items-center justify-center mx-auto mb-4">
                           <channel.icon className="h-6 w-6 text-white" />
                         </div>
-                        <h3 className="font-semibold text-gray-900 mb-2">{channel.title}</h3>
-                        <p className="text-gray-600 text-sm mb-3">{channel.description}</p>
+                        <h3 className="font-semibold text-gray-900 mb-2">
+                          {channel.title}
+                        </h3>
+                        <p className="text-gray-600 text-sm mb-3">
+                          {channel.description}
+                        </p>
                         <div className="space-y-1 mb-4">
-                          <p className="font-medium text-[#C70000]">{channel.contact}</p>
+                          <p className="font-medium text-[#C70000]">
+                            {channel.contact}
+                          </p>
                           <p className="text-xs text-gray-500 flex items-center justify-center">
                             <Clock className="h-3 w-3 mr-1" />
                             {channel.hours}
                           </p>
                         </div>
-                        <Button 
-                          asChild 
-                          variant="outline" 
+                        <Button
+                          asChild
+                          variant="outline"
                           className="w-full border-[#C70000] text-[#C70000] hover:bg-red-50"
-                          onClick={() => handleFooterLinkClick(`help_support_${channel.title.toLowerCase().replace(' ', '_')}`)}
+                          onClick={() =>
+                            handleFooterLinkClick(
+                              `help_support_${channel.title.toLowerCase().replace(" ", "_")}`,
+                            )
+                          }
                         >
                           <a href={channel.href}>
-                            {channel.title === "Live Chat" ? "Start Chat" : "Contact Now"}
+                            {channel.title === "Live Chat"
+                              ? "Start Chat"
+                              : "Contact Now"}
                             <ExternalLink className="h-3 w-3 ml-2" />
                           </a>
                         </Button>
@@ -589,21 +669,28 @@ export default function HelpCenter() {
 
             {/* Popular Resources */}
             <div className="mt-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Popular Resources</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                Popular Resources
+              </h2>
               <div className="grid md:grid-cols-2 gap-6">
                 <Card className="bg-white hover:shadow-lg transition-shadow">
                   <CardContent className="pt-6">
                     <div className="flex items-start space-x-4">
                       <FileText className="h-8 w-8 text-[#C70000] flex-shrink-0 mt-1" />
                       <div>
-                        <h3 className="font-semibold text-gray-900 mb-2">Property Buying Guide</h3>
+                        <h3 className="font-semibold text-gray-900 mb-2">
+                          Property Buying Guide
+                        </h3>
                         <p className="text-gray-600 text-sm mb-3">
-                          Complete guide to buying property in Rohtak, including legal requirements and documentation.
+                          Complete guide to buying property in Rohtak, including
+                          legal requirements and documentation.
                         </p>
-                        <Button 
-                          variant="link" 
+                        <Button
+                          variant="link"
                           className="p-0 h-auto text-[#C70000]"
-                          onClick={() => handleFooterLinkClick('help_resource_buying_guide')}
+                          onClick={() =>
+                            handleFooterLinkClick("help_resource_buying_guide")
+                          }
                         >
                           Read Guide →
                         </Button>
@@ -617,14 +704,19 @@ export default function HelpCenter() {
                     <div className="flex items-start space-x-4">
                       <Building className="h-8 w-8 text-[#C70000] flex-shrink-0 mt-1" />
                       <div>
-                        <h3 className="font-semibold text-gray-900 mb-2">Property Valuation</h3>
+                        <h3 className="font-semibold text-gray-900 mb-2">
+                          Property Valuation
+                        </h3>
                         <p className="text-gray-600 text-sm mb-3">
-                          Learn how property values are determined and get tips for accurate property assessment.
+                          Learn how property values are determined and get tips
+                          for accurate property assessment.
                         </p>
-                        <Button 
-                          variant="link" 
+                        <Button
+                          variant="link"
                           className="p-0 h-auto text-[#C70000]"
-                          onClick={() => handleFooterLinkClick('help_resource_valuation')}
+                          onClick={() =>
+                            handleFooterLinkClick("help_resource_valuation")
+                          }
                         >
                           Learn More →
                         </Button>

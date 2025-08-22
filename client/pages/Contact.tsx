@@ -3,19 +3,24 @@ import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { 
-  ArrowLeft, 
-  MapPin, 
-  Phone, 
-  Mail, 
+import {
+  ArrowLeft,
+  MapPin,
+  Phone,
+  Mail,
   Clock,
   Send,
   CheckCircle,
   AlertCircle,
-  Loader2
+  Loader2,
 } from "lucide-react";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
 import { useToast } from "../hooks/use-toast";
@@ -34,24 +39,29 @@ import StaticFooter from "../components/StaticFooter";
 
 // Form validation schema
 const contactFormSchema = z.object({
-  name: z.string()
+  name: z
+    .string()
     .min(2, "Name must be at least 2 characters")
     .max(50, "Name must be less than 50 characters")
     .regex(/^[a-zA-Z\s]+$/, "Name can only contain letters and spaces"),
-  email: z.string()
+  email: z
+    .string()
     .email("Please enter a valid email address")
     .min(1, "Email is required"),
-  phone: z.string()
+  phone: z
+    .string()
     .optional()
     .refine((phone) => {
       if (!phone) return true; // Optional field
       const phoneRegex = /^[\+]?[0-9\s\-\(\)]{10,15}$/;
       return phoneRegex.test(phone);
     }, "Please enter a valid phone number"),
-  subject: z.string()
+  subject: z
+    .string()
     .min(5, "Subject must be at least 5 characters")
     .max(100, "Subject must be less than 100 characters"),
-  message: z.string()
+  message: z
+    .string()
     .min(10, "Message must be at least 10 characters")
     .max(1000, "Message must be less than 1000 characters"),
 });
@@ -60,8 +70,10 @@ type ContactFormValues = z.infer<typeof contactFormSchema>;
 
 export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const [submitMessage, setSubmitMessage] = useState('');
+  const [submitStatus, setSubmitStatus] = useState<
+    "idle" | "success" | "error"
+  >("idle");
+  const [submitMessage, setSubmitMessage] = useState("");
   const { toast } = useToast();
 
   const form = useForm<ContactFormValues>({
@@ -77,24 +89,28 @@ export default function Contact() {
 
   useEffect(() => {
     // Set page title and meta tags for SEO
-    document.title = "Contact Us - Aashish Properties | Get In Touch With Our Property Experts";
-    
+    document.title =
+      "Contact Us - Aashish Properties | Get In Touch With Our Property Experts";
+
     // Set meta description
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
       metaDescription.setAttribute(
-        "content", 
-        "Contact Aashish Properties for all your real estate needs in Rohtak. Get expert advice, property consultations, and personalized service. Call +91 9876543210"
+        "content",
+        "Contact Aashish Properties for all your real estate needs in Rohtak. Get expert advice, property consultations, and personalized service. Call +91 9876543210",
       );
     } else {
       const meta = document.createElement("meta");
       meta.name = "description";
-      meta.content = "Contact Aashish Properties for all your real estate needs in Rohtak. Get expert advice, property consultations, and personalized service. Call +91 9876543210";
+      meta.content =
+        "Contact Aashish Properties for all your real estate needs in Rohtak. Get expert advice, property consultations, and personalized service. Call +91 9876543210";
       document.head.appendChild(meta);
     }
 
     // Set canonical URL
-    const canonical = document.querySelector('link[rel="canonical"]') || document.createElement("link");
+    const canonical =
+      document.querySelector('link[rel="canonical"]') ||
+      document.createElement("link");
     canonical.setAttribute("rel", "canonical");
     canonical.setAttribute("href", `${window.location.origin}/contact`);
     if (!document.querySelector('link[rel="canonical"]')) {
@@ -105,48 +121,45 @@ export default function Contact() {
     const businessJsonLd = {
       "@context": "https://schema.org",
       "@type": "LocalBusiness",
-      "name": "Aashish Properties",
-      "description": "Trusted real estate services in Rohtak, Haryana",
-      "telephone": "+91-9876543210",
-      "email": "info@aashishproperty.com",
-      "address": {
+      name: "Aashish Properties",
+      description: "Trusted real estate services in Rohtak, Haryana",
+      telephone: "+91-9876543210",
+      email: "info@aashishproperty.com",
+      address: {
         "@type": "PostalAddress",
-        "streetAddress": "Model Town",
-        "addressLocality": "Rohtak",
-        "addressRegion": "Haryana",
-        "postalCode": "124001",
-        "addressCountry": "IN"
+        streetAddress: "Model Town",
+        addressLocality: "Rohtak",
+        addressRegion: "Haryana",
+        postalCode: "124001",
+        addressCountry: "IN",
       },
-      "geo": {
+      geo: {
         "@type": "GeoCoordinates",
-        "latitude": "28.8955",
-        "longitude": "76.6066"
+        latitude: "28.8955",
+        longitude: "76.6066",
       },
-      "openingHours": [
-        "Mo-Sa 09:00-18:00",
-        "Su 10:00-17:00"
-      ],
-      "priceRange": "$$"
+      openingHours: ["Mo-Sa 09:00-18:00", "Su 10:00-17:00"],
+      priceRange: "$$",
     };
 
     // Add breadcrumb structured data
     const breadcrumbJsonLd = {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": window.location.origin
+          position: 1,
+          name: "Home",
+          item: window.location.origin,
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Contact Us",
-          "item": `${window.location.origin}/contact`
-        }
-      ]
+          position: 2,
+          name: "Contact Us",
+          item: `${window.location.origin}/contact`,
+        },
+      ],
     };
 
     const businessScript = document.createElement("script");
@@ -160,19 +173,24 @@ export default function Contact() {
     document.head.appendChild(breadcrumbScript);
 
     // Analytics event
-    if (typeof window !== 'undefined' && window.dataLayer) {
+    if (typeof window !== "undefined" && window.dataLayer) {
       window.dataLayer.push({
         event: "page_view",
         path: "/contact",
-        page_title: "Contact Us"
+        page_title: "Contact Us",
       });
     }
 
     // Cleanup function
     return () => {
-      const scriptTags = document.querySelectorAll('script[type="application/ld+json"]');
-      scriptTags.forEach(script => {
-        if (script.textContent?.includes('Contact Us') || script.textContent?.includes('Aashish Properties')) {
+      const scriptTags = document.querySelectorAll(
+        'script[type="application/ld+json"]',
+      );
+      scriptTags.forEach((script) => {
+        if (
+          script.textContent?.includes("Contact Us") ||
+          script.textContent?.includes("Aashish Properties")
+        ) {
           script.remove();
         }
       });
@@ -180,45 +198,47 @@ export default function Contact() {
   }, []);
 
   const handleFooterLinkClick = (label: string) => {
-    if (typeof window !== 'undefined' && window.dataLayer) {
+    if (typeof window !== "undefined" && window.dataLayer) {
       window.dataLayer.push({
         event: "footer_link_click",
-        label: label
+        label: label,
       });
     }
   };
 
   const onSubmit = async (data: ContactFormValues) => {
     setIsSubmitting(true);
-    setSubmitStatus('idle');
-    setSubmitMessage('');
+    setSubmitStatus("idle");
+    setSubmitMessage("");
 
     try {
       // Analytics event for form submission attempt
-      if (typeof window !== 'undefined' && window.dataLayer) {
+      if (typeof window !== "undefined" && window.dataLayer) {
         window.dataLayer.push({
           event: "contact_form_submit",
           form_data: {
             has_phone: !!data.phone,
             subject_length: data.subject.length,
-            message_length: data.message.length
-          }
+            message_length: data.message.length,
+          },
         });
       }
 
-      const response = await fetch('/api/contact', {
-        method: 'POST',
+      const response = await fetch("/api/contact", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
       });
 
       if (response.ok) {
         const result = await response.json();
-        setSubmitStatus('success');
-        setSubmitMessage('Thank you for your message! We\'ll get back to you within 24 hours.');
-        
+        setSubmitStatus("success");
+        setSubmitMessage(
+          "Thank you for your message! We'll get back to you within 24 hours.",
+        );
+
         // Show success toast
         toast({
           title: "Message Sent Successfully!",
@@ -230,23 +250,25 @@ export default function Contact() {
         form.reset();
 
         // Analytics success event
-        if (typeof window !== 'undefined' && window.dataLayer) {
+        if (typeof window !== "undefined" && window.dataLayer) {
           window.dataLayer.push({
             event: "contact_form_success",
-            form_id: result.id || 'unknown'
+            form_id: result.id || "unknown",
           });
         }
       } else {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        const errorData = await response
+          .json()
+          .catch(() => ({ error: "Unknown error" }));
         throw new Error(errorData.error || `HTTP ${response.status}`);
       }
     } catch (error: any) {
-      console.error('Contact form submission error:', error);
-      setSubmitStatus('error');
+      console.error("Contact form submission error:", error);
+      setSubmitStatus("error");
       setSubmitMessage(
-        error.message.includes('fetch') 
-          ? 'Unable to send message. Please check your internet connection and try again.'
-          : `Failed to send message: ${error.message}`
+        error.message.includes("fetch")
+          ? "Unable to send message. Please check your internet connection and try again."
+          : `Failed to send message: ${error.message}`,
       );
 
       // Show error toast
@@ -258,10 +280,10 @@ export default function Contact() {
       });
 
       // Analytics error event
-      if (typeof window !== 'undefined' && window.dataLayer) {
+      if (typeof window !== "undefined" && window.dataLayer) {
         window.dataLayer.push({
           event: "contact_form_error",
-          error_message: error.message
+          error_message: error.message,
         });
       }
     } finally {
@@ -275,44 +297,49 @@ export default function Contact() {
       title: "Phone Number",
       value: "+91 9876543210",
       description: "Mon-Sat 9AM-6PM, Sun 10AM-5PM",
-      href: "tel:+919876543210"
+      href: "tel:+919876543210",
     },
     {
       icon: Mail,
       title: "Email Address",
       value: "info@aashishproperty.com",
       description: "We'll respond within 24 hours",
-      href: "mailto:info@aashishproperty.com"
+      href: "mailto:info@aashishproperty.com",
     },
     {
       icon: MapPin,
       title: "Office Address",
       value: "Model Town, Rohtak",
       description: "Haryana 124001, India",
-      href: "https://maps.google.com/?q=Model+Town+Rohtak+Haryana"
+      href: "https://maps.google.com/?q=Model+Town+Rohtak+Haryana",
     },
     {
       icon: Clock,
       title: "Business Hours",
       value: "Mon-Sat: 9AM-6PM",
       description: "Sunday: 10AM-5PM",
-      href: null
-    }
+      href: null,
+    },
   ];
 
   return (
     <div className="min-h-screen bg-gray-50">
       <OLXStyleHeader />
-      
+
       {/* Breadcrumb Navigation */}
-      <nav className="bg-white border-b border-gray-200" aria-label="Breadcrumb">
+      <nav
+        className="bg-white border-b border-gray-200"
+        aria-label="Breadcrumb"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center space-x-2 text-sm text-gray-600">
             <Link to="/" className="hover:text-[#C70000] transition-colors">
               Home
             </Link>
             <span>/</span>
-            <span className="text-gray-900 font-medium" aria-current="page">Contact Us</span>
+            <span className="text-gray-900 font-medium" aria-current="page">
+              Contact Us
+            </span>
           </div>
         </div>
       </nav>
@@ -320,8 +347,8 @@ export default function Contact() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back Button */}
         <div className="mb-6">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             asChild
             className="text-gray-600 hover:text-[#C70000]"
           >
@@ -338,7 +365,7 @@ export default function Contact() {
             Contact <span className="text-[#C70000]">Aashish Properties</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Ready to find your dream property or need expert real estate advice? 
+            Ready to find your dream property or need expert real estate advice?
             Get in touch with our experienced team today.
           </p>
         </section>
@@ -348,14 +375,17 @@ export default function Contact() {
           <div className="lg:col-span-2">
             <Card className="bg-white shadow-lg">
               <CardHeader>
-                <CardTitle className="text-2xl text-gray-900">Send us a Message</CardTitle>
+                <CardTitle className="text-2xl text-gray-900">
+                  Send us a Message
+                </CardTitle>
                 <p className="text-gray-600">
-                  Fill out the form below and we'll get back to you within 24 hours.
+                  Fill out the form below and we'll get back to you within 24
+                  hours.
                 </p>
               </CardHeader>
               <CardContent>
                 {/* Status Messages */}
-                {submitStatus === 'success' && (
+                {submitStatus === "success" && (
                   <Alert className="mb-6 border-green-200 bg-green-50">
                     <CheckCircle className="h-4 w-4 text-green-600" />
                     <AlertDescription className="text-green-800">
@@ -364,17 +394,21 @@ export default function Contact() {
                   </Alert>
                 )}
 
-                {submitStatus === 'error' && (
-                  <Alert className="mb-6 border-red-200 bg-red-50" variant="destructive">
+                {submitStatus === "error" && (
+                  <Alert
+                    className="mb-6 border-red-200 bg-red-50"
+                    variant="destructive"
+                  >
                     <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      {submitMessage}
-                    </AlertDescription>
+                    <AlertDescription>{submitMessage}</AlertDescription>
                   </Alert>
                 )}
 
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-6"
+                  >
                     <div className="grid md:grid-cols-2 gap-4">
                       {/* Name Field */}
                       <FormField
@@ -384,9 +418,9 @@ export default function Contact() {
                           <FormItem>
                             <FormLabel>Full Name *</FormLabel>
                             <FormControl>
-                              <Input 
-                                placeholder="Enter your full name" 
-                                {...field} 
+                              <Input
+                                placeholder="Enter your full name"
+                                {...field}
                                 disabled={isSubmitting}
                                 className="focus:ring-[#C70000] focus:border-[#C70000]"
                               />
@@ -404,10 +438,10 @@ export default function Contact() {
                           <FormItem>
                             <FormLabel>Email Address *</FormLabel>
                             <FormControl>
-                              <Input 
+                              <Input
                                 type="email"
-                                placeholder="your.email@example.com" 
-                                {...field} 
+                                placeholder="your.email@example.com"
+                                {...field}
                                 disabled={isSubmitting}
                                 className="focus:ring-[#C70000] focus:border-[#C70000]"
                               />
@@ -427,10 +461,10 @@ export default function Contact() {
                           <FormItem>
                             <FormLabel>Phone Number</FormLabel>
                             <FormControl>
-                              <Input 
+                              <Input
                                 type="tel"
-                                placeholder="+91 98765 43210" 
-                                {...field} 
+                                placeholder="+91 98765 43210"
+                                {...field}
                                 disabled={isSubmitting}
                                 className="focus:ring-[#C70000] focus:border-[#C70000]"
                               />
@@ -451,9 +485,9 @@ export default function Contact() {
                           <FormItem>
                             <FormLabel>Subject *</FormLabel>
                             <FormControl>
-                              <Input 
-                                placeholder="Property inquiry, investment advice..." 
-                                {...field} 
+                              <Input
+                                placeholder="Property inquiry, investment advice..."
+                                {...field}
                                 disabled={isSubmitting}
                                 className="focus:ring-[#C70000] focus:border-[#C70000]"
                               />
@@ -472,7 +506,7 @@ export default function Contact() {
                         <FormItem>
                           <FormLabel>Message *</FormLabel>
                           <FormControl>
-                            <Textarea 
+                            <Textarea
                               placeholder="Tell us about your property requirements, budget, preferred location, or any specific questions you have..."
                               className="min-h-[120px] focus:ring-[#C70000] focus:border-[#C70000]"
                               {...field}
@@ -480,7 +514,8 @@ export default function Contact() {
                             />
                           </FormControl>
                           <FormDescription>
-                            Be as detailed as possible to help us serve you better
+                            Be as detailed as possible to help us serve you
+                            better
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -488,8 +523,8 @@ export default function Contact() {
                     />
 
                     {/* Submit Button */}
-                    <Button 
-                      type="submit" 
+                    <Button
+                      type="submit"
                       disabled={isSubmitting}
                       className="w-full bg-[#C70000] hover:bg-red-700 text-white py-3"
                     >
@@ -507,7 +542,8 @@ export default function Contact() {
                     </Button>
 
                     <p className="text-sm text-gray-500 text-center">
-                      * Required fields. Your information is secure and will not be shared.
+                      * Required fields. Your information is secure and will not
+                      be shared.
                     </p>
                   </form>
                 </Form>
@@ -520,7 +556,9 @@ export default function Contact() {
             {/* Contact Details */}
             <Card className="bg-white shadow-lg">
               <CardHeader>
-                <CardTitle className="text-xl text-gray-900">Get in Touch</CardTitle>
+                <CardTitle className="text-xl text-gray-900">
+                  Get in Touch
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 {contactInfo.map((info, index) => (
@@ -529,21 +567,37 @@ export default function Contact() {
                       <info.icon className="h-6 w-6 text-white" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 mb-1">{info.title}</h3>
+                      <h3 className="font-semibold text-gray-900 mb-1">
+                        {info.title}
+                      </h3>
                       {info.href ? (
-                        <a 
-                          href={info.href} 
+                        <a
+                          href={info.href}
                           className="text-[#C70000] hover:text-red-700 font-medium transition-colors"
-                          target={info.href.startsWith('http') ? '_blank' : '_self'}
-                          rel={info.href.startsWith('http') ? 'noopener noreferrer' : ''}
-                          onClick={() => handleFooterLinkClick(`contact_${info.title.toLowerCase().replace(' ', '_')}`)}
+                          target={
+                            info.href.startsWith("http") ? "_blank" : "_self"
+                          }
+                          rel={
+                            info.href.startsWith("http")
+                              ? "noopener noreferrer"
+                              : ""
+                          }
+                          onClick={() =>
+                            handleFooterLinkClick(
+                              `contact_${info.title.toLowerCase().replace(" ", "_")}`,
+                            )
+                          }
                         >
                           {info.value}
                         </a>
                       ) : (
-                        <p className="text-gray-900 font-medium">{info.value}</p>
+                        <p className="text-gray-900 font-medium">
+                          {info.value}
+                        </p>
                       )}
-                      <p className="text-sm text-gray-600 mt-1">{info.description}</p>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {info.description}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -553,7 +607,9 @@ export default function Contact() {
             {/* Map Placeholder */}
             <Card className="bg-white shadow-lg">
               <CardHeader>
-                <CardTitle className="text-xl text-gray-900">Visit Our Office</CardTitle>
+                <CardTitle className="text-xl text-gray-900">
+                  Visit Our Office
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="aspect-video bg-gray-200 rounded-lg flex items-center justify-center relative overflow-hidden">
@@ -561,20 +617,22 @@ export default function Contact() {
                   <div className="absolute inset-0 bg-gradient-to-br from-[#C70000] to-red-700 opacity-20"></div>
                   <div className="text-center z-10">
                     <MapPin className="h-12 w-12 text-[#C70000] mx-auto mb-2" />
-                    <p className="font-semibold text-gray-900">Aashish Properties</p>
+                    <p className="font-semibold text-gray-900">
+                      Aashish Properties
+                    </p>
                     <p className="text-sm text-gray-600">Model Town, Rohtak</p>
                     <p className="text-sm text-gray-600">Haryana, India</p>
                   </div>
                   <div className="absolute bottom-2 right-2">
-                    <Button 
-                      variant="secondary" 
-                      size="sm" 
+                    <Button
+                      variant="secondary"
+                      size="sm"
                       asChild
-                      onClick={() => handleFooterLinkClick('office_directions')}
+                      onClick={() => handleFooterLinkClick("office_directions")}
                     >
-                      <a 
-                        href="https://maps.google.com/?q=Model+Town+Rohtak+Haryana" 
-                        target="_blank" 
+                      <a
+                        href="https://maps.google.com/?q=Model+Town+Rohtak+Haryana"
+                        target="_blank"
                         rel="noopener noreferrer"
                       >
                         Get Directions
@@ -587,7 +645,8 @@ export default function Contact() {
                     <strong>Parking:</strong> Free parking available on-site
                   </p>
                   <p>
-                    <strong>Public Transport:</strong> Near main bus stand and railway station
+                    <strong>Public Transport:</strong> Near main bus stand and
+                    railway station
                   </p>
                 </div>
               </CardContent>
@@ -596,7 +655,9 @@ export default function Contact() {
             {/* Quick Tips */}
             <Card className="bg-gradient-to-br from-gray-50 to-gray-100">
               <CardContent className="pt-6">
-                <h3 className="font-semibold text-gray-900 mb-3">💡 Quick Tips</h3>
+                <h3 className="font-semibold text-gray-900 mb-3">
+                  💡 Quick Tips
+                </h3>
                 <ul className="space-y-2 text-sm text-gray-600">
                   <li>• Include your budget and preferred location</li>
                   <li>• Mention if you're a first-time buyer</li>
@@ -613,29 +674,36 @@ export default function Contact() {
           <Card className="bg-gradient-to-r from-[#C70000] to-red-700 text-white">
             <CardContent className="py-8">
               <div className="text-center">
-                <h2 className="text-2xl font-bold mb-4">Need Immediate Assistance?</h2>
+                <h2 className="text-2xl font-bold mb-4">
+                  Need Immediate Assistance?
+                </h2>
                 <p className="text-red-100 mb-6 max-w-2xl mx-auto">
-                  For urgent property inquiries or immediate assistance, you can reach us directly through these channels.
+                  For urgent property inquiries or immediate assistance, you can
+                  reach us directly through these channels.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button 
-                    asChild 
-                    variant="secondary" 
+                  <Button
+                    asChild
+                    variant="secondary"
                     className="bg-white text-[#C70000] hover:bg-gray-100"
-                    onClick={() => handleFooterLinkClick('urgent_call')}
+                    onClick={() => handleFooterLinkClick("urgent_call")}
                   >
                     <a href="tel:+919876543210">
                       <Phone className="mr-2 h-4 w-4" />
                       Call Now: +91 9876543210
                     </a>
                   </Button>
-                  <Button 
-                    asChild 
-                    variant="outline" 
+                  <Button
+                    asChild
+                    variant="outline"
                     className="border-white text-white hover:bg-white hover:text-[#C70000]"
-                    onClick={() => handleFooterLinkClick('urgent_whatsapp')}
+                    onClick={() => handleFooterLinkClick("urgent_whatsapp")}
                   >
-                    <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer">
+                    <a
+                      href="https://wa.me/919876543210"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       <Send className="mr-2 h-4 w-4" />
                       WhatsApp Us
                     </a>

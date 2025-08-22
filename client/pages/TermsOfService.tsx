@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { 
-  ArrowLeft, 
-  Scale, 
-  FileText, 
-  AlertTriangle, 
-  CreditCard, 
+import {
+  ArrowLeft,
+  Scale,
+  FileText,
+  AlertTriangle,
+  CreditCard,
   Shield,
   Calendar,
   CheckCircle,
@@ -13,10 +13,15 @@ import {
   Globe,
   Gavel,
   AlertCircle,
-  Building
+  Building,
 } from "lucide-react";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import OLXStyleHeader from "../components/OLXStyleHeader";
@@ -25,26 +30,33 @@ import StaticFooter from "../components/StaticFooter";
 export default function TermsOfService() {
   useEffect(() => {
     // Set page title and meta tags for SEO
-    document.title = "Terms of Service - Aashish Properties | Legal Terms and Conditions";
-    
+    document.title =
+      "Terms of Service - Aashish Properties | Legal Terms and Conditions";
+
     // Set meta description
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
       metaDescription.setAttribute(
-        "content", 
-        "Read Aashish Properties terms of service and legal conditions. Understand your rights and responsibilities when using our real estate platform and services."
+        "content",
+        "Read Aashish Properties terms of service and legal conditions. Understand your rights and responsibilities when using our real estate platform and services.",
       );
     } else {
       const meta = document.createElement("meta");
       meta.name = "description";
-      meta.content = "Read Aashish Properties terms of service and legal conditions. Understand your rights and responsibilities when using our real estate platform and services.";
+      meta.content =
+        "Read Aashish Properties terms of service and legal conditions. Understand your rights and responsibilities when using our real estate platform and services.";
       document.head.appendChild(meta);
     }
 
     // Set canonical URL
-    const canonical = document.querySelector('link[rel="canonical"]') || document.createElement("link");
+    const canonical =
+      document.querySelector('link[rel="canonical"]') ||
+      document.createElement("link");
     canonical.setAttribute("rel", "canonical");
-    canonical.setAttribute("href", `${window.location.origin}/terms-of-service`);
+    canonical.setAttribute(
+      "href",
+      `${window.location.origin}/terms-of-service`,
+    );
     if (!document.querySelector('link[rel="canonical"]')) {
       document.head.appendChild(canonical);
     }
@@ -53,20 +65,20 @@ export default function TermsOfService() {
     const jsonLd = {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": window.location.origin
+          position: 1,
+          name: "Home",
+          item: window.location.origin,
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Terms of Service",
-          "item": `${window.location.origin}/terms-of-service`
-        }
-      ]
+          position: 2,
+          name: "Terms of Service",
+          item: `${window.location.origin}/terms-of-service`,
+        },
+      ],
     };
 
     const script = document.createElement("script");
@@ -75,19 +87,21 @@ export default function TermsOfService() {
     document.head.appendChild(script);
 
     // Analytics event
-    if (typeof window !== 'undefined' && window.dataLayer) {
+    if (typeof window !== "undefined" && window.dataLayer) {
       window.dataLayer.push({
         event: "page_view",
         path: "/terms-of-service",
-        page_title: "Terms of Service"
+        page_title: "Terms of Service",
       });
     }
 
     // Cleanup function
     return () => {
-      const scriptTags = document.querySelectorAll('script[type="application/ld+json"]');
-      scriptTags.forEach(script => {
-        if (script.textContent?.includes('Terms of Service')) {
+      const scriptTags = document.querySelectorAll(
+        'script[type="application/ld+json"]',
+      );
+      scriptTags.forEach((script) => {
+        if (script.textContent?.includes("Terms of Service")) {
           script.remove();
         }
       });
@@ -95,10 +109,10 @@ export default function TermsOfService() {
   }, []);
 
   const handleFooterLinkClick = (label: string) => {
-    if (typeof window !== 'undefined' && window.dataLayer) {
+    if (typeof window !== "undefined" && window.dataLayer) {
       window.dataLayer.push({
         event: "footer_link_click",
-        label: label
+        label: label,
       });
     }
   };
@@ -131,7 +145,7 @@ export default function TermsOfService() {
         • You must be at least 18 years old to use our services
         • If you are under 18, you may only use our services with parental consent
         • We may verify your age and identity as required
-      `
+      `,
     },
     {
       id: "use-restrictions",
@@ -168,7 +182,7 @@ export default function TermsOfService() {
         • Notify us immediately of any unauthorized access
         • You are responsible for all activities under your account
         • One account per person or business entity
-      `
+      `,
     },
     {
       id: "property-listings",
@@ -200,7 +214,7 @@ export default function TermsOfService() {
         • All negotiations and agreements are between users
         • We are not responsible for failed transactions
         • Legal compliance is the responsibility of transaction parties
-      `
+      `,
     },
     {
       id: "payments-fees",
@@ -237,7 +251,7 @@ export default function TermsOfService() {
         • Users are responsible for applicable taxes
         • Service fees may be subject to GST or other taxes
         • International users may have additional tax obligations
-      `
+      `,
     },
     {
       id: "disclaimers",
@@ -275,7 +289,7 @@ export default function TermsOfService() {
         • Users are responsible for protecting their account information
         • Report security issues immediately
         • We are not liable for unauthorized access due to user negligence
-      `
+      `,
     },
     {
       id: "liability-limitations",
@@ -312,7 +326,7 @@ export default function TermsOfService() {
         • Some jurisdictions may not allow liability limitations
         • Local consumer protection laws may apply
         • These limitations apply to the maximum extent permitted by law
-      `
+      `,
     },
     {
       id: "intellectual-property",
@@ -350,7 +364,7 @@ export default function TermsOfService() {
         • License is personal, non-transferable, and revocable
         • You may not copy, modify, or distribute our technology
         • License terminates when your account is closed
-      `
+      `,
     },
     {
       id: "privacy-data",
@@ -388,7 +402,7 @@ export default function TermsOfService() {
         • Data portability rights may apply
         • Opt-out of marketing communications anytime
         • Contact us for data-related requests
-      `
+      `,
     },
     {
       id: "termination",
@@ -425,7 +439,7 @@ export default function TermsOfService() {
         • Terminated accounts may not be eligible for reactivation
         • New registration may be permitted at our discretion
         • Previous violations may affect new account approval
-      `
+      `,
     },
     {
       id: "governing-law",
@@ -462,7 +476,7 @@ export default function TermsOfService() {
         • Invalid provisions do not affect remaining terms
         • Unenforceable terms will be modified to be enforceable
         • Core business terms remain in effect
-      `
+      `,
     },
     {
       id: "contact-legal",
@@ -498,23 +512,28 @@ export default function TermsOfService() {
         • Security incidents: security@aashishproperty.com
         • Privacy breaches: privacy@aashishproperty.com
         • 24/7 emergency phone: +91 9876543210
-      `
-    }
+      `,
+    },
   ];
 
   return (
     <div className="min-h-screen bg-gray-50">
       <OLXStyleHeader />
-      
+
       {/* Breadcrumb Navigation */}
-      <nav className="bg-white border-b border-gray-200" aria-label="Breadcrumb">
+      <nav
+        className="bg-white border-b border-gray-200"
+        aria-label="Breadcrumb"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center space-x-2 text-sm text-gray-600">
             <Link to="/" className="hover:text-[#C70000] transition-colors">
               Home
             </Link>
             <span>/</span>
-            <span className="text-gray-900 font-medium" aria-current="page">Terms of Service</span>
+            <span className="text-gray-900 font-medium" aria-current="page">
+              Terms of Service
+            </span>
           </div>
         </div>
       </nav>
@@ -522,8 +541,8 @@ export default function TermsOfService() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back Button */}
         <div className="mb-6">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             asChild
             className="text-gray-600 hover:text-[#C70000]"
           >
@@ -543,10 +562,10 @@ export default function TermsOfService() {
             </h1>
           </div>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-6">
-            Please read these terms carefully before using our services. 
-            Your use of our platform constitutes acceptance of these terms.
+            Please read these terms carefully before using our services. Your
+            use of our platform constitutes acceptance of these terms.
           </p>
-          
+
           {/* Last Updated Info */}
           <div className="flex flex-wrap justify-center gap-4">
             <Badge variant="secondary" className="px-4 py-2">
@@ -564,16 +583,19 @@ export default function TermsOfService() {
         <Alert className="mb-8 border-[#C70000] bg-red-50">
           <AlertTriangle className="h-4 w-4 text-[#C70000]" />
           <AlertDescription className="text-gray-800">
-            <strong>Legal Agreement:</strong> These terms constitute a binding legal agreement. 
-            By using our services, you agree to be bound by these terms. If you do not agree, 
-            please do not use our services. We may update these terms periodically.
+            <strong>Legal Agreement:</strong> These terms constitute a binding
+            legal agreement. By using our services, you agree to be bound by
+            these terms. If you do not agree, please do not use our services. We
+            may update these terms periodically.
           </AlertDescription>
         </Alert>
 
         {/* Table of Contents */}
         <Card className="mb-8 bg-gray-100">
           <CardHeader>
-            <CardTitle className="text-xl text-gray-900">Table of Contents</CardTitle>
+            <CardTitle className="text-xl text-gray-900">
+              Table of Contents
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-2 gap-2">
@@ -582,7 +604,9 @@ export default function TermsOfService() {
                   key={section.id}
                   href={`#${section.id}`}
                   className="flex items-center text-sm text-gray-600 hover:text-[#C70000] transition-colors py-1"
-                  onClick={() => handleFooterLinkClick(`terms_toc_${section.id}`)}
+                  onClick={() =>
+                    handleFooterLinkClick(`terms_toc_${section.id}`)
+                  }
                 >
                   <section.icon className="h-4 w-4 mr-2 text-[#C70000]" />
                   {index + 1}. {section.title}
@@ -595,7 +619,11 @@ export default function TermsOfService() {
         {/* Content Sections */}
         <div className="space-y-8">
           {sections.map((section, index) => (
-            <Card key={section.id} id={section.id} className="bg-white shadow-sm">
+            <Card
+              key={section.id}
+              id={section.id}
+              className="bg-white shadow-sm"
+            >
               <CardHeader>
                 <CardTitle className="flex items-center text-2xl text-gray-900">
                   <section.icon className="h-6 w-6 mr-3 text-[#C70000]" />
@@ -604,27 +632,36 @@ export default function TermsOfService() {
               </CardHeader>
               <CardContent>
                 <div className="prose prose-gray max-w-none">
-                  {section.content.split('\n').map((paragraph, pIndex) => {
-                    if (paragraph.trim() === '') return null;
-                    
-                    if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
+                  {section.content.split("\n").map((paragraph, pIndex) => {
+                    if (paragraph.trim() === "") return null;
+
+                    if (
+                      paragraph.startsWith("**") &&
+                      paragraph.endsWith("**")
+                    ) {
                       return (
-                        <h4 key={pIndex} className="font-semibold text-gray-900 mt-4 mb-2">
+                        <h4
+                          key={pIndex}
+                          className="font-semibold text-gray-900 mt-4 mb-2"
+                        >
                           {paragraph.slice(2, -2)}
                         </h4>
                       );
                     }
-                    
-                    if (paragraph.startsWith('•')) {
+
+                    if (paragraph.startsWith("•")) {
                       return (
                         <li key={pIndex} className="text-gray-700 ml-4">
                           {paragraph.slice(1).trim()}
                         </li>
                       );
                     }
-                    
+
                     return (
-                      <p key={pIndex} className="text-gray-700 leading-relaxed mb-3">
+                      <p
+                        key={pIndex}
+                        className="text-gray-700 leading-relaxed mb-3"
+                      >
                         {paragraph}
                       </p>
                     );
@@ -640,10 +677,13 @@ export default function TermsOfService() {
           <CardContent className="py-8">
             <div className="text-center">
               <Gavel className="h-12 w-12 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold mb-4">Legal Questions or Concerns?</h2>
+              <h2 className="text-2xl font-bold mb-4">
+                Legal Questions or Concerns?
+              </h2>
               <p className="text-red-100 mb-6 max-w-2xl mx-auto">
-                If you have questions about these terms, need legal clarification, 
-                or want to report violations, please contact our legal team.
+                If you have questions about these terms, need legal
+                clarification, or want to report violations, please contact our
+                legal team.
               </p>
               <div className="space-y-4">
                 <div>
@@ -653,35 +693,36 @@ export default function TermsOfService() {
                 <div className="space-y-2">
                   <p>
                     <strong>Email:</strong>{" "}
-                    <a 
-                      href="mailto:legal@aashishproperty.com" 
+                    <a
+                      href="mailto:legal@aashishproperty.com"
                       className="underline hover:no-underline"
-                      onClick={() => handleFooterLinkClick('terms_legal_email')}
+                      onClick={() => handleFooterLinkClick("terms_legal_email")}
                     >
                       legal@aashishproperty.com
                     </a>
                   </p>
                   <p>
                     <strong>Phone:</strong>{" "}
-                    <a 
-                      href="tel:+919876543210" 
+                    <a
+                      href="tel:+919876543210"
                       className="underline hover:no-underline"
-                      onClick={() => handleFooterLinkClick('terms_legal_phone')}
+                      onClick={() => handleFooterLinkClick("terms_legal_phone")}
                     >
                       +91 9876543210
                     </a>
                   </p>
                   <p>
-                    <strong>Address:</strong> Model Town, Rohtak, Haryana 124001, India
+                    <strong>Address:</strong> Model Town, Rohtak, Haryana
+                    124001, India
                   </p>
                 </div>
               </div>
               <div className="mt-6">
-                <Button 
-                  asChild 
-                  variant="secondary" 
+                <Button
+                  asChild
+                  variant="secondary"
                   className="bg-white text-[#C70000] hover:bg-gray-100"
-                  onClick={() => handleFooterLinkClick('terms_contact_legal')}
+                  onClick={() => handleFooterLinkClick("terms_contact_legal")}
                 >
                   <Link to="/contact">Contact Legal Team</Link>
                 </Button>
@@ -693,13 +734,14 @@ export default function TermsOfService() {
         {/* Legal Disclaimer */}
         <div className="mt-8 p-6 bg-gray-100 rounded-lg text-sm text-gray-600">
           <p className="mb-2">
-            <strong>Legal Notice:</strong> These terms of service constitute a legally binding 
-            agreement. Violation of these terms may result in account termination and legal action. 
-            Consult with qualified legal counsel for specific legal advice.
+            <strong>Legal Notice:</strong> These terms of service constitute a
+            legally binding agreement. Violation of these terms may result in
+            account termination and legal action. Consult with qualified legal
+            counsel for specific legal advice.
           </p>
           <p>
-            This document was last updated on {lastUpdated} and is effective as of {effectiveDate}. 
-            Check back regularly for updates to these terms.
+            This document was last updated on {lastUpdated} and is effective as
+            of {effectiveDate}. Check back regularly for updates to these terms.
           </p>
         </div>
 
@@ -707,13 +749,25 @@ export default function TermsOfService() {
         <div className="mt-8 text-center">
           <p className="text-gray-600 mb-4">Related Legal Information:</p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Button variant="outline" asChild onClick={() => handleFooterLinkClick('related_privacy')}>
+            <Button
+              variant="outline"
+              asChild
+              onClick={() => handleFooterLinkClick("related_privacy")}
+            >
               <Link to="/privacy-policy">Privacy Policy</Link>
             </Button>
-            <Button variant="outline" asChild onClick={() => handleFooterLinkClick('related_contact')}>
+            <Button
+              variant="outline"
+              asChild
+              onClick={() => handleFooterLinkClick("related_contact")}
+            >
               <Link to="/contact">Contact Us</Link>
             </Button>
-            <Button variant="outline" asChild onClick={() => handleFooterLinkClick('related_help')}>
+            <Button
+              variant="outline"
+              asChild
+              onClick={() => handleFooterLinkClick("related_help")}
+            >
               <Link to="/help-center">Help Center</Link>
             </Button>
           </div>

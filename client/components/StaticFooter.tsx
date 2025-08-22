@@ -25,7 +25,8 @@ export default function StaticFooter() {
 
   // Helper function to get link classes with active state
   const getLinkClasses = (path: string) => {
-    const baseClasses = "transition-colors duration-200 text-sm flex items-center";
+    const baseClasses =
+      "transition-colors duration-200 text-sm flex items-center";
     const activeClasses = "text-white font-medium";
     const inactiveClasses = "text-red-200 hover:text-white";
 
@@ -199,7 +200,9 @@ export default function StaticFooter() {
                   className={getLinkClasses("/about")}
                   aria-current={isActiveLink("/about") ? "page" : undefined}
                 >
-                  <span className={`w-2 h-2 rounded-full mr-2 ${isActiveLink("/about") ? "bg-white" : "bg-red-300"}`}></span>
+                  <span
+                    className={`w-2 h-2 rounded-full mr-2 ${isActiveLink("/about") ? "bg-white" : "bg-red-300"}`}
+                  ></span>
                   About Us
                 </Link>
               </li>
@@ -209,7 +212,9 @@ export default function StaticFooter() {
                   className={getLinkClasses("/contact")}
                   aria-current={isActiveLink("/contact") ? "page" : undefined}
                 >
-                  <span className={`w-2 h-2 rounded-full mr-2 ${isActiveLink("/contact") ? "bg-white" : "bg-red-300"}`}></span>
+                  <span
+                    className={`w-2 h-2 rounded-full mr-2 ${isActiveLink("/contact") ? "bg-white" : "bg-red-300"}`}
+                  ></span>
                   Contact Us
                 </Link>
               </li>
@@ -217,9 +222,13 @@ export default function StaticFooter() {
                 <Link
                   to="/privacy-policy"
                   className={getLinkClasses("/privacy-policy")}
-                  aria-current={isActiveLink("/privacy-policy") ? "page" : undefined}
+                  aria-current={
+                    isActiveLink("/privacy-policy") ? "page" : undefined
+                  }
                 >
-                  <span className={`w-2 h-2 rounded-full mr-2 ${isActiveLink("/privacy-policy") ? "bg-white" : "bg-red-300"}`}></span>
+                  <span
+                    className={`w-2 h-2 rounded-full mr-2 ${isActiveLink("/privacy-policy") ? "bg-white" : "bg-red-300"}`}
+                  ></span>
                   Privacy Policy
                 </Link>
               </li>
@@ -227,9 +236,13 @@ export default function StaticFooter() {
                 <Link
                   to="/terms-of-service"
                   className={getLinkClasses("/terms-of-service")}
-                  aria-current={isActiveLink("/terms-of-service") ? "page" : undefined}
+                  aria-current={
+                    isActiveLink("/terms-of-service") ? "page" : undefined
+                  }
                 >
-                  <span className={`w-2 h-2 rounded-full mr-2 ${isActiveLink("/terms-of-service") ? "bg-white" : "bg-red-300"}`}></span>
+                  <span
+                    className={`w-2 h-2 rounded-full mr-2 ${isActiveLink("/terms-of-service") ? "bg-white" : "bg-red-300"}`}
+                  ></span>
                   Terms of Service
                 </Link>
               </li>
@@ -237,9 +250,13 @@ export default function StaticFooter() {
                 <Link
                   to="/help-center"
                   className={getLinkClasses("/help-center")}
-                  aria-current={isActiveLink("/help-center") ? "page" : undefined}
+                  aria-current={
+                    isActiveLink("/help-center") ? "page" : undefined
+                  }
                 >
-                  <span className={`w-2 h-2 rounded-full mr-2 ${isActiveLink("/help-center") ? "bg-white" : "bg-red-300"}`}></span>
+                  <span
+                    className={`w-2 h-2 rounded-full mr-2 ${isActiveLink("/help-center") ? "bg-white" : "bg-red-300"}`}
+                  ></span>
                   Help Center
                 </Link>
               </li>

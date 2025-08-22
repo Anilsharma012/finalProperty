@@ -475,10 +475,12 @@ export function createServer() {
 
         // In development, allow any localhost, fly.dev, or builder.codes origin
         if (process.env.NODE_ENV !== "production") {
-          if (origin?.includes("localhost") ||
-              origin?.includes(".fly.dev") ||
-              origin?.includes(".builder.codes") ||
-              origin?.includes("projects.builder.codes")) {
+          if (
+            origin?.includes("localhost") ||
+            origin?.includes(".fly.dev") ||
+            origin?.includes(".builder.codes") ||
+            origin?.includes("projects.builder.codes")
+          ) {
             console.log("✅ CORS allowed for development origin:", origin);
             return callback(null, true);
           }
