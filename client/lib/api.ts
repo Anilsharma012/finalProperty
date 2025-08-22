@@ -52,8 +52,8 @@ const getApiBaseUrl = () => {
         return "";
 
       case "fly":
-        // Fly.dev: Backend and frontend on same domain, same port
-        return `${protocol}//${hostname}`;
+        // Fly.dev: Backend and frontend served by same Vite dev server
+        return "";
 
       case "netlify":
         // Netlify: Use Netlify Functions
@@ -130,7 +130,7 @@ export const apiRequest = async (
   const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.timeout);
 
   try {
-    console.log(`���� Making API request to: ${url}`, {
+    console.log(`����� Making API request to: ${url}`, {
       method: options.method || "GET",
       headers: {
         "Content-Type": "application/json",

@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
+import SellerNotifications from "../components/SellerNotifications";
 import {
   Plus,
   Home,
@@ -306,6 +307,9 @@ export default function SellerDashboard() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Messages & Notifications */}
+        <SellerNotifications />
 
         {/* User Profile */}
         <Card>

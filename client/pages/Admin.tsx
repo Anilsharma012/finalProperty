@@ -42,6 +42,8 @@ import CompleteCategoryManagement from "../components/admin/CompleteCategoryMana
 import SellerVerificationManagement from "../components/admin/SellerVerificationManagement";
 import ReportsManagement from "../components/admin/ReportsManagement";
 import AdminSettings from "../components/admin/AdminSettings";
+import AdminTestingDashboard from "../components/admin/AdminTestingDashboard";
+import TestSellerNotification from "../components/admin/TestSellerNotification";
 import UserAnalytics from "../components/admin/UserAnalytics";
 import NotificationManagement from "../components/admin/NotificationManagement";
 import SystemUpdate from "../components/admin/SystemUpdate";
@@ -1093,6 +1095,10 @@ export default function Admin() {
           return <TestimonialManagement />;
         case "settings":
           return <AdminSettings />;
+        case "testing":
+          return <AdminTestingDashboard />;
+        case "test-seller-notifications":
+          return <TestSellerNotification />;
         case "system-update":
           return <SystemUpdate />;
         case "auth-debug":

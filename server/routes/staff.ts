@@ -10,7 +10,14 @@ interface StaffMember {
   email: string;
   phone?: string;
   password: string;
-  role: "super_admin" | "content_manager" | "sales_manager" | "support_executive" | "admin";
+  role:
+    | "super_admin"
+    | "content_manager"
+    | "sales_manager"
+    | "support_executive"
+    | "admin"
+    | "property_moderator"
+    | "custom_role";
   permissions: string[];
   status: "active" | "inactive" | "suspended";
   lastLogin?: Date;
@@ -20,30 +27,56 @@ interface StaffMember {
 }
 
 const rolePermissions = {
-  super_admin: [
-    "dashboard.view", "content.manage", "content.create", "content.view",
-    "ads.manage", "ads.view", "ads.approve", "categories.manage",
-    "packages.manage", "payments.manage", "payments.view", "payments.approve",
-    "users.manage", "users.view", "sellers.manage", "sellers.verify", "sellers.view",
-    "locations.manage", "reports.manage", "reports.view", "promotions.manage",
-    "notifications.send", "staff.manage", "roles.manage", "blog.manage", "blog.view",
-    "support.view", "system.manage", "system.view", "system.test", "system.update", "system.debug",
-    "analytics.view"
-  ],
+  super_admin: ["*"], // All permissions
   content_manager: [
-    "dashboard.view", "content.manage", "content.create", "content.view",
-    "blog.manage", "blog.view", "ads.view", "support.view"
+    "content.view",
+    "content.create",
+    "content.edit",
+    "content.delete",
+    "content.publish",
+    "categories.view",
+    "categories.edit",
+    "faq.view",
+    "faq.edit",
+    "analytics.view",
   ],
   sales_manager: [
-    "dashboard.view", "users.view", "sellers.manage", "sellers.verify", "sellers.view",
-    "payments.view", "packages.manage", "ads.view", "analytics.view"
+    "properties.view",
+    "properties.edit",
+    "properties.approve",
+    "properties.featured",
+    "users.view",
+    "analytics.view",
+    "packages.view",
+    "transactions.view",
+    "reports.view",
   ],
   support_executive: [
-    "dashboard.view", "users.view", "support.view", "reports.view", "content.view"
+    "users.view",
+    "users.support",
+    "support.tickets",
+    "support.resolve",
+    "chat.view",
+    "chat.manage",
+    "faq.view",
+    "notifications.send",
+  ],
+  property_moderator: [
+    "properties.view",
+    "properties.edit",
+    "properties.approve",
+    "users.view",
+    "categories.view",
+    "analytics.view",
   ],
   admin: [
-    "dashboard.view", "content.view", "users.view", "ads.view", "analytics.view"
-  ]
+    "properties.view",
+    "properties.edit",
+    "users.view",
+    "categories.view",
+    "analytics.view",
+  ],
+  custom_role: [], // Will be filled with custom permissions
 };
 
 // Get all staff members
@@ -59,14 +92,11 @@ export const getAllStaff: RequestHandler = async (req, res) => {
     const staff = await db
       .collection("users")
       .find(
-        { 
+        {
           ...filter,
-          $or: [
-            { userType: "admin" },
-            { role: { $exists: true } }
-          ]
+          $or: [{ userType: "admin" }, { role: { $exists: true } }],
         },
-        { projection: { password: 0 } }
+        { projection: { password: 0 } },
       )
       .sort({ createdAt: -1 })
       .toArray();
@@ -108,15 +138,13 @@ export const createStaff: RequestHandler = async (req, res) => {
       });
     }
 
-    // Check if email already exists
-    const existingUser = await db
-      .collection("users")
-      .findOne({ email });
+    // Check if email already exists in users collection
+    const existingUser = await db.collection("users").findOne({ email });
 
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        error: "User with this email already exists",
+        error: `User with email ${email} already exists. Please use a different email address.`,
       });
     }
 
@@ -124,8 +152,9 @@ export const createStaff: RequestHandler = async (req, res) => {
     let password = req.body.password;
     if (autoGeneratePassword || !password) {
       // Generate a secure random password
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$&';
-      password = '';
+      const chars =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$&";
+      password = "";
       for (let i = 0; i < 12; i++) {
         password += chars.charAt(Math.floor(Math.random() * chars.length));
       }
@@ -135,10 +164,20 @@ export const createStaff: RequestHandler = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Get permissions for role
-    const permissions = rolePermissions[role] || rolePermissions.admin;
+    let permissions = req.body.permissions || [];
+
+    // If not custom role, use predefined permissions
+    if (role !== "custom_role") {
+      permissions = rolePermissions[role] || rolePermissions.admin;
+    } else if (!permissions || permissions.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: "Custom role requires at least one permission",
+      });
+    }
 
     // Create username from email (first part before @)
-    const username = email.split('@')[0].toLowerCase();
+    const username = email.split("@")[0].toLowerCase();
 
     const newStaff: Omit<StaffMember, "_id"> = {
       name,
@@ -188,7 +227,7 @@ export const createStaff: RequestHandler = async (req, res) => {
         password: string;
         email: string;
         role: string;
-      }
+      };
     }> = {
       success: true,
       data: {
@@ -198,7 +237,7 @@ export const createStaff: RequestHandler = async (req, res) => {
           password, // Send password in response for admin to share
           email,
           role,
-        }
+        },
       },
       message: `Staff member created successfully! Login credentials: Username: ${username}, Password: ${password}`,
     };
@@ -220,12 +259,30 @@ export const updateStaff: RequestHandler = async (req, res) => {
     const { staffId } = req.params;
     const updateData = req.body;
 
+    console.log("🔄 UpdateStaff called with:", { staffId, updateData });
+
     if (!ObjectId.isValid(staffId)) {
+      console.error("❌ Invalid staff ID provided:", staffId);
       return res.status(400).json({
         success: false,
         error: "Invalid staff ID",
       });
     }
+
+    // Check if staff member exists first
+    const existingStaff = await db.collection("users").findOne({
+      _id: new ObjectId(staffId)
+    });
+
+    if (!existingStaff) {
+      console.error("❌ Staff member not found in database:", staffId);
+      return res.status(404).json({
+        success: false,
+        error: "Staff member not found",
+      });
+    }
+
+    console.log("✅ Found existing staff:", existingStaff._id);
 
     // Remove sensitive fields from update
     delete updateData._id;
@@ -233,23 +290,61 @@ export const updateStaff: RequestHandler = async (req, res) => {
     delete updateData.createdAt;
     delete updateData.createdBy;
 
+    // Check if email is being updated and if it conflicts with existing users
+    if (updateData.email) {
+      const existingUser = await db.collection("users").findOne({
+        email: updateData.email,
+        _id: { $ne: new ObjectId(staffId) }, // Exclude current user
+      });
+
+      if (existingUser) {
+        return res.status(400).json({
+          success: false,
+          error: `Email ${updateData.email} is already in use by another user. Please use a different email.`,
+        });
+      }
+    }
+
     // Update permissions if role changed
     if (updateData.role) {
-      updateData.permissions = rolePermissions[updateData.role] || rolePermissions.admin;
+      if (updateData.role === "custom_role") {
+        // For custom role, use provided permissions or keep existing
+        if (!updateData.permissions || updateData.permissions.length === 0) {
+          return res.status(400).json({
+            success: false,
+            error: "Custom role requires at least one permission",
+          });
+        }
+      } else {
+        // For predefined roles, use role-based permissions
+        updateData.permissions =
+          rolePermissions[updateData.role] || rolePermissions.admin;
+      }
     }
 
     updateData.updatedAt = new Date();
+
+    console.log("🔄 Updating staff with data:", updateData);
 
     const result = await db
       .collection("users")
       .updateOne({ _id: new ObjectId(staffId) }, { $set: updateData });
 
+    console.log("📊 Update result:", {
+      matchedCount: result.matchedCount,
+      modifiedCount: result.modifiedCount,
+      acknowledged: result.acknowledged
+    });
+
     if (result.matchedCount === 0) {
+      console.error("❌ Staff member not found during update, staffId:", staffId);
       return res.status(404).json({
         success: false,
         error: "Staff member not found",
       });
     }
+
+    console.log("✅ Staff member updated successfully:", staffId);
 
     const response: ApiResponse<{ message: string }> = {
       success: true,
@@ -326,17 +421,15 @@ export const updateStaffStatus: RequestHandler = async (req, res) => {
       });
     }
 
-    const result = await db
-      .collection("users")
-      .updateOne(
-        { _id: new ObjectId(staffId) },
-        { 
-          $set: { 
-            status,
-            updatedAt: new Date(),
-          }
-        }
-      );
+    const result = await db.collection("users").updateOne(
+      { _id: new ObjectId(staffId) },
+      {
+        $set: {
+          status,
+          updatedAt: new Date(),
+        },
+      },
+    );
 
     if (result.matchedCount === 0) {
       return res.status(404).json({
@@ -383,17 +476,15 @@ export const updateStaffPassword: RequestHandler = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    const result = await db
-      .collection("users")
-      .updateOne(
-        { _id: new ObjectId(staffId) },
-        { 
-          $set: { 
-            password: hashedPassword,
-            updatedAt: new Date(),
-          }
-        }
-      );
+    const result = await db.collection("users").updateOne(
+      { _id: new ObjectId(staffId) },
+      {
+        $set: {
+          password: hashedPassword,
+          updatedAt: new Date(),
+        },
+      },
+    );
 
     if (result.matchedCount === 0) {
       return res.status(404).json({
@@ -424,32 +515,38 @@ export const getRolesAndPermissions: RequestHandler = async (req, res) => {
       {
         id: "super_admin",
         name: "Super Admin",
-        description: "Full access to all features and settings",
+        description: "Complete system access with all permissions",
         permissions: rolePermissions.super_admin,
       },
       {
         id: "content_manager",
         name: "Content Manager",
-        description: "Manage pages, blogs, and content",
+        description: "Manage website content, pages, and blogs",
         permissions: rolePermissions.content_manager,
       },
       {
         id: "sales_manager",
         name: "Sales Manager",
-        description: "Manage leads, properties, and sales",
+        description: "Manage properties, leads, and sales analytics",
         permissions: rolePermissions.sales_manager,
       },
       {
         id: "support_executive",
         name: "Support Executive",
-        description: "Handle user queries and support",
+        description: "Handle customer support and user queries",
         permissions: rolePermissions.support_executive,
       },
       {
-        id: "admin",
-        name: "Admin",
-        description: "General admin access",
-        permissions: rolePermissions.admin,
+        id: "property_moderator",
+        name: "Property Moderator",
+        description: "Review and moderate property listings",
+        permissions: rolePermissions.property_moderator,
+      },
+      {
+        id: "custom_role",
+        name: "Custom Role",
+        description: "Custom role with specific permissions",
+        permissions: rolePermissions.custom_role,
       },
     ];
 
@@ -464,6 +561,250 @@ export const getRolesAndPermissions: RequestHandler = async (req, res) => {
     res.status(500).json({
       success: false,
       error: "Failed to fetch roles",
+    });
+  }
+};
+
+// Get available permissions grouped by category
+export const getAvailablePermissions: RequestHandler = async (req, res) => {
+  try {
+    const availablePermissions = {
+      "User Management": [
+        {
+          key: "users.view",
+          label: "View Users",
+          description: "View user profiles and information",
+        },
+        {
+          key: "users.edit",
+          label: "Edit Users",
+          description: "Edit user profiles and settings",
+        },
+        {
+          key: "users.delete",
+          label: "Delete Users",
+          description: "Delete user accounts",
+        },
+        {
+          key: "users.support",
+          label: "User Support",
+          description: "Handle user support queries",
+        },
+        {
+          key: "users.export",
+          label: "Export Users",
+          description: "Export user data",
+        },
+      ],
+      "Property Management": [
+        {
+          key: "properties.view",
+          label: "View Properties",
+          description: "View property listings",
+        },
+        {
+          key: "properties.edit",
+          label: "Edit Properties",
+          description: "Edit property information",
+        },
+        {
+          key: "properties.delete",
+          label: "Delete Properties",
+          description: "Delete property listings",
+        },
+        {
+          key: "properties.approve",
+          label: "Approve Properties",
+          description: "Approve/reject property listings",
+        },
+        {
+          key: "properties.featured",
+          label: "Feature Properties",
+          description: "Mark properties as featured",
+        },
+        {
+          key: "properties.export",
+          label: "Export Properties",
+          description: "Export property data",
+        },
+      ],
+      "Content Management": [
+        {
+          key: "content.view",
+          label: "View Content",
+          description: "View pages and blog posts",
+        },
+        {
+          key: "content.create",
+          label: "Create Content",
+          description: "Create pages and blog posts",
+        },
+        {
+          key: "content.edit",
+          label: "Edit Content",
+          description: "Edit pages and blog posts",
+        },
+        {
+          key: "content.delete",
+          label: "Delete Content",
+          description: "Delete pages and blog posts",
+        },
+        {
+          key: "content.publish",
+          label: "Publish Content",
+          description: "Publish/unpublish content",
+        },
+      ],
+      "Category Management": [
+        {
+          key: "categories.view",
+          label: "View Categories",
+          description: "View property categories",
+        },
+        {
+          key: "categories.edit",
+          label: "Edit Categories",
+          description: "Edit property categories",
+        },
+        {
+          key: "categories.create",
+          label: "Create Categories",
+          description: "Create new categories",
+        },
+        {
+          key: "categories.delete",
+          label: "Delete Categories",
+          description: "Delete categories",
+        },
+      ],
+      "Payment & Packages": [
+        {
+          key: "packages.view",
+          label: "View Packages",
+          description: "View advertisement packages",
+        },
+        {
+          key: "packages.edit",
+          label: "Edit Packages",
+          description: "Edit advertisement packages",
+        },
+        {
+          key: "transactions.view",
+          label: "View Transactions",
+          description: "View payment transactions",
+        },
+        {
+          key: "transactions.manage",
+          label: "Manage Transactions",
+          description: "Approve/reject payments",
+        },
+        {
+          key: "payment.settings",
+          label: "Payment Settings",
+          description: "Configure payment gateways",
+        },
+      ],
+      "Analytics & Reports": [
+        {
+          key: "analytics.view",
+          label: "View Analytics",
+          description: "View dashboard analytics",
+        },
+        {
+          key: "analytics.export",
+          label: "Export Analytics",
+          description: "Export analytics data",
+        },
+        {
+          key: "reports.view",
+          label: "View Reports",
+          description: "View system reports",
+        },
+        {
+          key: "reports.generate",
+          label: "Generate Reports",
+          description: "Generate custom reports",
+        },
+      ],
+      "Chat & Communication": [
+        {
+          key: "chat.view",
+          label: "View Chats",
+          description: "View user conversations",
+        },
+        {
+          key: "chat.manage",
+          label: "Manage Chats",
+          description: "Reply to user conversations",
+        },
+        {
+          key: "notifications.send",
+          label: "Send Notifications",
+          description: "Send push notifications",
+        },
+        {
+          key: "email.send",
+          label: "Send Emails",
+          description: "Send bulk emails",
+        },
+      ],
+      "System Settings": [
+        {
+          key: "settings.view",
+          label: "View Settings",
+          description: "View system settings",
+        },
+        {
+          key: "settings.edit",
+          label: "Edit Settings",
+          description: "Modify system settings",
+        },
+        {
+          key: "staff.manage",
+          label: "Manage Staff",
+          description: "Manage staff members and roles",
+        },
+        {
+          key: "system.backup",
+          label: "System Backup",
+          description: "Create system backups",
+        },
+      ],
+      "FAQ & Support": [
+        {
+          key: "faq.view",
+          label: "View FAQs",
+          description: "View FAQ entries",
+        },
+        {
+          key: "faq.edit",
+          label: "Edit FAQs",
+          description: "Edit FAQ entries",
+        },
+        {
+          key: "support.tickets",
+          label: "Support Tickets",
+          description: "Handle support tickets",
+        },
+        {
+          key: "support.resolve",
+          label: "Resolve Issues",
+          description: "Resolve user issues",
+        },
+      ],
+    };
+
+    const response: ApiResponse<any> = {
+      success: true,
+      data: availablePermissions,
+    };
+
+    res.json(response);
+  } catch (error) {
+    console.error("Error fetching permissions:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch permissions",
     });
   }
 };

@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./hooks/useAuth";
 import ErrorBoundary from "./components/ErrorBoundary";
+import PageUpdateNotification from "./components/PageUpdateNotification";
 import "./lib/global-api"; // Make API helper globally available
 import Index from "./pages/Index";
 import Categories from "./pages/Categories";
@@ -111,7 +112,10 @@ function App() {
                 <Route path="/properties/:id" element={<PropertyDetail />} />
                 <Route path="/chat" element={<Chat />} />
                 <Route path="/chat/:conversationId" element={<ChatPage />} />
-                <Route path="/conversation/:id" element={<ChatConversation />} />
+                <Route
+                  path="/conversation/:id"
+                  element={<ChatConversation />}
+                />
                 <Route path="/test-chat/:id" element={<TestChat />} />
                 <Route path="/step3-test" element={<Step3Test />} />
                 <Route path="/my-account" element={<MyAccount />} />
@@ -154,6 +158,9 @@ function App() {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
+
+            {/* Global Components */}
+            <PageUpdateNotification />
           </TooltipProvider>
         </AuthProvider>
       </QueryClientProvider>

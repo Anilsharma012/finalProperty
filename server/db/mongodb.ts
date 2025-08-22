@@ -7,7 +7,7 @@ const cluster = "property.zn2cowc.mongodb.net";
 
 const MONGODB_URI =
   process.env.MONGODB_URI ||
-  `mongodb+srv://${encodeURIComponent(username)}:${encodeURIComponent(password)}@${cluster}/?retryWrites=true&w=majority&appName=Property`;
+  `mongodb+srv://${encodeURIComponent(username)}:${encodeURIComponent(password)}@${cluster}/Use?retryWrites=true&w=majority&appName=Property`;
 const DB_NAME = process.env.DB_NAME || "aashish_property";
 
 let client: MongoClient;

@@ -139,6 +139,23 @@ import { handleDemo } from "./routes/demo";
 import { seedDatabase } from "./routes/seed";
 import { initializeSystem } from "./routes/init";
 import {
+  getAdminSettings,
+  updateAdminSettings,
+  getPhonePeConfig,
+  updatePhonePeConfig,
+} from "./routes/admin-settings";
+import {
+  phonePeCallback,
+  getPhonePePaymentStatus,
+  createPhonePeTransaction,
+  getPaymentMethodsWithPhonePe,
+} from "./routes/phonepe-payments";
+import {
+  testPhonePeConfig,
+  testPaymentMethods,
+  testDatabaseConnection,
+} from "./routes/test-phonepe";
+import {
   sendEmailVerification,
   verifyEmail,
   resendEmailVerification,
@@ -292,6 +309,7 @@ import {
   updateStaffStatus,
   updateStaffPassword,
   getRolesAndPermissions,
+  getAvailablePermissions,
 } from "./routes/staff";
 
 // Notification management routes
@@ -432,21 +450,55 @@ export function createServer() {
   const app = express();
 
   const allowedOrigins = [
-    "https://aproperty.netlify.app",
-    "http://localhost:5173",
-    "https://295329d1a890466f9bcbc004dd730a35-0776d79bc1304d9390d1d56e1.fly.dev",
+    "https://aproperty.netlify.app", // Keep Netlify for backwards compatibility
+    "http://localhost:5173", // Development
+    "https://295329d1a890466f9bcbc004dd730a35-0776d79bc1304d9390d1d56e1.fly.dev", // Old Fly.dev
+    "https://880833dcecc84a92861ca2f5c11ffbe5-ddcc24fd377b44659b202fb89.fly.dev", // Current Fly.dev
+    "https://880833dcecc84a92861ca2f5c11ffbe5-ddcc24fd377b44659b202fb89.fly.dev.projects.builder.codes", // Builder.io environment
+    "https://aashish.posttrr.com", // Hostinger production domain
+    "http://aashish.posttrr.com", // HTTP fallback (will redirect to HTTPS)
   ];
 
   app.use(
     cors({
       origin: function (origin, callback) {
-        // Temporarily allow all origins for debugging
-        console.log("🔍 CORS request from origin:", origin);
-        callback(null, true);
+        // Allow requests with no origin (like mobile apps, Postman, server-to-server)
+        if (!origin) return callback(null, true);
+
+        // In development, allow any localhost, fly.dev, or builder.codes origin
+        if (process.env.NODE_ENV !== "production") {
+          if (origin?.includes("localhost") ||
+              origin?.includes(".fly.dev") ||
+              origin?.includes(".builder.codes") ||
+              origin?.includes("projects.builder.codes")) {
+            console.log("✅ CORS allowed for development origin:", origin);
+            return callback(null, true);
+          }
+        }
+
+        // Check if the origin is in our allowed list
+        if (allowedOrigins.includes(origin)) {
+          console.log("✅ CORS allowed for origin:", origin);
+          return callback(null, true);
+        }
+
+        // Log and block unauthorized origins
+        console.log("❌ CORS blocked for origin:", origin);
+        return callback(
+          new Error(`CORS policy violation: Origin ${origin} not allowed`),
+        );
       },
       credentials: true,
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      allowedHeaders: ["Content-Type", "Authorization"],
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+      allowedHeaders: [
+        "Content-Type",
+        "Authorization",
+        "X-Requested-With",
+        "Accept",
+        "Origin",
+        "Access-Control-Request-Method",
+        "Access-Control-Request-Headers",
+      ],
     }),
   );
 
@@ -466,7 +518,7 @@ export function createServer() {
       console.log("Server will continue with limited functionality");
     });
 
-  // Health check with database status
+  // Health check with database status and CORS info
   app.get("/api/ping", async (req, res) => {
     const startTime = Date.now();
 
@@ -523,6 +575,13 @@ export function createServer() {
           ip: req.ip || req.connection.remoteAddress,
           method: req.method,
           url: req.url,
+        },
+        cors: {
+          allowedOrigins,
+          requestOrigin: req.get("origin"),
+          isOriginAllowed:
+            !req.get("origin") ||
+            allowedOrigins.includes(req.get("origin") || ""),
         },
         timestamp: new Date().toISOString(),
       };
@@ -686,6 +745,32 @@ export function createServer() {
   // Admin routes
   app.get("/api/admin/users", authenticateToken, requireAdmin, getAllUsers);
   app.get("/api/admin/stats", authenticateToken, requireAdmin, getUserStats);
+
+  // Admin settings routes
+  app.get(
+    "/api/admin/settings",
+    authenticateToken,
+    requireAdmin,
+    getAdminSettings,
+  );
+  app.put(
+    "/api/admin/settings",
+    authenticateToken,
+    requireAdmin,
+    updateAdminSettings,
+  );
+  app.get(
+    "/api/admin/settings/phonepe",
+    authenticateToken,
+    requireAdmin,
+    getPhonePeConfig,
+  );
+  app.put(
+    "/api/admin/settings/phonepe",
+    authenticateToken,
+    requireAdmin,
+    updatePhonePeConfig,
+  );
   app.get(
     "/api/admin/user-stats",
     authenticateToken,
@@ -875,7 +960,29 @@ export function createServer() {
     updateTransactionStatus,
   );
   app.post("/api/payments/verify", verifyPayment);
-  app.get("/api/payments/methods", getPaymentMethods);
+  app.get("/api/payments/methods", getPaymentMethodsWithPhonePe);
+
+  // PhonePe payment routes
+  app.post("/api/payments/phonepe/callback", phonePeCallback);
+  app.get(
+    "/api/payments/phonepe/status/:transactionId",
+    getPhonePePaymentStatus,
+  );
+  app.post(
+    "/api/payments/phonepe/transaction",
+    authenticateToken,
+    createPhonePeTransaction,
+  );
+
+  // Test endpoints for debugging
+  app.get(
+    "/api/test/phonepe-config",
+    authenticateToken,
+    requireAdmin,
+    testPhonePeConfig,
+  );
+  app.get("/api/test/payment-methods", testPaymentMethods);
+  app.get("/api/test/database", testDatabaseConnection);
 
   // Banner routes
   app.get("/api/banners", getActiveBanners);
@@ -1290,6 +1397,12 @@ export function createServer() {
     authenticateToken,
     requireAdmin,
     getRolesAndPermissions,
+  );
+  app.get(
+    "/api/admin/staff/permissions",
+    authenticateToken,
+    requireAdmin,
+    getAvailablePermissions,
   );
 
   // Notification management routes

@@ -33,6 +33,7 @@ import {
   Activity,
   Plus,
   Edit,
+  Bell,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
@@ -252,6 +253,12 @@ const menuItems: MenuItem[] = [
     icon: Wrench,
     children: [
       { id: "system-status", label: "System Status", icon: Activity },
+      { id: "testing", label: "System Testing", icon: Activity },
+      {
+        id: "test-seller-notifications",
+        label: "Test Seller Notifications",
+        icon: Bell,
+      },
       { id: "login-test", label: "Login Test Suite", icon: Users },
       { id: "settings", label: "Settings", icon: Settings },
       { id: "system-update", label: "System Update", icon: RefreshCw },

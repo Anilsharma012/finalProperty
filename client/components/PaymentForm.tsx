@@ -10,7 +10,9 @@ import {
   ExternalLink,
   AlertCircle,
   CheckCircle,
+  Zap,
 } from "lucide-react";
+import { phonePeService } from "../lib/phonepe";
 
 interface PaymentFormProps {
   packageId: string;
@@ -37,6 +39,11 @@ interface PaymentMethods {
     enabled: boolean;
     gateways: string[];
   };
+  phonepe: {
+    enabled: boolean;
+    merchantId: string;
+    testMode: boolean;
+  };
 }
 
 export default function PaymentForm({
@@ -47,8 +54,8 @@ export default function PaymentForm({
   onCancel,
 }: PaymentFormProps) {
   const [paymentMethod, setPaymentMethod] = useState<
-    "upi" | "bank_transfer" | "online"
-  >("upi");
+    "upi" | "bank_transfer" | "online" | "phonepe"
+  >("phonepe");
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethods | null>(
     null,
   );
@@ -159,6 +166,42 @@ export default function PaymentForm({
     });
   };
 
+  const handlePhonePePayment = async () => {
+    try {
+      setLoading(true);
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please login to continue");
+        return;
+      }
+
+      // Get user info from token or localStorage
+      const userInfo = JSON.parse(localStorage.getItem("user") || "{}");
+
+      const paymentResult = await phonePeService.initiatePayment({
+        amount: amount,
+        packageId: packageId,
+        propertyId: propertyId,
+        userId: userInfo.id || "user_" + Date.now(),
+        userPhone: userInfo.phone,
+      });
+
+      if (paymentResult.success && paymentResult.data) {
+        // Redirect to PhonePe payment page
+        const redirectInfo = paymentResult.data.instrumentResponse.redirectInfo;
+        window.location.href = redirectInfo.url;
+      } else {
+        alert(paymentResult.error || "Failed to initiate PhonePe payment");
+      }
+    } catch (error: any) {
+      console.error("PhonePe payment error:", error);
+      alert("Failed to process PhonePe payment: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!paymentMethods) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -203,7 +246,22 @@ export default function PaymentForm({
       </div>
 
       {/* Payment Method Selection */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {paymentMethods.phonepe?.enabled && (
+          <button
+            onClick={() => setPaymentMethod("phonepe")}
+            className={`p-4 border-2 rounded-lg transition-all ${
+              paymentMethod === "phonepe"
+                ? "border-[#C70000] bg-red-50"
+                : "border-gray-200 hover:border-gray-300"
+            }`}
+          >
+            <Zap className="h-8 w-8 mx-auto mb-2 text-purple-600" />
+            <div className="text-sm font-semibold">PhonePe</div>
+            <div className="text-xs text-gray-500">Instant payment</div>
+          </button>
+        )}
+
         {paymentMethods.upi.enabled && (
           <button
             onClick={() => setPaymentMethod("upi")}
@@ -475,6 +533,63 @@ export default function PaymentForm({
               className="w-full bg-[#C70000] hover:bg-[#A60000] text-white"
             >
               {loading ? "Processing..." : "Submit Bank Transfer"}
+            </Button>
+          </div>
+        )}
+
+        {paymentMethod === "phonepe" && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold flex items-center">
+              <Zap className="h-5 w-5 mr-2 text-purple-600" />
+              PhonePe Payment
+            </h3>
+
+            <div className="bg-purple-50 p-4 rounded-lg">
+              <p className="text-purple-800 font-medium">Amount: ₹{amount}</p>
+              <p className="text-sm text-purple-700 mt-1">
+                You will be redirected to PhonePe secure payment gateway
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-center p-3 border border-gray-200 rounded-lg">
+                <div className="text-sm font-medium">UPI Apps</div>
+                <div className="text-xs text-gray-500">
+                  PhonePe, GPay, PayTM
+                </div>
+              </div>
+              <div className="text-center p-3 border border-gray-200 rounded-lg">
+                <div className="text-sm font-medium">Cards & Banking</div>
+                <div className="text-xs text-gray-500">
+                  Debit/Credit, Net Banking
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <div className="flex items-start">
+                <CheckCircle className="h-5 w-5 text-green-400 mt-0.5 mr-3" />
+                <div>
+                  <h4 className="text-sm font-medium text-green-800">
+                    PhonePe Benefits
+                  </h4>
+                  <ul className="text-sm text-green-700 mt-1 space-y-1">
+                    <li>• Instant payment confirmation</li>
+                    <li>• Secure payment gateway</li>
+                    <li>• Multiple payment options</li>
+                    <li>• No hidden charges</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <Button
+              onClick={handlePhonePePayment}
+              disabled={loading}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+            >
+              {loading ? "Redirecting..." : "Pay with PhonePe"}
+              <ExternalLink className="h-4 w-4 ml-2" />
             </Button>
           </div>
         )}

@@ -206,6 +206,30 @@ export default function Footer() {
       }
     };
 
+    // Handle page published events
+    const handlePagePublished = (event: any) => {
+      try {
+        console.log("📄 Page published event received:", event.detail);
+        fetchFooterData().catch((error) => {
+          console.warn("🚨 Page published fetch failed:", error?.message);
+        });
+      } catch (error) {
+        console.warn("❌ Page published handler error:", error?.message);
+      }
+    };
+
+    // Handle page unpublished events
+    const handlePageUnpublished = (event: any) => {
+      try {
+        console.log("📄 Page unpublished event received:", event.detail);
+        fetchFooterData().catch((error) => {
+          console.warn("🚨 Page unpublished fetch failed:", error?.message);
+        });
+      } catch (error) {
+        console.warn("❌ Page unpublished handler error:", error?.message);
+      }
+    };
+
     // Listen for online/offline events
     const handleOnline = () => {
       try {
@@ -245,6 +269,9 @@ export default function Footer() {
 
     try {
       window.addEventListener("footerRefresh", handleFooterRefresh);
+      window.addEventListener("footerUpdate", handleFooterRefresh);
+      window.addEventListener("pagePublished", handlePagePublished);
+      window.addEventListener("pageUnpublished", handlePageUnpublished);
       window.addEventListener("online", handleOnline);
       window.addEventListener("offline", handleOffline);
       document.addEventListener("visibilitychange", handleVisibilityChange);
@@ -256,6 +283,9 @@ export default function Footer() {
       try {
         clearInterval(interval);
         window.removeEventListener("footerRefresh", handleFooterRefresh);
+        window.removeEventListener("footerUpdate", handleFooterRefresh);
+        window.removeEventListener("pagePublished", handlePagePublished);
+        window.removeEventListener("pageUnpublished", handlePageUnpublished);
         window.removeEventListener("online", handleOnline);
         window.removeEventListener("offline", handleOffline);
         document.removeEventListener(

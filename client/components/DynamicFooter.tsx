@@ -165,6 +165,8 @@ export default function DynamicFooter() {
 
     window.addEventListener("footerUpdate", handleFooterUpdate);
     window.addEventListener("footerRefresh", handleFooterUpdate);
+    window.addEventListener("pagePublished", handleFooterUpdate);
+    window.addEventListener("pageUnpublished", handleFooterUpdate);
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
     document.addEventListener("visibilitychange", handleVisibilityChange);
@@ -174,6 +176,8 @@ export default function DynamicFooter() {
       clearTimeout(visibilityTimeout);
       window.removeEventListener("footerUpdate", handleFooterUpdate);
       window.removeEventListener("footerRefresh", handleFooterUpdate);
+      window.removeEventListener("pagePublished", handleFooterUpdate);
+      window.removeEventListener("pageUnpublished", handleFooterUpdate);
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
       document.removeEventListener("visibilitychange", handleVisibilityChange);

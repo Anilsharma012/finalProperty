@@ -11,9 +11,13 @@ export default defineConfig(({ command }) => {
     plugins: [react(), isDev ? expressPlugin() : undefined].filter(Boolean),
 
     build: {
-      outDir: "client/dist", // ✅ Output still goes to client/dist for Netlify
+      outDir: "client/dist", // ✅ Output for production deployment
       emptyOutDir: true,
+      sourcemap: false, // Disable sourcemaps for production
+      minify: "esbuild", // Use esbuild for faster builds
     },
+
+    base: "/", // Ensure correct base path for production
 
     resolve: {
       alias: {
@@ -39,7 +43,7 @@ function expressPlugin(): Plugin {
       // Initialize Socket.io with the Vite HTTP server
       if (viteServer.httpServer) {
         initializeSocket(viteServer.httpServer);
-        console.log('🔌 Socket.io initialized in Vite dev server');
+        console.log("🔌 Socket.io initialized in Vite dev server");
       }
 
       viteServer.middlewares.use(app);

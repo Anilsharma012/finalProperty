@@ -77,12 +77,231 @@ interface Role {
   color: string;
 }
 
+// Available permissions with categories
+const availablePermissions = {
+  "User Management": [
+    {
+      key: "users.view",
+      label: "View Users",
+      description: "View user profiles and information",
+    },
+    {
+      key: "users.edit",
+      label: "Edit Users",
+      description: "Edit user profiles and settings",
+    },
+    {
+      key: "users.delete",
+      label: "Delete Users",
+      description: "Delete user accounts",
+    },
+    {
+      key: "users.support",
+      label: "User Support",
+      description: "Handle user support queries",
+    },
+    {
+      key: "users.export",
+      label: "Export Users",
+      description: "Export user data",
+    },
+  ],
+  "Property Management": [
+    {
+      key: "properties.view",
+      label: "View Properties",
+      description: "View property listings",
+    },
+    {
+      key: "properties.edit",
+      label: "Edit Properties",
+      description: "Edit property information",
+    },
+    {
+      key: "properties.delete",
+      label: "Delete Properties",
+      description: "Delete property listings",
+    },
+    {
+      key: "properties.approve",
+      label: "Approve Properties",
+      description: "Approve/reject property listings",
+    },
+    {
+      key: "properties.featured",
+      label: "Feature Properties",
+      description: "Mark properties as featured",
+    },
+    {
+      key: "properties.export",
+      label: "Export Properties",
+      description: "Export property data",
+    },
+  ],
+  "Content Management": [
+    {
+      key: "content.view",
+      label: "View Content",
+      description: "View pages and blog posts",
+    },
+    {
+      key: "content.create",
+      label: "Create Content",
+      description: "Create pages and blog posts",
+    },
+    {
+      key: "content.edit",
+      label: "Edit Content",
+      description: "Edit pages and blog posts",
+    },
+    {
+      key: "content.delete",
+      label: "Delete Content",
+      description: "Delete pages and blog posts",
+    },
+    {
+      key: "content.publish",
+      label: "Publish Content",
+      description: "Publish/unpublish content",
+    },
+  ],
+  "Category Management": [
+    {
+      key: "categories.view",
+      label: "View Categories",
+      description: "View property categories",
+    },
+    {
+      key: "categories.edit",
+      label: "Edit Categories",
+      description: "Edit property categories",
+    },
+    {
+      key: "categories.create",
+      label: "Create Categories",
+      description: "Create new categories",
+    },
+    {
+      key: "categories.delete",
+      label: "Delete Categories",
+      description: "Delete categories",
+    },
+  ],
+  "Payment & Packages": [
+    {
+      key: "packages.view",
+      label: "View Packages",
+      description: "View advertisement packages",
+    },
+    {
+      key: "packages.edit",
+      label: "Edit Packages",
+      description: "Edit advertisement packages",
+    },
+    {
+      key: "transactions.view",
+      label: "View Transactions",
+      description: "View payment transactions",
+    },
+    {
+      key: "transactions.manage",
+      label: "Manage Transactions",
+      description: "Approve/reject payments",
+    },
+    {
+      key: "payment.settings",
+      label: "Payment Settings",
+      description: "Configure payment gateways",
+    },
+  ],
+  "Analytics & Reports": [
+    {
+      key: "analytics.view",
+      label: "View Analytics",
+      description: "View dashboard analytics",
+    },
+    {
+      key: "analytics.export",
+      label: "Export Analytics",
+      description: "Export analytics data",
+    },
+    {
+      key: "reports.view",
+      label: "View Reports",
+      description: "View system reports",
+    },
+    {
+      key: "reports.generate",
+      label: "Generate Reports",
+      description: "Generate custom reports",
+    },
+  ],
+  "Chat & Communication": [
+    {
+      key: "chat.view",
+      label: "View Chats",
+      description: "View user conversations",
+    },
+    {
+      key: "chat.manage",
+      label: "Manage Chats",
+      description: "Reply to user conversations",
+    },
+    {
+      key: "notifications.send",
+      label: "Send Notifications",
+      description: "Send push notifications",
+    },
+    {
+      key: "email.send",
+      label: "Send Emails",
+      description: "Send bulk emails",
+    },
+  ],
+  "System Settings": [
+    {
+      key: "settings.view",
+      label: "View Settings",
+      description: "View system settings",
+    },
+    {
+      key: "settings.edit",
+      label: "Edit Settings",
+      description: "Modify system settings",
+    },
+    {
+      key: "staff.manage",
+      label: "Manage Staff",
+      description: "Manage staff members and roles",
+    },
+    {
+      key: "system.backup",
+      label: "System Backup",
+      description: "Create system backups",
+    },
+  ],
+  "FAQ & Support": [
+    { key: "faq.view", label: "View FAQs", description: "View FAQ entries" },
+    { key: "faq.edit", label: "Edit FAQs", description: "Edit FAQ entries" },
+    {
+      key: "support.tickets",
+      label: "Support Tickets",
+      description: "Handle support tickets",
+    },
+    {
+      key: "support.resolve",
+      label: "Resolve Issues",
+      description: "Resolve user issues",
+    },
+  ],
+};
+
 const availableRoles: Role[] = [
   {
     id: "super_admin",
     name: "super_admin",
     displayName: "Super Admin",
-    description: "Full access to all features and settings",
+    description: "Complete system access with all permissions",
     permissions: ["*"], // All permissions
     icon: Crown,
     color: "bg-purple-100 text-purple-800",
@@ -91,12 +310,13 @@ const availableRoles: Role[] = [
     id: "content_manager",
     name: "content_manager",
     displayName: "Content Manager",
-    description: "Manage pages, blogs, and content",
+    description: "Manage website content, pages, and blogs",
     permissions: [
       "content.view",
       "content.create",
       "content.edit",
       "content.delete",
+      "content.publish",
       "categories.view",
       "categories.edit",
       "faq.view",
@@ -109,15 +329,17 @@ const availableRoles: Role[] = [
     id: "sales_manager",
     name: "sales_manager",
     displayName: "Sales Manager",
-    description: "Manage leads, properties, and sales",
+    description: "Manage properties, leads, and sales analytics",
     permissions: [
       "properties.view",
       "properties.edit",
       "properties.approve",
+      "properties.featured",
       "users.view",
       "analytics.view",
       "packages.view",
       "transactions.view",
+      "reports.view",
     ],
     icon: UserCheck,
     color: "bg-green-100 text-green-800",
@@ -126,32 +348,43 @@ const availableRoles: Role[] = [
     id: "support_executive",
     name: "support_executive",
     displayName: "Support Executive",
-    description: "Handle user queries and support",
+    description: "Handle customer support and user queries",
     permissions: [
       "users.view",
       "users.support",
-      "reports.view",
-      "reports.resolve",
+      "support.tickets",
+      "support.resolve",
       "chat.view",
       "chat.manage",
       "faq.view",
+      "notifications.send",
     ],
     icon: User,
     color: "bg-orange-100 text-orange-800",
   },
   {
-    id: "admin",
-    name: "admin",
-    displayName: "Admin",
-    description: "General admin access",
+    id: "property_moderator",
+    name: "property_moderator",
+    displayName: "Property Moderator",
+    description: "Review and moderate property listings",
     permissions: [
       "properties.view",
       "properties.edit",
+      "properties.approve",
       "users.view",
       "categories.view",
       "analytics.view",
     ],
     icon: Shield,
+    color: "bg-cyan-100 text-cyan-800",
+  },
+  {
+    id: "custom_role",
+    name: "custom_role",
+    displayName: "Custom Role",
+    description: "Custom role with specific permissions",
+    permissions: [],
+    icon: Settings,
     color: "bg-gray-100 text-gray-800",
   },
 ];
@@ -224,8 +457,32 @@ export default function StaffManagement() {
   const handleCreate = async () => {
     if (!token) return;
 
+    // Validate form data
+    if (!formData.name.trim()) {
+      setError("Name is required");
+      return;
+    }
+
+    if (!formData.email.trim()) {
+      setError("Email is required");
+      return;
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    if (formData.role === "custom_role" && formData.permissions.length === 0) {
+      setError("Custom role requires at least one permission");
+      return;
+    }
+
     try {
       setSaving(true);
+      setError(""); // Clear previous errors
 
       const response = await fetch("/api/admin/staff", {
         method: "POST",
@@ -247,8 +504,10 @@ export default function StaffManagement() {
           fetchStaff();
           resetForm();
           setShowCreateDialog(false);
+          setError(""); // Clear any previous errors
         } else {
           setError(data.error || "Failed to create staff member");
+          // Don't close dialog on error so user can fix the issue
         }
       } else {
         setError("Failed to create staff member");
@@ -264,8 +523,32 @@ export default function StaffManagement() {
   const handleUpdate = async () => {
     if (!token || !selectedStaff) return;
 
+    // Validate form data
+    if (!formData.name.trim()) {
+      setError("Name is required");
+      return;
+    }
+
+    if (!formData.email.trim()) {
+      setError("Email is required");
+      return;
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    if (formData.role === "custom_role" && formData.permissions.length === 0) {
+      setError("Custom role requires at least one permission");
+      return;
+    }
+
     try {
       setSaving(true);
+      setError(""); // Clear previous errors
 
       const response = await fetch(`/api/admin/staff/${selectedStaff._id}`, {
         method: "PUT",
@@ -283,8 +566,12 @@ export default function StaffManagement() {
           resetForm();
           setShowEditDialog(false);
           setSelectedStaff(null);
+          setError(""); // Clear any previous errors
+          setSuccess("Staff member updated successfully!");
+          setTimeout(() => setSuccess(""), 3000);
         } else {
           setError(data.error || "Failed to update staff member");
+          // Don't close dialog on error so user can fix the issue
         }
       } else {
         setError("Failed to update staff member");
@@ -860,6 +1147,116 @@ export default function StaffManagement() {
               )}
             </div>
 
+            {/* Custom Permissions */}
+            {(formData.role === "custom_role" ||
+              formData.role === "super_admin") && (
+              <div className="border-t pt-4">
+                <label className="block text-sm font-medium mb-3">
+                  Permissions{" "}
+                  {formData.role === "super_admin"
+                    ? "(All permissions enabled)"
+                    : "*"}
+                </label>
+
+                {formData.role === "super_admin" ? (
+                  <div className="bg-purple-50 p-4 rounded-lg">
+                    <p className="text-purple-800 font-medium">
+                      Super Admin Access
+                    </p>
+                    <p className="text-sm text-purple-600">
+                      This role has complete access to all system features and
+                      permissions.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="max-h-96 overflow-y-auto space-y-4">
+                    {Object.entries(availablePermissions).map(
+                      ([category, permissions]) => (
+                        <div
+                          key={category}
+                          className="border border-gray-200 rounded-lg p-4"
+                        >
+                          <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
+                            <Settings className="h-4 w-4 mr-2" />
+                            {category}
+                          </h4>
+                          <div className="space-y-2">
+                            {permissions.map((permission) => (
+                              <div
+                                key={permission.key}
+                                className="flex items-start space-x-2"
+                              >
+                                <Checkbox
+                                  id={permission.key}
+                                  checked={formData.permissions.includes(
+                                    permission.key,
+                                  )}
+                                  onCheckedChange={(checked) => {
+                                    if (checked) {
+                                      setFormData((prev) => ({
+                                        ...prev,
+                                        permissions: [
+                                          ...prev.permissions,
+                                          permission.key,
+                                        ],
+                                      }));
+                                    } else {
+                                      setFormData((prev) => ({
+                                        ...prev,
+                                        permissions: prev.permissions.filter(
+                                          (p) => p !== permission.key,
+                                        ),
+                                      }));
+                                    }
+                                  }}
+                                />
+                                <div>
+                                  <label
+                                    htmlFor={permission.key}
+                                    className="text-sm font-medium text-gray-700 cursor-pointer"
+                                  >
+                                    {permission.label}
+                                  </label>
+                                  <p className="text-xs text-gray-500">
+                                    {permission.description}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Permission Summary */}
+            {formData.permissions.length > 0 &&
+              formData.role !== "super_admin" && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="font-medium text-blue-900 mb-2">
+                    Selected Permissions ({formData.permissions.length})
+                  </h4>
+                  <div className="flex flex-wrap gap-1">
+                    {formData.permissions.map((permission) => {
+                      const permissionInfo = Object.values(availablePermissions)
+                        .flat()
+                        .find((p) => p.key === permission);
+                      return (
+                        <span
+                          key={permission}
+                          className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded"
+                        >
+                          {permissionInfo?.label || permission}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
             <div className="flex justify-end space-x-2 pt-6 border-t">
               <Button
                 variant="outline"
@@ -947,7 +1344,122 @@ export default function StaffManagement() {
                   ))}
                 </SelectContent>
               </Select>
+              {formData.role && (
+                <p className="text-sm text-gray-600 mt-1">
+                  {getRoleInfo(formData.role).description}
+                </p>
+              )}
             </div>
+
+            {/* Custom Permissions for Edit */}
+            {(formData.role === "custom_role" ||
+              formData.role === "super_admin") && (
+              <div className="border-t pt-4">
+                <label className="block text-sm font-medium mb-3">
+                  Permissions{" "}
+                  {formData.role === "super_admin"
+                    ? "(All permissions enabled)"
+                    : "*"}
+                </label>
+
+                {formData.role === "super_admin" ? (
+                  <div className="bg-purple-50 p-4 rounded-lg">
+                    <p className="text-purple-800 font-medium">
+                      Super Admin Access
+                    </p>
+                    <p className="text-sm text-purple-600">
+                      This role has complete access to all system features and
+                      permissions.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="max-h-96 overflow-y-auto space-y-4">
+                    {Object.entries(availablePermissions).map(
+                      ([category, permissions]) => (
+                        <div
+                          key={category}
+                          className="border border-gray-200 rounded-lg p-4"
+                        >
+                          <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
+                            <Settings className="h-4 w-4 mr-2" />
+                            {category}
+                          </h4>
+                          <div className="space-y-2">
+                            {permissions.map((permission) => (
+                              <div
+                                key={permission.key}
+                                className="flex items-start space-x-2"
+                              >
+                                <Checkbox
+                                  id={`edit_${permission.key}`}
+                                  checked={formData.permissions.includes(
+                                    permission.key,
+                                  )}
+                                  onCheckedChange={(checked) => {
+                                    if (checked) {
+                                      setFormData((prev) => ({
+                                        ...prev,
+                                        permissions: [
+                                          ...prev.permissions,
+                                          permission.key,
+                                        ],
+                                      }));
+                                    } else {
+                                      setFormData((prev) => ({
+                                        ...prev,
+                                        permissions: prev.permissions.filter(
+                                          (p) => p !== permission.key,
+                                        ),
+                                      }));
+                                    }
+                                  }}
+                                />
+                                <div>
+                                  <label
+                                    htmlFor={`edit_${permission.key}`}
+                                    className="text-sm font-medium text-gray-700 cursor-pointer"
+                                  >
+                                    {permission.label}
+                                  </label>
+                                  <p className="text-xs text-gray-500">
+                                    {permission.description}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Permission Summary for Edit */}
+            {formData.permissions.length > 0 &&
+              formData.role !== "super_admin" && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="font-medium text-blue-900 mb-2">
+                    Selected Permissions ({formData.permissions.length})
+                  </h4>
+                  <div className="flex flex-wrap gap-1">
+                    {formData.permissions.map((permission) => {
+                      const permissionInfo = Object.values(availablePermissions)
+                        .flat()
+                        .find((p) => p.key === permission);
+                      return (
+                        <span
+                          key={permission}
+                          className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded"
+                        >
+                          {permissionInfo?.label || permission}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
             <div className="flex justify-end space-x-2 pt-6 border-t">
               <Button
