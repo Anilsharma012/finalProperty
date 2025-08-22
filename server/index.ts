@@ -1214,6 +1214,49 @@ export function createServer() {
     updateConversationStatus,
   );
 
+  // Review routes
+  // Public review routes
+  app.get("/api/properties/:propertyId/reviews", getPropertyReviews);
+  app.get("/api/properties/:propertyId/reviews/stats", getPropertyReviewStats);
+
+  // Authenticated review routes
+  app.post(
+    "/api/reviews",
+    authenticateToken,
+    uploadReviewImages.array("images", 5),
+    createReview
+  );
+  app.put(
+    "/api/reviews/:reviewId",
+    authenticateToken,
+    uploadReviewImages.array("images", 5),
+    updateReview
+  );
+  app.delete("/api/reviews/:reviewId", authenticateToken, deleteReview);
+  app.post("/api/reviews/:reviewId/helpful", authenticateToken, markReviewHelpful);
+  app.get("/api/user/reviews", authenticateToken, getUserReviews);
+
+  // Admin review routes
+  app.get("/api/admin/reviews", authenticateToken, requireAdmin, getAllReviews);
+  app.put(
+    "/api/admin/reviews/:reviewId/status",
+    authenticateToken,
+    requireAdmin,
+    updateReviewStatus
+  );
+  app.post(
+    "/api/admin/reviews/:reviewId/reply",
+    authenticateToken,
+    requireAdmin,
+    replyToReview
+  );
+  app.delete(
+    "/api/admin/reviews/:reviewId/reply",
+    authenticateToken,
+    requireAdmin,
+    deleteAdminReply
+  );
+
   // Testimonials routes
   app.get("/api/testimonials", getPublicTestimonials);
   app.get(
