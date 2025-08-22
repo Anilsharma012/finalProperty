@@ -418,3 +418,57 @@ export const ROHTAK_AREAS = [
 ] as const;
 
 export type RohtakArea = (typeof ROHTAK_AREAS)[number];
+
+// Review System Types
+export interface Review {
+  _id?: string;
+  propertyId: string;
+  userId: string;
+  userName: string;
+  userType: "buyer" | "seller" | "agent" | "admin";
+  rating: number; // 1-5 stars
+  title: string;
+  comment: string;
+  images?: string[]; // Optional review images
+  verified: boolean; // Whether review is from verified user
+  status: "pending" | "approved" | "rejected";
+  adminReply?: {
+    message: string;
+    adminId: string;
+    adminName: string;
+    repliedAt: Date;
+  };
+  flagged: boolean; // If review is flagged for inappropriate content
+  flagReasons?: string[];
+  helpful: number; // Number of helpful votes
+  helpfulVotes: string[]; // User IDs who found it helpful
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ReviewStats {
+  totalReviews: number;
+  averageRating: number;
+  ratingDistribution: {
+    1: number;
+    2: number;
+    3: number;
+    4: number;
+    5: number;
+  };
+}
+
+export interface ReviewFilters {
+  rating?: number;
+  sortBy?: "newest" | "oldest" | "highest_rating" | "lowest_rating" | "most_helpful";
+  status?: "pending" | "approved" | "rejected";
+  flagged?: boolean;
+}
+
+export interface ReviewSubmission {
+  propertyId: string;
+  rating: number;
+  title: string;
+  comment: string;
+  images?: string[];
+}
