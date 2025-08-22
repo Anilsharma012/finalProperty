@@ -3,11 +3,21 @@ import { useAuth } from "../hooks/useAuth";
 import { useNavigate, Link } from "react-router-dom";
 import { api } from "../lib/api";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
 import { Badge } from "../components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -78,8 +88,21 @@ interface Lead {
   name: string;
   email: string;
   phone: string;
-  source: "website" | "referral" | "social" | "advertisement" | "coldcall" | "event";
-  status: "new" | "contacted" | "qualified" | "proposal" | "negotiation" | "closed" | "lost";
+  source:
+    | "website"
+    | "referral"
+    | "social"
+    | "advertisement"
+    | "coldcall"
+    | "event";
+  status:
+    | "new"
+    | "contacted"
+    | "qualified"
+    | "proposal"
+    | "negotiation"
+    | "closed"
+    | "lost";
   score: number; // 1-100
   assignedDate: string;
   lastContact: string;
@@ -127,11 +150,14 @@ export default function Leads() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [sourceFilter, setSourceFilter] = useState<string>("all");
   const [scoreFilter, setScoreFilter] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<"score" | "lastContact" | "nextFollowup" | "probability">("score");
+  const [sortBy, setSortBy] = useState<
+    "score" | "lastContact" | "nextFollowup" | "probability"
+  >("score");
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [showAddLeadDialog, setShowAddLeadDialog] = useState(false);
   const [showLeadDetails, setShowLeadDetails] = useState(false);
-  const [showAddInteractionDialog, setShowAddInteractionDialog] = useState(false);
+  const [showAddInteractionDialog, setShowAddInteractionDialog] =
+    useState(false);
 
   const [newLead, setNewLead] = useState({
     name: "",
@@ -218,14 +244,18 @@ export default function Leads() {
     const now = new Date();
     const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-    const newLeads = leads.filter(l => l.status === "new").length;
-    const hotLeads = leads.filter(l => l.score >= 80).length;
-    const converted = leads.filter(l => l.convertedToClient).length;
-    const avgScore = leads.length > 0 ? leads.reduce((sum, l) => sum + l.score, 0) / leads.length : 0;
-    const conversionRate = leads.length > 0 ? (converted / leads.length) * 100 : 0;
+    const newLeads = leads.filter((l) => l.status === "new").length;
+    const hotLeads = leads.filter((l) => l.score >= 80).length;
+    const converted = leads.filter((l) => l.convertedToClient).length;
+    const avgScore =
+      leads.length > 0
+        ? leads.reduce((sum, l) => sum + l.score, 0) / leads.length
+        : 0;
+    const conversionRate =
+      leads.length > 0 ? (converted / leads.length) * 100 : 0;
     const totalValue = leads.reduce((sum, l) => sum + l.estimatedValue, 0);
-    const thisWeekContacts = leads.filter(l => 
-      new Date(l.lastContact) >= weekAgo
+    const thisWeekContacts = leads.filter(
+      (l) => new Date(l.lastContact) >= weekAgo,
     ).length;
 
     setStats({
@@ -311,7 +341,11 @@ export default function Leads() {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const response = await api.post(`/agent/leads/${selectedLead._id}/interactions`, newInteraction, token);
+      const response = await api.post(
+        `/agent/leads/${selectedLead._id}/interactions`,
+        newInteraction,
+        token,
+      );
       if (response.data.success) {
         fetchLeads();
         setShowAddInteractionDialog(false);
@@ -347,33 +381,36 @@ export default function Leads() {
 
     // Apply search filter
     if (searchTerm) {
-      filtered = filtered.filter(lead =>
-        lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.phone.includes(searchTerm)
+      filtered = filtered.filter(
+        (lead) =>
+          lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          lead.phone.includes(searchTerm),
       );
     }
 
     // Apply status filter
     if (statusFilter !== "all") {
-      filtered = filtered.filter(lead => lead.status === statusFilter);
+      filtered = filtered.filter((lead) => lead.status === statusFilter);
     }
 
     // Apply source filter
     if (sourceFilter !== "all") {
-      filtered = filtered.filter(lead => lead.source === sourceFilter);
+      filtered = filtered.filter((lead) => lead.source === sourceFilter);
     }
 
     // Apply score filter
     switch (scoreFilter) {
       case "hot":
-        filtered = filtered.filter(lead => lead.score >= 80);
+        filtered = filtered.filter((lead) => lead.score >= 80);
         break;
       case "warm":
-        filtered = filtered.filter(lead => lead.score >= 50 && lead.score < 80);
+        filtered = filtered.filter(
+          (lead) => lead.score >= 50 && lead.score < 80,
+        );
         break;
       case "cold":
-        filtered = filtered.filter(lead => lead.score < 50);
+        filtered = filtered.filter((lead) => lead.score < 50);
         break;
     }
 
@@ -383,9 +420,15 @@ export default function Leads() {
         case "score":
           return b.score - a.score;
         case "lastContact":
-          return new Date(b.lastContact).getTime() - new Date(a.lastContact).getTime();
+          return (
+            new Date(b.lastContact).getTime() -
+            new Date(a.lastContact).getTime()
+          );
         case "nextFollowup":
-          return new Date(a.nextFollowup).getTime() - new Date(b.nextFollowup).getTime();
+          return (
+            new Date(a.nextFollowup).getTime() -
+            new Date(b.nextFollowup).getTime()
+          );
         case "probability":
           return b.probability - a.probability;
         default:
@@ -402,12 +445,16 @@ export default function Leads() {
       contacted: { color: "bg-yellow-100 text-yellow-800", label: "Contacted" },
       qualified: { color: "bg-purple-100 text-purple-800", label: "Qualified" },
       proposal: { color: "bg-orange-100 text-orange-800", label: "Proposal" },
-      negotiation: { color: "bg-indigo-100 text-indigo-800", label: "Negotiation" },
+      negotiation: {
+        color: "bg-indigo-100 text-indigo-800",
+        label: "Negotiation",
+      },
       closed: { color: "bg-green-100 text-green-800", label: "Closed" },
       lost: { color: "bg-red-100 text-red-800", label: "Lost" },
     };
 
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.new;
+    const config =
+      statusConfig[status as keyof typeof statusConfig] || statusConfig.new;
     return <Badge className={config.color}>{config.label}</Badge>;
   };
 
@@ -428,7 +475,9 @@ export default function Leads() {
       low: { color: "bg-green-100 text-green-800", label: "Low" },
     };
 
-    const config = urgencyConfig[urgency as keyof typeof urgencyConfig] || urgencyConfig.medium;
+    const config =
+      urgencyConfig[urgency as keyof typeof urgencyConfig] ||
+      urgencyConfig.medium;
     return <Badge className={config.color}>{config.label}</Badge>;
   };
 
@@ -486,14 +535,19 @@ export default function Leads() {
               <Target className="h-6 w-6" />
               <span>Lead Management</span>
             </h1>
-            <p className="text-gray-600">Track and nurture your potential clients</p>
+            <p className="text-gray-600">
+              Track and nurture your potential clients
+            </p>
           </div>
           <div className="flex items-center space-x-2">
             <Button onClick={fetchLeads} variant="outline">
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
             </Button>
-            <Button onClick={() => setShowAddLeadDialog(true)} className="bg-[#C70000] hover:bg-[#A60000]">
+            <Button
+              onClick={() => setShowAddLeadDialog(true)}
+              className="bg-[#C70000] hover:bg-[#A60000]"
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add Lead
             </Button>
@@ -504,42 +558,54 @@ export default function Leads() {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-6">
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-[#C70000]">{stats.totalLeads}</div>
+              <div className="text-2xl font-bold text-[#C70000]">
+                {stats.totalLeads}
+              </div>
               <div className="text-sm text-gray-600">Total Leads</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-blue-600">{stats.newLeads}</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {stats.newLeads}
+              </div>
               <div className="text-sm text-gray-600">New</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-red-600">{stats.hotLeads}</div>
+              <div className="text-2xl font-bold text-red-600">
+                {stats.hotLeads}
+              </div>
               <div className="text-sm text-gray-600">Hot Leads</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-green-600">{stats.converted}</div>
+              <div className="text-2xl font-bold text-green-600">
+                {stats.converted}
+              </div>
               <div className="text-sm text-gray-600">Converted</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-purple-600">{stats.avgScore}</div>
+              <div className="text-2xl font-bold text-purple-600">
+                {stats.avgScore}
+              </div>
               <div className="text-sm text-gray-600">Avg Score</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-orange-600">{stats.conversionRate}%</div>
+              <div className="text-2xl font-bold text-orange-600">
+                {stats.conversionRate}%
+              </div>
               <div className="text-sm text-gray-600">Conversion</div>
             </CardContent>
           </Card>
@@ -555,7 +621,9 @@ export default function Leads() {
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-teal-600">{stats.thisWeekContacts}</div>
+              <div className="text-2xl font-bold text-teal-600">
+                {stats.thisWeekContacts}
+              </div>
               <div className="text-sm text-gray-600">This Week</div>
             </CardContent>
           </Card>
@@ -647,16 +715,20 @@ export default function Leads() {
                   <div className="text-center py-12">
                     <Target className="mx-auto h-16 w-16 text-gray-400 mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">
-                      {leads.length === 0 ? "No leads yet" : "No leads match your filters"}
+                      {leads.length === 0
+                        ? "No leads yet"
+                        : "No leads match your filters"}
                     </h3>
                     <p className="text-gray-500 mb-6">
-                      {leads.length === 0 
+                      {leads.length === 0
                         ? "Start building your lead pipeline"
-                        : "Try adjusting your search criteria"
-                      }
+                        : "Try adjusting your search criteria"}
                     </p>
                     {leads.length === 0 && (
-                      <Button onClick={() => setShowAddLeadDialog(true)} className="bg-[#C70000] hover:bg-[#A60000]">
+                      <Button
+                        onClick={() => setShowAddLeadDialog(true)}
+                        className="bg-[#C70000] hover:bg-[#A60000]"
+                      >
                         <Plus className="h-4 w-4 mr-2" />
                         Add Your First Lead
                       </Button>
@@ -688,22 +760,30 @@ export default function Leads() {
                                   </span>
                                 </div>
                                 <div>
-                                  <div className="font-medium text-gray-900">{lead.name}</div>
-                                  <div className="text-sm text-gray-500">{lead.email}</div>
-                                  <div className="text-sm text-gray-500">{lead.phone}</div>
+                                  <div className="font-medium text-gray-900">
+                                    {lead.name}
+                                  </div>
+                                  <div className="text-sm text-gray-500">
+                                    {lead.email}
+                                  </div>
+                                  <div className="text-sm text-gray-500">
+                                    {lead.phone}
+                                  </div>
                                 </div>
                               </div>
                             </TableCell>
-                            
+
                             <TableCell>
                               <div className="flex items-center space-x-2">
-                                <div className="text-lg font-bold">{lead.score}</div>
+                                <div className="text-lg font-bold">
+                                  {lead.score}
+                                </div>
                                 {getScoreBadge(lead.score)}
                               </div>
                             </TableCell>
-                            
+
                             <TableCell>{getStatusBadge(lead.status)}</TableCell>
-                            
+
                             <TableCell>
                               <div className="space-y-1">
                                 <Badge variant="outline">
@@ -712,26 +792,32 @@ export default function Leads() {
                                 {getUrgencyBadge(lead.propertyInterest.urgency)}
                               </div>
                             </TableCell>
-                            
+
                             <TableCell>
                               <div className="text-sm">
-                                ₹{lead.propertyInterest.priceRange.min.toLocaleString()} - 
-                                ₹{lead.propertyInterest.priceRange.max.toLocaleString()}
+                                ₹
+                                {lead.propertyInterest.priceRange.min.toLocaleString()}{" "}
+                                - ₹
+                                {lead.propertyInterest.priceRange.max.toLocaleString()}
                               </div>
                             </TableCell>
-                            
+
                             <TableCell>
                               <div className="text-sm text-gray-500">
-                                {new Date(lead.lastContact).toLocaleDateString()}
+                                {new Date(
+                                  lead.lastContact,
+                                ).toLocaleDateString()}
                               </div>
                             </TableCell>
-                            
+
                             <TableCell>
                               <div className="text-sm text-gray-500">
-                                {new Date(lead.nextFollowup).toLocaleDateString()}
+                                {new Date(
+                                  lead.nextFollowup,
+                                ).toLocaleDateString()}
                               </div>
                             </TableCell>
-                            
+
                             <TableCell>
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -749,7 +835,7 @@ export default function Leads() {
                                     <Eye className="h-4 w-4 mr-2" />
                                     View Details
                                   </DropdownMenuItem>
-                                  
+
                                   <DropdownMenuItem
                                     onClick={() => {
                                       setSelectedLead(lead);
@@ -759,25 +845,30 @@ export default function Leads() {
                                     <MessageSquare className="h-4 w-4 mr-2" />
                                     Add Interaction
                                   </DropdownMenuItem>
-                                  
+
                                   <DropdownMenuItem>
                                     <Phone className="h-4 w-4 mr-2" />
                                     Call Lead
                                   </DropdownMenuItem>
-                                  
+
                                   <DropdownMenuItem>
                                     <Mail className="h-4 w-4 mr-2" />
                                     Send Email
                                   </DropdownMenuItem>
-                                  
+
                                   {!lead.convertedToClient && (
-                                    <DropdownMenuItem onClick={() => convertToClient(lead._id)}>
+                                    <DropdownMenuItem
+                                      onClick={() => convertToClient(lead._id)}
+                                    >
                                       <UserPlus className="h-4 w-4 mr-2" />
                                       Convert to Client
                                     </DropdownMenuItem>
                                   )}
-                                  
-                                  <DropdownMenuItem onClick={() => deleteLead(lead._id)} className="text-red-600">
+
+                                  <DropdownMenuItem
+                                    onClick={() => deleteLead(lead._id)}
+                                    className="text-red-600"
+                                  >
                                     <Trash2 className="h-4 w-4 mr-2" />
                                     Delete Lead
                                   </DropdownMenuItem>
@@ -803,17 +894,26 @@ export default function Leads() {
                 {leadSources.length === 0 ? (
                   <div className="text-center py-8">
                     <TrendingUp className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <p className="text-gray-500">No lead source data available</p>
+                    <p className="text-gray-500">
+                      No lead source data available
+                    </p>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {leadSources.map((source, index) => (
-                      <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-4 border rounded-lg"
+                      >
                         <div>
-                          <h3 className="font-medium capitalize">{source.source}</h3>
+                          <h3 className="font-medium capitalize">
+                            {source.source}
+                          </h3>
                           <div className="flex items-center space-x-4 text-sm text-gray-500">
                             <span>{source.count} leads</span>
-                            <span>{source.conversionRate.toFixed(1)}% conversion</span>
+                            <span>
+                              {source.conversionRate.toFixed(1)}% conversion
+                            </span>
                           </div>
                         </div>
                         <div className="text-right">
@@ -834,30 +934,40 @@ export default function Leads() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-center">Pipeline Overview</CardTitle>
+                  <CardTitle className="text-center">
+                    Pipeline Overview
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
                       <span>New</span>
-                      <Badge>{leads.filter(l => l.status === "new").length}</Badge>
+                      <Badge>
+                        {leads.filter((l) => l.status === "new").length}
+                      </Badge>
                     </div>
                     <div className="flex justify-between items-center">
                       <span>Qualified</span>
-                      <Badge>{leads.filter(l => l.status === "qualified").length}</Badge>
+                      <Badge>
+                        {leads.filter((l) => l.status === "qualified").length}
+                      </Badge>
                     </div>
                     <div className="flex justify-between items-center">
                       <span>Proposal</span>
-                      <Badge>{leads.filter(l => l.status === "proposal").length}</Badge>
+                      <Badge>
+                        {leads.filter((l) => l.status === "proposal").length}
+                      </Badge>
                     </div>
                     <div className="flex justify-between items-center">
                       <span>Negotiation</span>
-                      <Badge>{leads.filter(l => l.status === "negotiation").length}</Badge>
+                      <Badge>
+                        {leads.filter((l) => l.status === "negotiation").length}
+                      </Badge>
                     </div>
                     <div className="flex justify-between items-center">
                       <span>Closed</span>
                       <Badge className="bg-green-100 text-green-800">
-                        {leads.filter(l => l.status === "closed").length}
+                        {leads.filter((l) => l.status === "closed").length}
                       </Badge>
                     </div>
                   </div>
@@ -872,15 +982,27 @@ export default function Leads() {
                   <div className="text-center space-y-4">
                     <div>
                       <div className="text-2xl font-bold text-[#C70000]">
-                        {leads.filter(l => new Date(l.assignedDate).getMonth() === new Date().getMonth()).length}
+                        {
+                          leads.filter(
+                            (l) =>
+                              new Date(l.assignedDate).getMonth() ===
+                              new Date().getMonth(),
+                          ).length
+                        }
                       </div>
                       <div className="text-sm text-gray-500">New Leads</div>
                     </div>
                     <div>
                       <div className="text-2xl font-bold text-green-600">
-                        {leads.filter(l => l.convertedToClient && 
-                          l.conversionDate && 
-                          new Date(l.conversionDate).getMonth() === new Date().getMonth()).length}
+                        {
+                          leads.filter(
+                            (l) =>
+                              l.convertedToClient &&
+                              l.conversionDate &&
+                              new Date(l.conversionDate).getMonth() ===
+                                new Date().getMonth(),
+                          ).length
+                        }
                       </div>
                       <div className="text-sm text-gray-500">Conversions</div>
                     </div>
@@ -895,12 +1017,20 @@ export default function Leads() {
                 <CardContent>
                   <div className="text-center space-y-4">
                     <div>
-                      <div className="text-2xl font-bold text-purple-600">{stats.avgScore}</div>
-                      <div className="text-sm text-gray-500">Avg Lead Score</div>
+                      <div className="text-2xl font-bold text-purple-600">
+                        {stats.avgScore}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        Avg Lead Score
+                      </div>
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-orange-600">{stats.conversionRate}%</div>
-                      <div className="text-sm text-gray-500">Conversion Rate</div>
+                      <div className="text-2xl font-bold text-orange-600">
+                        {stats.conversionRate}%
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        Conversion Rate
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -915,42 +1045,50 @@ export default function Leads() {
             <DialogHeader>
               <DialogTitle>Add New Lead</DialogTitle>
             </DialogHeader>
-            
+
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium">Full Name</label>
                   <Input
                     value={newLead.name}
-                    onChange={(e) => setNewLead(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) =>
+                      setNewLead((prev) => ({ ...prev, name: e.target.value }))
+                    }
                     placeholder="Enter full name"
                   />
                 </div>
-                
+
                 <div>
                   <label className="text-sm font-medium">Email</label>
                   <Input
                     type="email"
                     value={newLead.email}
-                    onChange={(e) => setNewLead(prev => ({ ...prev, email: e.target.value }))}
+                    onChange={(e) =>
+                      setNewLead((prev) => ({ ...prev, email: e.target.value }))
+                    }
                     placeholder="Enter email address"
                   />
                 </div>
-                
+
                 <div>
                   <label className="text-sm font-medium">Phone</label>
                   <Input
                     value={newLead.phone}
-                    onChange={(e) => setNewLead(prev => ({ ...prev, phone: e.target.value }))}
+                    onChange={(e) =>
+                      setNewLead((prev) => ({ ...prev, phone: e.target.value }))
+                    }
                     placeholder="Enter phone number"
                   />
                 </div>
-                
+
                 <div>
                   <label className="text-sm font-medium">Source</label>
                   <Select
                     value={newLead.source}
-                    onValueChange={(value: any) => setNewLead(prev => ({ ...prev, source: value }))}
+                    onValueChange={(value: any) =>
+                      setNewLead((prev) => ({ ...prev, source: value }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -959,21 +1097,28 @@ export default function Leads() {
                       <SelectItem value="website">Website</SelectItem>
                       <SelectItem value="referral">Referral</SelectItem>
                       <SelectItem value="social">Social Media</SelectItem>
-                      <SelectItem value="advertisement">Advertisement</SelectItem>
+                      <SelectItem value="advertisement">
+                        Advertisement
+                      </SelectItem>
                       <SelectItem value="coldcall">Cold Call</SelectItem>
                       <SelectItem value="event">Event</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div>
                   <label className="text-sm font-medium">Interest Type</label>
                   <Select
                     value={newLead.propertyInterest.type}
-                    onValueChange={(value: any) => setNewLead(prev => ({ 
-                      ...prev, 
-                      propertyInterest: { ...prev.propertyInterest, type: value }
-                    }))}
+                    onValueChange={(value: any) =>
+                      setNewLead((prev) => ({
+                        ...prev,
+                        propertyInterest: {
+                          ...prev.propertyInterest,
+                          type: value,
+                        },
+                      }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -985,15 +1130,20 @@ export default function Leads() {
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div>
                   <label className="text-sm font-medium">Urgency</label>
                   <Select
                     value={newLead.propertyInterest.urgency}
-                    onValueChange={(value: any) => setNewLead(prev => ({ 
-                      ...prev, 
-                      propertyInterest: { ...prev.propertyInterest, urgency: value }
-                    }))}
+                    onValueChange={(value: any) =>
+                      setNewLead((prev) => ({
+                        ...prev,
+                        propertyInterest: {
+                          ...prev.propertyInterest,
+                          urgency: value,
+                        },
+                      }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -1005,61 +1155,74 @@ export default function Leads() {
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div>
                   <label className="text-sm font-medium">Min Budget</label>
                   <Input
                     type="number"
                     value={newLead.propertyInterest.priceRange.min}
-                    onChange={(e) => setNewLead(prev => ({ 
-                      ...prev, 
-                      propertyInterest: { 
-                        ...prev.propertyInterest, 
-                        priceRange: { 
-                          ...prev.propertyInterest.priceRange, 
-                          min: parseInt(e.target.value) || 0 
-                        }
-                      }
-                    }))}
+                    onChange={(e) =>
+                      setNewLead((prev) => ({
+                        ...prev,
+                        propertyInterest: {
+                          ...prev.propertyInterest,
+                          priceRange: {
+                            ...prev.propertyInterest.priceRange,
+                            min: parseInt(e.target.value) || 0,
+                          },
+                        },
+                      }))
+                    }
                     placeholder="Minimum budget"
                   />
                 </div>
-                
+
                 <div>
                   <label className="text-sm font-medium">Max Budget</label>
                   <Input
                     type="number"
                     value={newLead.propertyInterest.priceRange.max}
-                    onChange={(e) => setNewLead(prev => ({ 
-                      ...prev, 
-                      propertyInterest: { 
-                        ...prev.propertyInterest, 
-                        priceRange: { 
-                          ...prev.propertyInterest.priceRange, 
-                          max: parseInt(e.target.value) || 0 
-                        }
-                      }
-                    }))}
+                    onChange={(e) =>
+                      setNewLead((prev) => ({
+                        ...prev,
+                        propertyInterest: {
+                          ...prev.propertyInterest,
+                          priceRange: {
+                            ...prev.propertyInterest.priceRange,
+                            max: parseInt(e.target.value) || 0,
+                          },
+                        },
+                      }))
+                    }
                     placeholder="Maximum budget"
                   />
                 </div>
               </div>
-              
+
               <div>
                 <label className="text-sm font-medium">Notes</label>
                 <Textarea
                   value={newLead.notes}
-                  onChange={(e) => setNewLead(prev => ({ ...prev, notes: e.target.value }))}
+                  onChange={(e) =>
+                    setNewLead((prev) => ({ ...prev, notes: e.target.value }))
+                  }
                   placeholder="Add any notes about the lead..."
                   rows={3}
                 />
               </div>
-              
+
               <div className="flex space-x-2">
-                <Button onClick={addLead} className="flex-1 bg-[#C70000] hover:bg-[#A60000]">
+                <Button
+                  onClick={addLead}
+                  className="flex-1 bg-[#C70000] hover:bg-[#A60000]"
+                >
                   Add Lead
                 </Button>
-                <Button onClick={() => setShowAddLeadDialog(false)} variant="outline" className="flex-1">
+                <Button
+                  onClick={() => setShowAddLeadDialog(false)}
+                  variant="outline"
+                  className="flex-1"
+                >
                   Cancel
                 </Button>
               </div>
@@ -1073,7 +1236,7 @@ export default function Leads() {
             <DialogHeader>
               <DialogTitle>Lead Details</DialogTitle>
             </DialogHeader>
-            
+
             {selectedLead && (
               <Tabs defaultValue="overview" className="w-full">
                 <TabsList className="grid w-full grid-cols-3">
@@ -1081,12 +1244,14 @@ export default function Leads() {
                   <TabsTrigger value="interactions">Interactions</TabsTrigger>
                   <TabsTrigger value="scoring">Scoring</TabsTrigger>
                 </TabsList>
-                
+
                 <TabsContent value="overview" className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Card>
                       <CardHeader>
-                        <CardTitle className="text-sm">Contact Information</CardTitle>
+                        <CardTitle className="text-sm">
+                          Contact Information
+                        </CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-2">
                         <div className="flex items-center space-x-2">
@@ -1103,7 +1268,7 @@ export default function Leads() {
                         </div>
                       </CardContent>
                     </Card>
-                    
+
                     <Card>
                       <CardHeader>
                         <CardTitle className="text-sm">Lead Details</CardTitle>
@@ -1116,7 +1281,9 @@ export default function Leads() {
                         <div className="flex justify-between">
                           <span>Score:</span>
                           <div className="flex items-center space-x-2">
-                            <span className="font-bold">{selectedLead.score}</span>
+                            <span className="font-bold">
+                              {selectedLead.score}
+                            </span>
                             {getScoreBadge(selectedLead.score)}
                           </div>
                         </div>
@@ -1127,19 +1294,28 @@ export default function Leads() {
                       </CardContent>
                     </Card>
                   </div>
-                  
+
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-sm">Property Interest</CardTitle>
+                      <CardTitle className="text-sm">
+                        Property Interest
+                      </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-2">
                       <div className="flex justify-between">
                         <span>Type:</span>
-                        <Badge variant="outline">{selectedLead.propertyInterest.type.toUpperCase()}</Badge>
+                        <Badge variant="outline">
+                          {selectedLead.propertyInterest.type.toUpperCase()}
+                        </Badge>
                       </div>
                       <div className="flex justify-between">
                         <span>Budget:</span>
-                        <span>₹{selectedLead.propertyInterest.priceRange.min.toLocaleString()} - ₹{selectedLead.propertyInterest.priceRange.max.toLocaleString()}</span>
+                        <span>
+                          ₹
+                          {selectedLead.propertyInterest.priceRange.min.toLocaleString()}{" "}
+                          - ₹
+                          {selectedLead.propertyInterest.priceRange.max.toLocaleString()}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span>Urgency:</span>
@@ -1147,19 +1323,21 @@ export default function Leads() {
                       </div>
                     </CardContent>
                   </Card>
-                  
+
                   {selectedLead.notes && (
                     <Card>
                       <CardHeader>
                         <CardTitle className="text-sm">Notes</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-sm text-gray-600">{selectedLead.notes}</p>
+                        <p className="text-sm text-gray-600">
+                          {selectedLead.notes}
+                        </p>
                       </CardContent>
                     </Card>
                   )}
                 </TabsContent>
-                
+
                 <TabsContent value="interactions" className="space-y-4">
                   <div className="flex justify-between items-center">
                     <h3 className="font-medium">Interaction History</h3>
@@ -1172,7 +1350,7 @@ export default function Leads() {
                       Add Interaction
                     </Button>
                   </div>
-                  
+
                   <div className="space-y-3">
                     {selectedLead.interactions?.map((interaction) => (
                       <Card key={interaction._id}>
@@ -1182,7 +1360,9 @@ export default function Leads() {
                               {getInteractionIcon(interaction.type)}
                               <div>
                                 <div className="flex items-center space-x-2">
-                                  <span className="font-medium capitalize">{interaction.type}</span>
+                                  <span className="font-medium capitalize">
+                                    {interaction.type}
+                                  </span>
                                   <Badge
                                     className={
                                       interaction.outcome === "positive"
@@ -1196,12 +1376,18 @@ export default function Leads() {
                                   </Badge>
                                   {interaction.scoreChange !== 0 && (
                                     <div className="flex items-center space-x-1">
-                                      {getScoreChangeIcon(interaction.scoreChange)}
-                                      <span className="text-sm">{Math.abs(interaction.scoreChange)}</span>
+                                      {getScoreChangeIcon(
+                                        interaction.scoreChange,
+                                      )}
+                                      <span className="text-sm">
+                                        {Math.abs(interaction.scoreChange)}
+                                      </span>
                                     </div>
                                   )}
                                 </div>
-                                <p className="text-sm text-gray-600 mt-1">{interaction.description}</p>
+                                <p className="text-sm text-gray-600 mt-1">
+                                  {interaction.description}
+                                </p>
                                 {interaction.nextAction && (
                                   <p className="text-sm text-blue-600 mt-1">
                                     Next: {interaction.nextAction}
@@ -1218,7 +1404,7 @@ export default function Leads() {
                     ))}
                   </div>
                 </TabsContent>
-                
+
                 <TabsContent value="scoring" className="space-y-4">
                   <Card>
                     <CardHeader>
@@ -1229,45 +1415,59 @@ export default function Leads() {
                         <div className="flex justify-between items-center">
                           <span>Current Score:</span>
                           <div className="flex items-center space-x-2">
-                            <span className="text-2xl font-bold">{selectedLead.score}</span>
+                            <span className="text-2xl font-bold">
+                              {selectedLead.score}
+                            </span>
                             {getScoreBadge(selectedLead.score)}
                           </div>
                         </div>
                         <div className="flex justify-between items-center">
                           <span>Probability:</span>
-                          <span className="font-bold">{selectedLead.probability}%</span>
+                          <span className="font-bold">
+                            {selectedLead.probability}%
+                          </span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span>Estimated Value:</span>
-                          <span className="font-bold text-[#C70000]">₹{selectedLead.estimatedValue.toLocaleString()}</span>
+                          <span className="font-bold text-[#C70000]">
+                            ₹{selectedLead.estimatedValue.toLocaleString()}
+                          </span>
                         </div>
-                        
+
                         <div className="space-y-2">
                           <h4 className="font-medium">Adjust Score</h4>
                           <div className="flex space-x-2">
                             <Button
-                              onClick={() => updateLeadScore(selectedLead._id, 10)}
+                              onClick={() =>
+                                updateLeadScore(selectedLead._id, 10)
+                              }
                               size="sm"
                               variant="outline"
                             >
                               +10
                             </Button>
                             <Button
-                              onClick={() => updateLeadScore(selectedLead._id, 5)}
+                              onClick={() =>
+                                updateLeadScore(selectedLead._id, 5)
+                              }
                               size="sm"
                               variant="outline"
                             >
                               +5
                             </Button>
                             <Button
-                              onClick={() => updateLeadScore(selectedLead._id, -5)}
+                              onClick={() =>
+                                updateLeadScore(selectedLead._id, -5)
+                              }
                               size="sm"
                               variant="outline"
                             >
                               -5
                             </Button>
                             <Button
-                              onClick={() => updateLeadScore(selectedLead._id, -10)}
+                              onClick={() =>
+                                updateLeadScore(selectedLead._id, -10)
+                              }
                               size="sm"
                               variant="outline"
                             >
@@ -1285,18 +1485,23 @@ export default function Leads() {
         </Dialog>
 
         {/* Add Interaction Dialog */}
-        <Dialog open={showAddInteractionDialog} onOpenChange={setShowAddInteractionDialog}>
+        <Dialog
+          open={showAddInteractionDialog}
+          onOpenChange={setShowAddInteractionDialog}
+        >
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Add Interaction</DialogTitle>
             </DialogHeader>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="text-sm font-medium">Interaction Type</label>
                 <Select
                   value={newInteraction.type}
-                  onValueChange={(value: any) => setNewInteraction(prev => ({ ...prev, type: value }))}
+                  onValueChange={(value: any) =>
+                    setNewInteraction((prev) => ({ ...prev, type: value }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -1310,22 +1515,29 @@ export default function Leads() {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div>
                 <label className="text-sm font-medium">Description</label>
                 <Textarea
                   value={newInteraction.description}
-                  onChange={(e) => setNewInteraction(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) =>
+                    setNewInteraction((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
                   placeholder="Describe the interaction..."
                   rows={3}
                 />
               </div>
-              
+
               <div>
                 <label className="text-sm font-medium">Outcome</label>
                 <Select
                   value={newInteraction.outcome}
-                  onValueChange={(value: any) => setNewInteraction(prev => ({ ...prev, outcome: value }))}
+                  onValueChange={(value: any) =>
+                    setNewInteraction((prev) => ({ ...prev, outcome: value }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -1337,33 +1549,50 @@ export default function Leads() {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div>
                 <label className="text-sm font-medium">Score Change</label>
                 <Input
                   type="number"
                   value={newInteraction.scoreChange}
-                  onChange={(e) => setNewInteraction(prev => ({ ...prev, scoreChange: parseInt(e.target.value) || 0 }))}
+                  onChange={(e) =>
+                    setNewInteraction((prev) => ({
+                      ...prev,
+                      scoreChange: parseInt(e.target.value) || 0,
+                    }))
+                  }
                   placeholder="Score change (-20 to +20)"
                   min="-20"
                   max="20"
                 />
               </div>
-              
+
               <div>
                 <label className="text-sm font-medium">Next Action</label>
                 <Input
                   value={newInteraction.nextAction}
-                  onChange={(e) => setNewInteraction(prev => ({ ...prev, nextAction: e.target.value }))}
+                  onChange={(e) =>
+                    setNewInteraction((prev) => ({
+                      ...prev,
+                      nextAction: e.target.value,
+                    }))
+                  }
                   placeholder="What's the next step?"
                 />
               </div>
-              
+
               <div className="flex space-x-2">
-                <Button onClick={addInteraction} className="flex-1 bg-[#C70000] hover:bg-[#A60000]">
+                <Button
+                  onClick={addInteraction}
+                  className="flex-1 bg-[#C70000] hover:bg-[#A60000]"
+                >
                   Add Interaction
                 </Button>
-                <Button onClick={() => setShowAddInteractionDialog(false)} variant="outline" className="flex-1">
+                <Button
+                  onClick={() => setShowAddInteractionDialog(false)}
+                  variant="outline"
+                  className="flex-1"
+                >
                   Cancel
                 </Button>
               </div>

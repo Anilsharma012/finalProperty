@@ -3,13 +3,23 @@ import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
 import { Switch } from "../components/ui/switch";
 import { Badge } from "../components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -115,16 +125,17 @@ export default function Settings() {
     confirmPassword: "",
   });
 
-  const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>({
-    emailNotifications: true,
-    pushNotifications: true,
-    smsNotifications: false,
-    propertyAlerts: true,
-    priceDropAlerts: false,
-    newListingAlerts: true,
-    messageNotifications: true,
-    marketingEmails: false,
-  });
+  const [notificationSettings, setNotificationSettings] =
+    useState<NotificationSettings>({
+      emailNotifications: true,
+      pushNotifications: true,
+      smsNotifications: false,
+      propertyAlerts: true,
+      priceDropAlerts: false,
+      newListingAlerts: true,
+      messageNotifications: true,
+      marketingEmails: false,
+    });
 
   const [privacySettings, setPrivacySettings] = useState<PrivacySettings>({
     profileVisibility: "public",
@@ -156,9 +167,12 @@ export default function Settings() {
       const response = await api.get("/user/settings", token);
       if (response.data.success) {
         const settings = response.data.data;
-        setProfileData(prev => ({ ...prev, ...settings.profile }));
-        setNotificationSettings(prev => ({ ...prev, ...settings.notifications }));
-        setPrivacySettings(prev => ({ ...prev, ...settings.privacy }));
+        setProfileData((prev) => ({ ...prev, ...settings.profile }));
+        setNotificationSettings((prev) => ({
+          ...prev,
+          ...settings.notifications,
+        }));
+        setPrivacySettings((prev) => ({ ...prev, ...settings.privacy }));
         setTheme(settings.theme || "system");
         setLanguage(settings.language || "en");
       }
@@ -204,10 +218,14 @@ export default function Settings() {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const response = await api.put("/user/change-password", {
-        currentPassword: passwordData.currentPassword,
-        newPassword: passwordData.newPassword,
-      }, token);
+      const response = await api.put(
+        "/user/change-password",
+        {
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword,
+        },
+        token,
+      );
 
       if (response.data.success) {
         setMessage("Password changed successfully!");
@@ -220,7 +238,9 @@ export default function Settings() {
       }
     } catch (error: any) {
       console.error("Error changing password:", error);
-      setError("Failed to change password. Please check your current password.");
+      setError(
+        "Failed to change password. Please check your current password.",
+      );
     } finally {
       setSaving(false);
     }
@@ -232,7 +252,11 @@ export default function Settings() {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      await api.put("/user/notifications-settings", notificationSettings, token);
+      await api.put(
+        "/user/notifications-settings",
+        notificationSettings,
+        token,
+      );
       setMessage("Notification settings updated successfully!");
       setError("");
     } catch (error) {
@@ -282,7 +306,11 @@ export default function Settings() {
   };
 
   const deleteAccount = async () => {
-    if (!confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+    if (
+      !confirm(
+        "Are you sure you want to delete your account? This action cannot be undone.",
+      )
+    ) {
       return;
     }
 
@@ -426,7 +454,10 @@ export default function Settings() {
                       id="name"
                       value={profileData.name}
                       onChange={(e) =>
-                        setProfileData(prev => ({ ...prev, name: e.target.value }))
+                        setProfileData((prev) => ({
+                          ...prev,
+                          name: e.target.value,
+                        }))
                       }
                     />
                   </div>
@@ -437,7 +468,10 @@ export default function Settings() {
                       type="email"
                       value={profileData.email}
                       onChange={(e) =>
-                        setProfileData(prev => ({ ...prev, email: e.target.value }))
+                        setProfileData((prev) => ({
+                          ...prev,
+                          email: e.target.value,
+                        }))
                       }
                     />
                   </div>
@@ -447,7 +481,10 @@ export default function Settings() {
                       id="phone"
                       value={profileData.phone}
                       onChange={(e) =>
-                        setProfileData(prev => ({ ...prev, phone: e.target.value }))
+                        setProfileData((prev) => ({
+                          ...prev,
+                          phone: e.target.value,
+                        }))
                       }
                     />
                   </div>
@@ -457,7 +494,10 @@ export default function Settings() {
                       id="location"
                       value={profileData.location}
                       onChange={(e) =>
-                        setProfileData(prev => ({ ...prev, location: e.target.value }))
+                        setProfileData((prev) => ({
+                          ...prev,
+                          location: e.target.value,
+                        }))
                       }
                       placeholder="City, State"
                     />
@@ -468,7 +508,10 @@ export default function Settings() {
                       id="company"
                       value={profileData.company}
                       onChange={(e) =>
-                        setProfileData(prev => ({ ...prev, company: e.target.value }))
+                        setProfileData((prev) => ({
+                          ...prev,
+                          company: e.target.value,
+                        }))
                       }
                     />
                   </div>
@@ -478,7 +521,10 @@ export default function Settings() {
                       id="designation"
                       value={profileData.designation}
                       onChange={(e) =>
-                        setProfileData(prev => ({ ...prev, designation: e.target.value }))
+                        setProfileData((prev) => ({
+                          ...prev,
+                          designation: e.target.value,
+                        }))
                       }
                     />
                   </div>
@@ -488,7 +534,10 @@ export default function Settings() {
                       id="website"
                       value={profileData.website}
                       onChange={(e) =>
-                        setProfileData(prev => ({ ...prev, website: e.target.value }))
+                        setProfileData((prev) => ({
+                          ...prev,
+                          website: e.target.value,
+                        }))
                       }
                       placeholder="https://yourwebsite.com"
                     />
@@ -499,7 +548,10 @@ export default function Settings() {
                       id="bio"
                       value={profileData.bio}
                       onChange={(e) =>
-                        setProfileData(prev => ({ ...prev, bio: e.target.value }))
+                        setProfileData((prev) => ({
+                          ...prev,
+                          bio: e.target.value,
+                        }))
                       }
                       placeholder="Tell us about yourself..."
                       rows={3}
@@ -538,7 +590,10 @@ export default function Settings() {
                       type={showCurrentPassword ? "text" : "password"}
                       value={passwordData.currentPassword}
                       onChange={(e) =>
-                        setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))
+                        setPasswordData((prev) => ({
+                          ...prev,
+                          currentPassword: e.target.value,
+                        }))
                       }
                     />
                     <Button
@@ -546,7 +601,9 @@ export default function Settings() {
                       variant="ghost"
                       size="sm"
                       className="absolute right-0 top-0 h-full px-3"
-                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                      onClick={() =>
+                        setShowCurrentPassword(!showCurrentPassword)
+                      }
                     >
                       {showCurrentPassword ? (
                         <EyeOff className="h-4 w-4" />
@@ -564,7 +621,10 @@ export default function Settings() {
                       type={showNewPassword ? "text" : "password"}
                       value={passwordData.newPassword}
                       onChange={(e) =>
-                        setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))
+                        setPasswordData((prev) => ({
+                          ...prev,
+                          newPassword: e.target.value,
+                        }))
                       }
                     />
                     <Button
@@ -589,7 +649,10 @@ export default function Settings() {
                     type="password"
                     value={passwordData.confirmPassword}
                     onChange={(e) =>
-                      setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))
+                      setPasswordData((prev) => ({
+                        ...prev,
+                        confirmPassword: e.target.value,
+                      }))
                     }
                   />
                 </div>
@@ -638,7 +701,9 @@ export default function Settings() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label htmlFor="emailNotifications">Email Notifications</Label>
+                      <Label htmlFor="emailNotifications">
+                        Email Notifications
+                      </Label>
                       <p className="text-sm text-gray-500">
                         Receive notifications via email
                       </p>
@@ -647,14 +712,19 @@ export default function Settings() {
                       id="emailNotifications"
                       checked={notificationSettings.emailNotifications}
                       onCheckedChange={(checked) =>
-                        setNotificationSettings(prev => ({ ...prev, emailNotifications: checked }))
+                        setNotificationSettings((prev) => ({
+                          ...prev,
+                          emailNotifications: checked,
+                        }))
                       }
                     />
                   </div>
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label htmlFor="pushNotifications">Push Notifications</Label>
+                      <Label htmlFor="pushNotifications">
+                        Push Notifications
+                      </Label>
                       <p className="text-sm text-gray-500">
                         Receive push notifications in browser
                       </p>
@@ -663,14 +733,19 @@ export default function Settings() {
                       id="pushNotifications"
                       checked={notificationSettings.pushNotifications}
                       onCheckedChange={(checked) =>
-                        setNotificationSettings(prev => ({ ...prev, pushNotifications: checked }))
+                        setNotificationSettings((prev) => ({
+                          ...prev,
+                          pushNotifications: checked,
+                        }))
                       }
                     />
                   </div>
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label htmlFor="smsNotifications">SMS Notifications</Label>
+                      <Label htmlFor="smsNotifications">
+                        SMS Notifications
+                      </Label>
                       <p className="text-sm text-gray-500">
                         Receive notifications via SMS
                       </p>
@@ -679,7 +754,10 @@ export default function Settings() {
                       id="smsNotifications"
                       checked={notificationSettings.smsNotifications}
                       onCheckedChange={(checked) =>
-                        setNotificationSettings(prev => ({ ...prev, smsNotifications: checked }))
+                        setNotificationSettings((prev) => ({
+                          ...prev,
+                          smsNotifications: checked,
+                        }))
                       }
                     />
                   </div>
@@ -695,7 +773,10 @@ export default function Settings() {
                       id="propertyAlerts"
                       checked={notificationSettings.propertyAlerts}
                       onCheckedChange={(checked) =>
-                        setNotificationSettings(prev => ({ ...prev, propertyAlerts: checked }))
+                        setNotificationSettings((prev) => ({
+                          ...prev,
+                          propertyAlerts: checked,
+                        }))
                       }
                     />
                   </div>
@@ -711,14 +792,19 @@ export default function Settings() {
                       id="priceDropAlerts"
                       checked={notificationSettings.priceDropAlerts}
                       onCheckedChange={(checked) =>
-                        setNotificationSettings(prev => ({ ...prev, priceDropAlerts: checked }))
+                        setNotificationSettings((prev) => ({
+                          ...prev,
+                          priceDropAlerts: checked,
+                        }))
                       }
                     />
                   </div>
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label htmlFor="messageNotifications">Message Notifications</Label>
+                      <Label htmlFor="messageNotifications">
+                        Message Notifications
+                      </Label>
                       <p className="text-sm text-gray-500">
                         Get notified about new messages
                       </p>
@@ -727,7 +813,10 @@ export default function Settings() {
                       id="messageNotifications"
                       checked={notificationSettings.messageNotifications}
                       onCheckedChange={(checked) =>
-                        setNotificationSettings(prev => ({ ...prev, messageNotifications: checked }))
+                        setNotificationSettings((prev) => ({
+                          ...prev,
+                          messageNotifications: checked,
+                        }))
                       }
                     />
                   </div>
@@ -743,7 +832,10 @@ export default function Settings() {
                       id="marketingEmails"
                       checked={notificationSettings.marketingEmails}
                       onCheckedChange={(checked) =>
-                        setNotificationSettings(prev => ({ ...prev, marketingEmails: checked }))
+                        setNotificationSettings((prev) => ({
+                          ...prev,
+                          marketingEmails: checked,
+                        }))
                       }
                     />
                   </div>
@@ -777,7 +869,10 @@ export default function Settings() {
                   <Select
                     value={privacySettings.profileVisibility}
                     onValueChange={(value: any) =>
-                      setPrivacySettings(prev => ({ ...prev, profileVisibility: value }))
+                      setPrivacySettings((prev) => ({
+                        ...prev,
+                        profileVisibility: value,
+                      }))
                     }
                   >
                     <SelectTrigger>
@@ -803,7 +898,10 @@ export default function Settings() {
                       id="showEmail"
                       checked={privacySettings.showEmail}
                       onCheckedChange={(checked) =>
-                        setPrivacySettings(prev => ({ ...prev, showEmail: checked }))
+                        setPrivacySettings((prev) => ({
+                          ...prev,
+                          showEmail: checked,
+                        }))
                       }
                     />
                   </div>
@@ -819,7 +917,10 @@ export default function Settings() {
                       id="showPhone"
                       checked={privacySettings.showPhone}
                       onCheckedChange={(checked) =>
-                        setPrivacySettings(prev => ({ ...prev, showPhone: checked }))
+                        setPrivacySettings((prev) => ({
+                          ...prev,
+                          showPhone: checked,
+                        }))
                       }
                     />
                   </div>
@@ -835,7 +936,10 @@ export default function Settings() {
                       id="allowMessages"
                       checked={privacySettings.allowMessages}
                       onCheckedChange={(checked) =>
-                        setPrivacySettings(prev => ({ ...prev, allowMessages: checked }))
+                        setPrivacySettings((prev) => ({
+                          ...prev,
+                          allowMessages: checked,
+                        }))
                       }
                     />
                   </div>
@@ -851,7 +955,10 @@ export default function Settings() {
                       id="allowCalls"
                       checked={privacySettings.allowCalls}
                       onCheckedChange={(checked) =>
-                        setPrivacySettings(prev => ({ ...prev, allowCalls: checked }))
+                        setPrivacySettings((prev) => ({
+                          ...prev,
+                          allowCalls: checked,
+                        }))
                       }
                     />
                   </div>
@@ -867,7 +974,10 @@ export default function Settings() {
                       id="dataCollection"
                       checked={privacySettings.dataCollection}
                       onCheckedChange={(checked) =>
-                        setPrivacySettings(prev => ({ ...prev, dataCollection: checked }))
+                        setPrivacySettings((prev) => ({
+                          ...prev,
+                          dataCollection: checked,
+                        }))
                       }
                     />
                   </div>
@@ -883,7 +993,10 @@ export default function Settings() {
                       id="analytics"
                       checked={privacySettings.analytics}
                       onCheckedChange={(checked) =>
-                        setPrivacySettings(prev => ({ ...prev, analytics: checked }))
+                        setPrivacySettings((prev) => ({
+                          ...prev,
+                          analytics: checked,
+                        }))
                       }
                     />
                   </div>
@@ -914,7 +1027,10 @@ export default function Settings() {
               <CardContent className="space-y-6">
                 <div>
                   <Label>Theme</Label>
-                  <Select value={theme} onValueChange={(value: any) => setTheme(value)}>
+                  <Select
+                    value={theme}
+                    onValueChange={(value: any) => setTheme(value)}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -988,7 +1104,9 @@ export default function Settings() {
 
                   <div className="flex items-center justify-between p-4 border rounded-lg border-red-200 bg-red-50">
                     <div>
-                      <h4 className="font-medium text-red-800">Delete Account</h4>
+                      <h4 className="font-medium text-red-800">
+                        Delete Account
+                      </h4>
                       <p className="text-sm text-red-600">
                         Permanently delete your account and all data
                       </p>
@@ -1006,11 +1124,15 @@ export default function Settings() {
                         </DialogHeader>
                         <div className="space-y-4">
                           <p className="text-sm text-gray-600">
-                            Are you sure you want to delete your account? This action
-                            cannot be undone and will permanently remove all your data.
+                            Are you sure you want to delete your account? This
+                            action cannot be undone and will permanently remove
+                            all your data.
                           </p>
                           <div className="flex space-x-2">
-                            <Button variant="destructive" onClick={deleteAccount}>
+                            <Button
+                              variant="destructive"
+                              onClick={deleteAccount}
+                            >
                               Yes, Delete Account
                             </Button>
                           </div>
@@ -1031,7 +1153,8 @@ export default function Settings() {
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-500">User Type:</span>
                     <Badge variant="outline">
-                      {user?.userType?.charAt(0).toUpperCase() + user?.userType?.slice(1)}
+                      {user?.userType?.charAt(0).toUpperCase() +
+                        user?.userType?.slice(1)}
                     </Badge>
                   </div>
                   <div className="flex justify-between">

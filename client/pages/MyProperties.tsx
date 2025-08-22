@@ -4,10 +4,20 @@ import { useNavigate, Link } from "react-router-dom";
 import { Property } from "@shared/types";
 import { api } from "../lib/api";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Badge } from "../components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -87,12 +97,22 @@ export default function MyProperties() {
   const [loading, setLoading] = useState(true);
   const [properties, setProperties] = useState<Property[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
-  const [typeFilter, setTypeFilter] = useState<"all" | "premium" | "regular">("all");
-  const [sortBy, setSortBy] = useState<"newest" | "oldest" | "price" | "views">("newest");
-  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | "pending" | "approved" | "rejected"
+  >("all");
+  const [typeFilter, setTypeFilter] = useState<"all" | "premium" | "regular">(
+    "all",
+  );
+  const [sortBy, setSortBy] = useState<"newest" | "oldest" | "price" | "views">(
+    "newest",
+  );
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(
+    null,
+  );
   const [showStatsDialog, setShowStatsDialog] = useState(false);
-  const [propertyStats, setPropertyStats] = useState<PropertyStats | null>(null);
+  const [propertyStats, setPropertyStats] = useState<PropertyStats | null>(
+    null,
+  );
 
   const [stats, setStats] = useState({
     total: 0,
@@ -133,14 +153,19 @@ export default function MyProperties() {
 
   const calculateStats = (properties: Property[]) => {
     const totalViews = properties.reduce((sum, prop) => sum + prop.views, 0);
-    const totalInquiries = properties.reduce((sum, prop) => sum + prop.inquiries, 0);
+    const totalInquiries = properties.reduce(
+      (sum, prop) => sum + prop.inquiries,
+      0,
+    );
 
     setStats({
       total: properties.length,
-      pending: properties.filter(p => p.approvalStatus === "pending").length,
-      approved: properties.filter(p => p.approvalStatus === "approved").length,
-      rejected: properties.filter(p => p.approvalStatus === "rejected").length,
-      premium: properties.filter(p => p.isPremium).length,
+      pending: properties.filter((p) => p.approvalStatus === "pending").length,
+      approved: properties.filter((p) => p.approvalStatus === "approved")
+        .length,
+      rejected: properties.filter((p) => p.approvalStatus === "rejected")
+        .length,
+      premium: properties.filter((p) => p.isPremium).length,
       totalViews,
       totalInquiries,
     });
@@ -174,14 +199,21 @@ export default function MyProperties() {
     }
   };
 
-  const togglePropertyStatus = async (propertyId: string, currentStatus: string) => {
+  const togglePropertyStatus = async (
+    propertyId: string,
+    currentStatus: string,
+  ) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
 
       const newStatus = currentStatus === "active" ? "inactive" : "active";
-      const response = await api.put(`/properties/${propertyId}/status`, { status: newStatus }, token);
-      
+      const response = await api.put(
+        `/properties/${propertyId}/status`,
+        { status: newStatus },
+        token,
+      );
+
       if (response.data.success) {
         fetchProperties();
       }
@@ -195,7 +227,11 @@ export default function MyProperties() {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const response = await api.put(`/properties/${propertyId}/premium`, {}, token);
+      const response = await api.put(
+        `/properties/${propertyId}/premium`,
+        {},
+        token,
+      );
       if (response.data.success) {
         fetchProperties();
         // Redirect to payment or show success
@@ -210,32 +246,41 @@ export default function MyProperties() {
 
     // Apply search filter
     if (searchTerm) {
-      filtered = filtered.filter(property =>
-        property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.location.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.description.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (property) =>
+          property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          property.location.address
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          property.description.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
     // Apply status filter
     if (statusFilter !== "all") {
-      filtered = filtered.filter(property => property.approvalStatus === statusFilter);
+      filtered = filtered.filter(
+        (property) => property.approvalStatus === statusFilter,
+      );
     }
 
     // Apply type filter
     if (typeFilter === "premium") {
-      filtered = filtered.filter(property => property.isPremium);
+      filtered = filtered.filter((property) => property.isPremium);
     } else if (typeFilter === "regular") {
-      filtered = filtered.filter(property => !property.isPremium);
+      filtered = filtered.filter((property) => !property.isPremium);
     }
 
     // Apply sorting
     filtered.sort((a, b) => {
       switch (sortBy) {
         case "newest":
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
         case "oldest":
-          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+          return (
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
         case "price":
           return b.price - a.price;
         case "views":
@@ -321,7 +366,9 @@ export default function MyProperties() {
               <Home className="h-6 w-6" />
               <span>My Properties</span>
             </h1>
-            <p className="text-gray-600">Manage and track your property listings</p>
+            <p className="text-gray-600">
+              Manage and track your property listings
+            </p>
           </div>
           <div className="flex items-center space-x-2">
             <Button onClick={fetchProperties} variant="outline">
@@ -341,49 +388,63 @@ export default function MyProperties() {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-6">
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-[#C70000]">{stats.total}</div>
+              <div className="text-2xl font-bold text-[#C70000]">
+                {stats.total}
+              </div>
               <div className="text-sm text-gray-600">Total Properties</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-yellow-600">{stats.pending}</div>
+              <div className="text-2xl font-bold text-yellow-600">
+                {stats.pending}
+              </div>
               <div className="text-sm text-gray-600">Pending</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-green-600">{stats.approved}</div>
+              <div className="text-2xl font-bold text-green-600">
+                {stats.approved}
+              </div>
               <div className="text-sm text-gray-600">Approved</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-red-600">{stats.rejected}</div>
+              <div className="text-2xl font-bold text-red-600">
+                {stats.rejected}
+              </div>
               <div className="text-sm text-gray-600">Rejected</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-amber-600">{stats.premium}</div>
+              <div className="text-2xl font-bold text-amber-600">
+                {stats.premium}
+              </div>
               <div className="text-sm text-gray-600">Premium</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-blue-600">{stats.totalViews}</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {stats.totalViews}
+              </div>
               <div className="text-sm text-gray-600">Total Views</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-purple-600">{stats.totalInquiries}</div>
+              <div className="text-2xl font-bold text-purple-600">
+                {stats.totalInquiries}
+              </div>
               <div className="text-sm text-gray-600">Inquiries</div>
             </CardContent>
           </Card>
@@ -441,20 +502,23 @@ export default function MyProperties() {
         {/* Properties Table */}
         <Card>
           <CardHeader>
-            <CardTitle>Property Listings ({getFilteredProperties().length})</CardTitle>
+            <CardTitle>
+              Property Listings ({getFilteredProperties().length})
+            </CardTitle>
           </CardHeader>
           <CardContent>
             {getFilteredProperties().length === 0 ? (
               <div className="text-center py-12">
                 <Home className="mx-auto h-16 w-16 text-gray-400 mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  {properties.length === 0 ? "No properties yet" : "No properties match your filters"}
+                  {properties.length === 0
+                    ? "No properties yet"
+                    : "No properties match your filters"}
                 </h3>
                 <p className="text-gray-500 mb-6">
-                  {properties.length === 0 
+                  {properties.length === 0
                     ? "Start by posting your first property listing"
-                    : "Try adjusting your search criteria"
-                  }
+                    : "Try adjusting your search criteria"}
                 </p>
                 {properties.length === 0 && (
                   <Link to="/post-property">
@@ -511,53 +575,54 @@ export default function MyProperties() {
                             </div>
                           </div>
                         </TableCell>
-                        
+
                         <TableCell>
                           <div className="font-bold text-[#C70000]">
                             ₹{property.price.toLocaleString()}
                             {property.priceType === "rent" && "/month"}
                           </div>
                         </TableCell>
-                        
+
                         <TableCell>
                           <div className="text-sm">
                             <MapPin className="inline h-3 w-3 mr-1" />
                             {property.location.address}
                           </div>
                         </TableCell>
-                        
+
                         <TableCell>
                           <div className="space-y-1">
                             {getStatusBadge(property.approvalStatus)}
-                            {property.approvalStatus === "rejected" && property.rejectionReason && (
-                              <div className="text-xs text-red-600">
-                                Reason: {property.rejectionReason}
-                              </div>
-                            )}
+                            {property.approvalStatus === "rejected" &&
+                              property.rejectionReason && (
+                                <div className="text-xs text-red-600">
+                                  Reason: {property.rejectionReason}
+                                </div>
+                              )}
                           </div>
                         </TableCell>
-                        
+
                         <TableCell>
                           <div className="flex items-center space-x-1">
                             <Eye className="h-3 w-3 text-gray-400" />
                             <span>{property.views}</span>
                           </div>
                         </TableCell>
-                        
+
                         <TableCell>
                           <div className="flex items-center space-x-1">
                             <MessageSquare className="h-3 w-3 text-gray-400" />
                             <span>{property.inquiries}</span>
                           </div>
                         </TableCell>
-                        
+
                         <TableCell>
                           <div className="text-sm text-gray-500">
                             <Calendar className="inline h-3 w-3 mr-1" />
                             {new Date(property.createdAt).toLocaleDateString()}
                           </div>
                         </TableCell>
-                        
+
                         <TableCell>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -572,14 +637,14 @@ export default function MyProperties() {
                                   View Property
                                 </Link>
                               </DropdownMenuItem>
-                              
+
                               <DropdownMenuItem asChild>
                                 <Link to={`/property/${property._id}/edit`}>
                                   <Edit className="h-4 w-4 mr-2" />
                                   Edit Property
                                 </Link>
                               </DropdownMenuItem>
-                              
+
                               <DropdownMenuItem
                                 onClick={() => {
                                   setSelectedProperty(property);
@@ -590,28 +655,39 @@ export default function MyProperties() {
                                 <BarChart3 className="h-4 w-4 mr-2" />
                                 View Analytics
                               </DropdownMenuItem>
-                              
-                              <DropdownMenuItem onClick={() => copyPropertyLink(property._id)}>
+
+                              <DropdownMenuItem
+                                onClick={() => copyPropertyLink(property._id)}
+                              >
                                 <Copy className="h-4 w-4 mr-2" />
                                 Copy Link
                               </DropdownMenuItem>
-                              
-                              <DropdownMenuItem onClick={() => shareProperty(property)}>
+
+                              <DropdownMenuItem
+                                onClick={() => shareProperty(property)}
+                              >
                                 <Share className="h-4 w-4 mr-2" />
                                 Share Property
                               </DropdownMenuItem>
-                              
+
                               {!property.isPremium && (
                                 <DropdownMenuItem
-                                  onClick={() => makePropertyPremium(property._id)}
+                                  onClick={() =>
+                                    makePropertyPremium(property._id)
+                                  }
                                 >
                                   <Crown className="h-4 w-4 mr-2" />
                                   Make Premium
                                 </DropdownMenuItem>
                               )}
-                              
+
                               <DropdownMenuItem
-                                onClick={() => togglePropertyStatus(property._id, property.status)}
+                                onClick={() =>
+                                  togglePropertyStatus(
+                                    property._id,
+                                    property.status,
+                                  )
+                                }
                               >
                                 {property.status === "active" ? (
                                   <>
@@ -625,10 +701,10 @@ export default function MyProperties() {
                                   </>
                                 )}
                               </DropdownMenuItem>
-                              
+
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>
-                                  <DropdownMenuItem 
+                                  <DropdownMenuItem
                                     onSelect={(e) => e.preventDefault()}
                                     className="text-red-600"
                                   >
@@ -638,16 +714,23 @@ export default function MyProperties() {
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                   <AlertDialogHeader>
-                                    <AlertDialogTitle>Delete Property</AlertDialogTitle>
+                                    <AlertDialogTitle>
+                                      Delete Property
+                                    </AlertDialogTitle>
                                     <AlertDialogDescription>
-                                      Are you sure you want to delete "{property.title}"? 
-                                      This action cannot be undone.
+                                      Are you sure you want to delete "
+                                      {property.title}"? This action cannot be
+                                      undone.
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogCancel>
+                                      Cancel
+                                    </AlertDialogCancel>
                                     <AlertDialogAction
-                                      onClick={() => deleteProperty(property._id)}
+                                      onClick={() =>
+                                        deleteProperty(property._id)
+                                      }
                                       className="bg-red-600 hover:bg-red-700"
                                     >
                                       Delete
@@ -673,12 +756,13 @@ export default function MyProperties() {
             <DialogHeader>
               <DialogTitle>Property Analytics</DialogTitle>
             </DialogHeader>
-            
+
             {selectedProperty && (
               <div className="space-y-6">
                 <div className="flex items-center space-x-3">
                   <div className="w-16 h-16 bg-gray-200 rounded overflow-hidden">
-                    {selectedProperty.images && selectedProperty.images.length > 0 ? (
+                    {selectedProperty.images &&
+                    selectedProperty.images.length > 0 ? (
                       <img
                         src={selectedProperty.images[0]}
                         alt={selectedProperty.title}
@@ -692,42 +776,62 @@ export default function MyProperties() {
                   </div>
                   <div>
                     <h3 className="font-medium">{selectedProperty.title}</h3>
-                    <p className="text-sm text-gray-500">{selectedProperty.location.address}</p>
+                    <p className="text-sm text-gray-500">
+                      {selectedProperty.location.address}
+                    </p>
                   </div>
                 </div>
 
                 {propertyStats && (
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     <div className="text-center p-4 bg-blue-50 rounded-lg">
-                      <div className="text-2xl font-bold text-blue-600">{propertyStats.views}</div>
+                      <div className="text-2xl font-bold text-blue-600">
+                        {propertyStats.views}
+                      </div>
                       <div className="text-sm text-blue-700">Total Views</div>
                     </div>
-                    
+
                     <div className="text-center p-4 bg-green-50 rounded-lg">
-                      <div className="text-2xl font-bold text-green-600">{propertyStats.inquiries}</div>
+                      <div className="text-2xl font-bold text-green-600">
+                        {propertyStats.inquiries}
+                      </div>
                       <div className="text-sm text-green-700">Inquiries</div>
                     </div>
-                    
+
                     <div className="text-center p-4 bg-red-50 rounded-lg">
-                      <div className="text-2xl font-bold text-red-600">{propertyStats.favorites}</div>
+                      <div className="text-2xl font-bold text-red-600">
+                        {propertyStats.favorites}
+                      </div>
                       <div className="text-sm text-red-700">Favorites</div>
                     </div>
-                    
+
                     <div className="text-center p-4 bg-purple-50 rounded-lg">
-                      <div className="text-2xl font-bold text-purple-600">{propertyStats.shares}</div>
+                      <div className="text-2xl font-bold text-purple-600">
+                        {propertyStats.shares}
+                      </div>
                       <div className="text-sm text-purple-700">Shares</div>
                     </div>
-                    
+
                     <div className="text-center p-4 bg-orange-50 rounded-lg">
-                      <div className="text-2xl font-bold text-orange-600">{propertyStats.clicks}</div>
-                      <div className="text-sm text-orange-700">Profile Clicks</div>
+                      <div className="text-2xl font-bold text-orange-600">
+                        {propertyStats.clicks}
+                      </div>
+                      <div className="text-sm text-orange-700">
+                        Profile Clicks
+                      </div>
                     </div>
-                    
+
                     <div className="text-center p-4 bg-amber-50 rounded-lg">
                       <div className="text-2xl font-bold text-amber-600">
-                        {((propertyStats.inquiries / propertyStats.views) * 100).toFixed(1)}%
+                        {(
+                          (propertyStats.inquiries / propertyStats.views) *
+                          100
+                        ).toFixed(1)}
+                        %
                       </div>
-                      <div className="text-sm text-amber-700">Conversion Rate</div>
+                      <div className="text-sm text-amber-700">
+                        Conversion Rate
+                      </div>
                     </div>
                   </div>
                 )}
@@ -741,7 +845,7 @@ export default function MyProperties() {
                     <Copy className="h-4 w-4 mr-2" />
                     Copy Link
                   </Button>
-                  
+
                   <Button
                     onClick={() => shareProperty(selectedProperty)}
                     variant="outline"
@@ -750,7 +854,7 @@ export default function MyProperties() {
                     <Share className="h-4 w-4 mr-2" />
                     Share
                   </Button>
-                  
+
                   <Button
                     asChild
                     className="flex-1 bg-[#C70000] hover:bg-[#A60000]"

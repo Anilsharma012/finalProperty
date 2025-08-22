@@ -4,10 +4,20 @@ import { useNavigate, Link } from "react-router-dom";
 import { Property } from "@shared/types";
 import { api } from "../lib/api";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Badge } from "../components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -89,8 +99,12 @@ export default function Favorites() {
   const [favorites, setFavorites] = useState<FavoriteProperty[]>([]);
   const [savedSearches, setSavedSearches] = useState<SavedSearch[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState<"newest" | "oldest" | "price" | "priceChange">("newest");
-  const [filterBy, setFilterBy] = useState<"all" | "sale" | "rent" | "priceDropped" | "new">("all");
+  const [sortBy, setSortBy] = useState<
+    "newest" | "oldest" | "price" | "priceChange"
+  >("newest");
+  const [filterBy, setFilterBy] = useState<
+    "all" | "sale" | "rent" | "priceDropped" | "new"
+  >("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedTab, setSelectedTab] = useState("properties");
 
@@ -147,19 +161,23 @@ export default function Favorites() {
   const calculateStats = (favorites: FavoriteProperty[]) => {
     const now = new Date();
     const lastWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    
+
     const recentlyAdded = favorites.filter(
-      fav => new Date(fav.savedAt) > lastWeek
+      (fav) => new Date(fav.savedAt) > lastWeek,
     ).length;
 
     const priceDropped = favorites.filter(
-      fav => fav.priceHistory && fav.priceHistory.length > 1 &&
-      fav.priceHistory[fav.priceHistory.length - 1].price < fav.priceHistory[0].price
+      (fav) =>
+        fav.priceHistory &&
+        fav.priceHistory.length > 1 &&
+        fav.priceHistory[fav.priceHistory.length - 1].price <
+          fav.priceHistory[0].price,
     ).length;
 
-    const avgPrice = favorites.length > 0 
-      ? favorites.reduce((sum, fav) => sum + fav.price, 0) / favorites.length 
-      : 0;
+    const avgPrice =
+      favorites.length > 0
+        ? favorites.reduce((sum, fav) => sum + fav.price, 0) / favorites.length
+        : 0;
 
     setStats({
       totalFavorites: favorites.length,
@@ -213,7 +231,11 @@ export default function Favorites() {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const response = await api.post(`/user/saved-searches/${searchId}/run`, {}, token);
+      const response = await api.post(
+        `/user/saved-searches/${searchId}/run`,
+        {},
+        token,
+      );
       if (response.data.success) {
         // Navigate to search results
         navigate(`/search?saved=${searchId}`);
@@ -240,30 +262,36 @@ export default function Favorites() {
 
     // Apply search filter
     if (searchTerm) {
-      filtered = filtered.filter(property =>
-        property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.location.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.description.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (property) =>
+          property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          property.location.address
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          property.description.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
     // Apply type filter
     switch (filterBy) {
       case "sale":
-        filtered = filtered.filter(prop => prop.priceType === "sale");
+        filtered = filtered.filter((prop) => prop.priceType === "sale");
         break;
       case "rent":
-        filtered = filtered.filter(prop => prop.priceType === "rent");
+        filtered = filtered.filter((prop) => prop.priceType === "rent");
         break;
       case "priceDropped":
-        filtered = filtered.filter(prop => 
-          prop.priceHistory && prop.priceHistory.length > 1 &&
-          prop.priceHistory[prop.priceHistory.length - 1].price < prop.priceHistory[0].price
+        filtered = filtered.filter(
+          (prop) =>
+            prop.priceHistory &&
+            prop.priceHistory.length > 1 &&
+            prop.priceHistory[prop.priceHistory.length - 1].price <
+              prop.priceHistory[0].price,
         );
         break;
       case "new":
         const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-        filtered = filtered.filter(prop => new Date(prop.savedAt) > lastWeek);
+        filtered = filtered.filter((prop) => new Date(prop.savedAt) > lastWeek);
         break;
     }
 
@@ -277,12 +305,16 @@ export default function Favorites() {
         case "price":
           return b.price - a.price;
         case "priceChange":
-          const aChange = a.priceHistory && a.priceHistory.length > 1 
-            ? a.priceHistory[a.priceHistory.length - 1].price - a.priceHistory[0].price
-            : 0;
-          const bChange = b.priceHistory && b.priceHistory.length > 1 
-            ? b.priceHistory[b.priceHistory.length - 1].price - b.priceHistory[0].price
-            : 0;
+          const aChange =
+            a.priceHistory && a.priceHistory.length > 1
+              ? a.priceHistory[a.priceHistory.length - 1].price -
+                a.priceHistory[0].price
+              : 0;
+          const bChange =
+            b.priceHistory && b.priceHistory.length > 1
+              ? b.priceHistory[b.priceHistory.length - 1].price -
+                b.priceHistory[0].price
+              : 0;
           return bChange - aChange;
         default:
           return 0;
@@ -297,7 +329,8 @@ export default function Favorites() {
       return null;
     }
 
-    const currentPrice = property.priceHistory[property.priceHistory.length - 1].price;
+    const currentPrice =
+      property.priceHistory[property.priceHistory.length - 1].price;
     const previousPrice = property.priceHistory[0].price;
     const change = currentPrice - previousPrice;
     const percentage = ((change / previousPrice) * 100).toFixed(1);
@@ -365,21 +398,27 @@ export default function Favorites() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-[#C70000]">{stats.totalFavorites}</div>
+              <div className="text-2xl font-bold text-[#C70000]">
+                {stats.totalFavorites}
+              </div>
               <div className="text-sm text-gray-600">Total Favorites</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-blue-600">{stats.recentlyAdded}</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {stats.recentlyAdded}
+              </div>
               <div className="text-sm text-gray-600">Recent</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-green-600">{stats.priceDropped}</div>
+              <div className="text-2xl font-bold text-green-600">
+                {stats.priceDropped}
+              </div>
               <div className="text-sm text-gray-600">Price Dropped</div>
             </CardContent>
           </Card>
@@ -395,7 +434,9 @@ export default function Favorites() {
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-orange-600">{stats.totalSavedSearches}</div>
+              <div className="text-2xl font-bold text-orange-600">
+                {stats.totalSavedSearches}
+              </div>
               <div className="text-sm text-gray-600">Saved Searches</div>
             </CardContent>
           </Card>
@@ -472,13 +513,14 @@ export default function Favorites() {
                 <CardContent className="text-center py-12">
                   <Heart className="mx-auto h-16 w-16 text-gray-400 mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    {favorites.length === 0 ? "No favorites yet" : "No properties match your filters"}
+                    {favorites.length === 0
+                      ? "No favorites yet"
+                      : "No properties match your filters"}
                   </h3>
                   <p className="text-gray-500 mb-6">
-                    {favorites.length === 0 
+                    {favorites.length === 0
                       ? "Start browsing properties and save your favorites"
-                      : "Try adjusting your search criteria"
-                    }
+                      : "Try adjusting your search criteria"}
                   </p>
                   {favorites.length === 0 && (
                     <Link to="/properties">
@@ -493,7 +535,10 @@ export default function Favorites() {
             ) : viewMode === "grid" ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {getFilteredFavorites().map((property) => (
-                  <Card key={property._id} className="hover:shadow-lg transition-shadow">
+                  <Card
+                    key={property._id}
+                    className="hover:shadow-lg transition-shadow"
+                  >
                     <div className="relative">
                       <div className="aspect-video w-full bg-gray-200 rounded-t-lg overflow-hidden">
                         {property.images && property.images.length > 0 ? (
@@ -521,7 +566,9 @@ export default function Favorites() {
 
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between mb-2">
-                        <h3 className="font-semibold text-lg truncate">{property.title}</h3>
+                        <h3 className="font-semibold text-lg truncate">
+                          {property.title}
+                        </h3>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="sm">
@@ -535,28 +582,37 @@ export default function Favorites() {
                                 View Property
                               </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => shareProperty(property)}>
+                            <DropdownMenuItem
+                              onClick={() => shareProperty(property)}
+                            >
                               <Share className="h-4 w-4 mr-2" />
                               Share
                             </DropdownMenuItem>
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
-                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                <DropdownMenuItem
+                                  onSelect={(e) => e.preventDefault()}
+                                >
                                   <Trash2 className="h-4 w-4 mr-2" />
                                   Remove
                                 </DropdownMenuItem>
                               </AlertDialogTrigger>
                               <AlertDialogContent>
                                 <AlertDialogHeader>
-                                  <AlertDialogTitle>Remove from Favorites</AlertDialogTitle>
+                                  <AlertDialogTitle>
+                                    Remove from Favorites
+                                  </AlertDialogTitle>
                                   <AlertDialogDescription>
-                                    Are you sure you want to remove "{property.title}" from your favorites?
+                                    Are you sure you want to remove "
+                                    {property.title}" from your favorites?
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
                                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                                   <AlertDialogAction
-                                    onClick={() => removeFromFavorites(property._id)}
+                                    onClick={() =>
+                                      removeFromFavorites(property._id)
+                                    }
                                     className="bg-red-600 hover:bg-red-700"
                                   >
                                     Remove
@@ -574,7 +630,9 @@ export default function Favorites() {
 
                       <div className="flex items-center space-x-1 text-gray-500 text-sm mb-3">
                         <MapPin className="h-3 w-3" />
-                        <span className="truncate">{property.location.address}</span>
+                        <span className="truncate">
+                          {property.location.address}
+                        </span>
                       </div>
 
                       <div className="flex items-center justify-between mb-3">
@@ -610,7 +668,10 @@ export default function Favorites() {
                       <div className="flex items-center justify-between text-xs text-gray-500">
                         <div className="flex items-center space-x-1">
                           <Heart className="h-3 w-3 text-red-500" />
-                          <span>Saved {new Date(property.savedAt).toLocaleDateString()}</span>
+                          <span>
+                            Saved{" "}
+                            {new Date(property.savedAt).toLocaleDateString()}
+                          </span>
                         </div>
                         <div className="flex items-center space-x-2">
                           <span>{property.views} views</span>
@@ -619,7 +680,9 @@ export default function Favorites() {
 
                       {property.notes && (
                         <div className="mt-3 p-2 bg-yellow-50 rounded-lg">
-                          <p className="text-sm text-yellow-800">{property.notes}</p>
+                          <p className="text-sm text-yellow-800">
+                            {property.notes}
+                          </p>
                         </div>
                       )}
                     </CardContent>
@@ -649,8 +712,12 @@ export default function Favorites() {
                         <div className="flex-1">
                           <div className="flex items-start justify-between">
                             <div>
-                              <h3 className="font-semibold text-lg">{property.title}</h3>
-                              <p className="text-gray-600 text-sm mb-2">{property.description}</p>
+                              <h3 className="font-semibold text-lg">
+                                {property.title}
+                              </h3>
+                              <p className="text-gray-600 text-sm mb-2">
+                                {property.description}
+                              </p>
                               <div className="flex items-center space-x-1 text-gray-500 text-sm mb-2">
                                 <MapPin className="h-3 w-3" />
                                 <span>{property.location.address}</span>
@@ -694,7 +761,11 @@ export default function Favorites() {
                                   View
                                 </Link>
                               </Button>
-                              <Button onClick={() => shareProperty(property)} variant="outline" size="sm">
+                              <Button
+                                onClick={() => shareProperty(property)}
+                                variant="outline"
+                                size="sm"
+                              >
                                 <Share className="h-3 w-3 mr-1" />
                                 Share
                               </Button>
@@ -707,15 +778,22 @@ export default function Favorites() {
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                   <AlertDialogHeader>
-                                    <AlertDialogTitle>Remove from Favorites</AlertDialogTitle>
+                                    <AlertDialogTitle>
+                                      Remove from Favorites
+                                    </AlertDialogTitle>
                                     <AlertDialogDescription>
-                                      Are you sure you want to remove "{property.title}" from your favorites?
+                                      Are you sure you want to remove "
+                                      {property.title}" from your favorites?
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogCancel>
+                                      Cancel
+                                    </AlertDialogCancel>
                                     <AlertDialogAction
-                                      onClick={() => removeFromFavorites(property._id)}
+                                      onClick={() =>
+                                        removeFromFavorites(property._id)
+                                      }
                                       className="bg-red-600 hover:bg-red-700"
                                     >
                                       Remove
@@ -744,7 +822,9 @@ export default function Favorites() {
                   <div className="text-center py-8">
                     <Search className="mx-auto h-12 w-12 text-gray-400 mb-4" />
                     <p className="text-gray-500">No saved searches yet</p>
-                    <p className="text-sm text-gray-400">Save your searches to get notified of new matches</p>
+                    <p className="text-sm text-gray-400">
+                      Save your searches to get notified of new matches
+                    </p>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -754,10 +834,17 @@ export default function Favorites() {
                           <div className="flex items-center justify-between">
                             <div>
                               <h3 className="font-medium">{search.name}</h3>
-                              <p className="text-sm text-gray-500">{search.query}</p>
+                              <p className="text-sm text-gray-500">
+                                {search.query}
+                              </p>
                               <div className="flex items-center space-x-4 text-xs text-gray-400 mt-1">
                                 <span>{search.matchCount} matches</span>
-                                <span>Last run: {new Date(search.lastRun).toLocaleDateString()}</span>
+                                <span>
+                                  Last run:{" "}
+                                  {new Date(
+                                    search.lastRun,
+                                  ).toLocaleDateString()}
+                                </span>
                               </div>
                             </div>
                             <div className="flex items-center space-x-2">
@@ -777,15 +864,22 @@ export default function Favorites() {
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                   <AlertDialogHeader>
-                                    <AlertDialogTitle>Delete Saved Search</AlertDialogTitle>
+                                    <AlertDialogTitle>
+                                      Delete Saved Search
+                                    </AlertDialogTitle>
                                     <AlertDialogDescription>
-                                      Are you sure you want to delete the saved search "{search.name}"?
+                                      Are you sure you want to delete the saved
+                                      search "{search.name}"?
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogCancel>
+                                      Cancel
+                                    </AlertDialogCancel>
                                     <AlertDialogAction
-                                      onClick={() => deleteSavedSearch(search._id)}
+                                      onClick={() =>
+                                        deleteSavedSearch(search._id)
+                                      }
                                       className="bg-red-600 hover:bg-red-700"
                                     >
                                       Delete

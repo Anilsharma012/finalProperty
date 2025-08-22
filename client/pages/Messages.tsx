@@ -3,11 +3,21 @@ import { useAuth } from "../hooks/useAuth";
 import { useNavigate, Link } from "react-router-dom";
 import { api } from "../lib/api";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
 import { Badge } from "../components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -109,16 +119,19 @@ export default function Messages() {
   const [sending, setSending] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("all");
-  
+
   // Data states
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
+  const [selectedConversation, setSelectedConversation] =
+    useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [attachments, setAttachments] = useState<File[]>([]);
 
   // Filters
-  const [filterBy, setFilterBy] = useState<"all" | "unread" | "starred" | "archived">("all");
+  const [filterBy, setFilterBy] = useState<
+    "all" | "unread" | "starred" | "archived"
+  >("all");
 
   useEffect(() => {
     if (!user) {
@@ -146,7 +159,7 @@ export default function Messages() {
       if (response.data.success) {
         const conversationsData = response.data.data;
         setConversations(conversationsData);
-        
+
         // Auto-select first conversation if none selected
         if (conversationsData.length > 0 && !selectedConversation) {
           setSelectedConversation(conversationsData[0]);
@@ -165,7 +178,10 @@ export default function Messages() {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const response = await api.get(`/messages/conversation/${conversationId}`, token);
+      const response = await api.get(
+        `/messages/conversation/${conversationId}`,
+        token,
+      );
       if (response.data.success) {
         setMessages(response.data.data);
         // Mark messages as read
@@ -218,14 +234,12 @@ export default function Messages() {
       if (!token) return;
 
       await api.put(`/messages/conversation/${conversationId}/read`, {}, token);
-      
+
       // Update local state
-      setConversations(prev =>
-        prev.map(conv =>
-          conv._id === conversationId
-            ? { ...conv, unreadCount: 0 }
-            : conv
-        )
+      setConversations((prev) =>
+        prev.map((conv) =>
+          conv._id === conversationId ? { ...conv, unreadCount: 0 } : conv,
+        ),
       );
     } catch (error) {
       console.error("Error marking conversation as read:", error);
@@ -238,14 +252,14 @@ export default function Messages() {
       if (!token) return;
 
       await api.put(`/messages/conversation/${conversationId}/star`, {}, token);
-      
+
       // Update local state
-      setConversations(prev =>
-        prev.map(conv =>
+      setConversations((prev) =>
+        prev.map((conv) =>
           conv._id === conversationId
             ? { ...conv, isStarred: !conv.isStarred }
-            : conv
-        )
+            : conv,
+        ),
       );
     } catch (error) {
       console.error("Error toggling star:", error);
@@ -257,7 +271,11 @@ export default function Messages() {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      await api.put(`/messages/conversation/${conversationId}/archive`, {}, token);
+      await api.put(
+        `/messages/conversation/${conversationId}/archive`,
+        {},
+        token,
+      );
       fetchConversations();
     } catch (error) {
       console.error("Error archiving conversation:", error);
@@ -284,11 +302,11 @@ export default function Messages() {
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
-    setAttachments(prev => [...prev, ...files]);
+    setAttachments((prev) => [...prev, ...files]);
   };
 
   const removeAttachment = (index: number) => {
-    setAttachments(prev => prev.filter((_, i) => i !== index));
+    setAttachments((prev) => prev.filter((_, i) => i !== index));
   };
 
   const getFilteredConversations = () => {
@@ -297,27 +315,33 @@ export default function Messages() {
     // Apply filter
     switch (filterBy) {
       case "unread":
-        filtered = filtered.filter(conv => conv.unreadCount > 0);
+        filtered = filtered.filter((conv) => conv.unreadCount > 0);
         break;
       case "starred":
-        filtered = filtered.filter(conv => conv.isStarred);
+        filtered = filtered.filter((conv) => conv.isStarred);
         break;
       case "archived":
-        filtered = filtered.filter(conv => conv.isArchived);
+        filtered = filtered.filter((conv) => conv.isArchived);
         break;
       default:
-        filtered = filtered.filter(conv => !conv.isArchived);
+        filtered = filtered.filter((conv) => !conv.isArchived);
     }
 
     // Apply search
     if (searchTerm) {
-      filtered = filtered.filter(conv =>
-        conv.participants.some(p => 
-          p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          p.email.toLowerCase().includes(searchTerm.toLowerCase())
-        ) ||
-        conv.property?.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        conv.lastMessage.content.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (conv) =>
+          conv.participants.some(
+            (p) =>
+              p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              p.email.toLowerCase().includes(searchTerm.toLowerCase()),
+          ) ||
+          conv.property?.title
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          conv.lastMessage.content
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()),
       );
     }
 
@@ -325,7 +349,7 @@ export default function Messages() {
   };
 
   const getOtherParticipant = (conversation: Conversation) => {
-    return conversation.participants.find(p => p._id !== user?.id);
+    return conversation.participants.find((p) => p._id !== user?.id);
   };
 
   const formatTime = (timestamp: string) => {
@@ -335,16 +359,19 @@ export default function Messages() {
     const hours = diff / (1000 * 60 * 60);
 
     if (hours < 24) {
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return date.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
     } else if (hours < 24 * 7) {
-      return date.toLocaleDateString([], { weekday: 'short' });
+      return date.toLocaleDateString([], { weekday: "short" });
     } else {
-      return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+      return date.toLocaleDateString([], { month: "short", day: "numeric" });
     }
   };
 
   const getFileIcon = (fileType: string) => {
-    if (fileType.startsWith('image/')) return <Image className="h-4 w-4" />;
+    if (fileType.startsWith("image/")) return <Image className="h-4 w-4" />;
     return <File className="h-4 w-4" />;
   };
 
@@ -430,7 +457,8 @@ export default function Messages() {
                 ) : (
                   <div className="divide-y">
                     {getFilteredConversations().map((conversation) => {
-                      const otherParticipant = getOtherParticipant(conversation);
+                      const otherParticipant =
+                        getOtherParticipant(conversation);
                       return (
                         <div
                           key={conversation._id}
@@ -447,7 +475,9 @@ export default function Messages() {
                           <div className="flex items-start space-x-3">
                             <div className="w-10 h-10 bg-[#C70000] rounded-full flex items-center justify-center flex-shrink-0">
                               <span className="text-sm font-medium text-white">
-                                {otherParticipant?.name?.charAt(0)?.toUpperCase()}
+                                {otherParticipant?.name
+                                  ?.charAt(0)
+                                  ?.toUpperCase()}
                               </span>
                             </div>
                             <div className="flex-1 min-w-0">
@@ -464,14 +494,16 @@ export default function Messages() {
                                   </span>
                                 </div>
                               </div>
-                              
+
                               {conversation.property && (
                                 <div className="flex items-center space-x-1 text-xs text-gray-500 mt-1">
                                   <Home className="h-3 w-3" />
-                                  <span className="truncate">{conversation.property.title}</span>
+                                  <span className="truncate">
+                                    {conversation.property.title}
+                                  </span>
                                 </div>
                               )}
-                              
+
                               <div className="flex items-center justify-between mt-1">
                                 <p className="text-sm text-gray-600 truncate">
                                   {conversation.lastMessage.content}
@@ -483,7 +515,7 @@ export default function Messages() {
                                 )}
                               </div>
                             </div>
-                            
+
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <Button
@@ -546,7 +578,9 @@ export default function Messages() {
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-[#C70000] rounded-full flex items-center justify-center">
                         <span className="text-sm font-medium text-white">
-                          {getOtherParticipant(selectedConversation)?.name?.charAt(0)?.toUpperCase()}
+                          {getOtherParticipant(selectedConversation)
+                            ?.name?.charAt(0)
+                            ?.toUpperCase()}
                         </span>
                       </div>
                       <div>
@@ -558,9 +592,11 @@ export default function Messages() {
                         </p>
                       </div>
                     </div>
-                    
+
                     {selectedConversation.property && (
-                      <Link to={`/property/${selectedConversation.property._id}`}>
+                      <Link
+                        to={`/property/${selectedConversation.property._id}`}
+                      >
                         <Button variant="outline" size="sm">
                           <Eye className="h-4 w-4 mr-2" />
                           View Property
@@ -568,7 +604,7 @@ export default function Messages() {
                       </Link>
                     )}
                   </div>
-                  
+
                   {selectedConversation.property && (
                     <div className="mt-3 p-3 bg-gray-50 rounded-lg">
                       <div className="flex items-center space-x-3">
@@ -590,7 +626,8 @@ export default function Messages() {
                             {selectedConversation.property.title}
                           </h4>
                           <p className="text-sm text-[#C70000] font-bold">
-                            ₹{selectedConversation.property.price.toLocaleString()}
+                            ₹
+                            {selectedConversation.property.price.toLocaleString()}
                           </p>
                           <p className="text-xs text-gray-500">
                             <MapPin className="inline h-3 w-3 mr-1" />
@@ -608,7 +645,9 @@ export default function Messages() {
                     <div className="text-center py-8">
                       <MessageSquare className="mx-auto h-12 w-12 text-gray-400 mb-4" />
                       <p className="text-gray-500">No messages yet</p>
-                      <p className="text-sm text-gray-400">Start the conversation!</p>
+                      <p className="text-sm text-gray-400">
+                        Start the conversation!
+                      </p>
                     </div>
                   ) : (
                     messages.map((message) => {
@@ -626,33 +665,41 @@ export default function Messages() {
                             }`}
                           >
                             <p className="text-sm">{message.content}</p>
-                            
-                            {message.attachments && message.attachments.length > 0 && (
-                              <div className="mt-2 space-y-2">
-                                {message.attachments.map((attachment, index) => (
-                                  <div
-                                    key={index}
-                                    className={`flex items-center space-x-2 p-2 rounded ${
-                                      isOwn ? "bg-red-800" : "bg-gray-200"
-                                    }`}
-                                  >
-                                    {getFileIcon(attachment.type)}
-                                    <span className="text-xs flex-1 truncate">
-                                      {attachment.name}
-                                    </span>
-                                    <Button
-                                      size="sm"
-                                      variant="ghost"
-                                      className="p-1"
-                                      onClick={() => window.open(attachment.url, '_blank')}
-                                    >
-                                      <Download className="h-3 w-3" />
-                                    </Button>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                            
+
+                            {message.attachments &&
+                              message.attachments.length > 0 && (
+                                <div className="mt-2 space-y-2">
+                                  {message.attachments.map(
+                                    (attachment, index) => (
+                                      <div
+                                        key={index}
+                                        className={`flex items-center space-x-2 p-2 rounded ${
+                                          isOwn ? "bg-red-800" : "bg-gray-200"
+                                        }`}
+                                      >
+                                        {getFileIcon(attachment.type)}
+                                        <span className="text-xs flex-1 truncate">
+                                          {attachment.name}
+                                        </span>
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          className="p-1"
+                                          onClick={() =>
+                                            window.open(
+                                              attachment.url,
+                                              "_blank",
+                                            )
+                                          }
+                                        >
+                                          <Download className="h-3 w-3" />
+                                        </Button>
+                                      </div>
+                                    ),
+                                  )}
+                                </div>
+                              )}
+
                             <div className="flex items-center justify-between mt-2">
                               <span
                                 className={`text-xs ${
@@ -704,7 +751,7 @@ export default function Messages() {
                       ))}
                     </div>
                   )}
-                  
+
                   <div className="flex items-end space-x-2">
                     <div className="flex-1">
                       <Textarea
@@ -721,7 +768,7 @@ export default function Messages() {
                         }}
                       />
                     </div>
-                    
+
                     <div className="flex space-x-1">
                       <input
                         type="file"
@@ -738,10 +785,13 @@ export default function Messages() {
                           </span>
                         </Button>
                       </label>
-                      
+
                       <Button
                         onClick={sendMessage}
-                        disabled={sending || (!newMessage.trim() && attachments.length === 0)}
+                        disabled={
+                          sending ||
+                          (!newMessage.trim() && attachments.length === 0)
+                        }
                         className="bg-[#C70000] hover:bg-[#A60000]"
                       >
                         {sending ? (

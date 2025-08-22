@@ -3,11 +3,21 @@ import { useAuth } from "../hooks/useAuth";
 import { useNavigate, Link } from "react-router-dom";
 import { api } from "../lib/api";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
 import { Badge } from "../components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -123,20 +133,32 @@ export default function Clients() {
   const [loading, setLoading] = useState(true);
   const [clients, setClients] = useState<Client[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive" | "potential" | "closed">("all");
-  const [typeFilter, setTypeFilter] = useState<"all" | "buyer" | "seller">("all");
-  const [sortBy, setSortBy] = useState<"name" | "lastContact" | "rating" | "deals">("lastContact");
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | "active" | "inactive" | "potential" | "closed"
+  >("all");
+  const [typeFilter, setTypeFilter] = useState<"all" | "buyer" | "seller">(
+    "all",
+  );
+  const [sortBy, setSortBy] = useState<
+    "name" | "lastContact" | "rating" | "deals"
+  >("lastContact");
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [showAddClientDialog, setShowAddClientDialog] = useState(false);
   const [showClientDetails, setShowClientDetails] = useState(false);
-  const [showAddInteractionDialog, setShowAddInteractionDialog] = useState(false);
+  const [showAddInteractionDialog, setShowAddInteractionDialog] =
+    useState(false);
 
   const [newClient, setNewClient] = useState({
     name: "",
     email: "",
     phone: "",
     userType: "buyer" as "buyer" | "seller",
-    source: "direct" as "referral" | "website" | "social" | "advertisement" | "direct",
+    source: "direct" as
+      | "referral"
+      | "website"
+      | "social"
+      | "advertisement"
+      | "direct",
     budget: { min: 0, max: 0 },
     notes: "",
   });
@@ -194,18 +216,24 @@ export default function Clients() {
   };
 
   const calculateStats = (clients: Client[]) => {
-    const totalDeals = clients.reduce((sum, client) => sum + client.deals.length, 0);
-    const totalCommission = clients.reduce((sum, client) => 
-      sum + client.deals.reduce((dealSum, deal) => dealSum + deal.commission, 0), 0
+    const totalDeals = clients.reduce(
+      (sum, client) => sum + client.deals.length,
+      0,
+    );
+    const totalCommission = clients.reduce(
+      (sum, client) =>
+        sum +
+        client.deals.reduce((dealSum, deal) => dealSum + deal.commission, 0),
+      0,
     );
 
     setStats({
       total: clients.length,
-      active: clients.filter(c => c.status === "active").length,
-      potential: clients.filter(c => c.status === "potential").length,
-      closed: clients.filter(c => c.status === "closed").length,
-      buyers: clients.filter(c => c.userType === "buyer").length,
-      sellers: clients.filter(c => c.userType === "seller").length,
+      active: clients.filter((c) => c.status === "active").length,
+      potential: clients.filter((c) => c.status === "potential").length,
+      closed: clients.filter((c) => c.status === "closed").length,
+      buyers: clients.filter((c) => c.userType === "buyer").length,
+      sellers: clients.filter((c) => c.userType === "seller").length,
       totalDeals,
       totalCommission,
     });
@@ -254,7 +282,11 @@ export default function Clients() {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const response = await api.post(`/agent/clients/${selectedClient._id}/interactions`, newInteraction, token);
+      const response = await api.post(
+        `/agent/clients/${selectedClient._id}/interactions`,
+        newInteraction,
+        token,
+      );
       if (response.data.success) {
         fetchClients();
         setShowAddInteractionDialog(false);
@@ -290,21 +322,22 @@ export default function Clients() {
 
     // Apply search filter
     if (searchTerm) {
-      filtered = filtered.filter(client =>
-        client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        client.phone.includes(searchTerm)
+      filtered = filtered.filter(
+        (client) =>
+          client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          client.phone.includes(searchTerm),
       );
     }
 
     // Apply status filter
     if (statusFilter !== "all") {
-      filtered = filtered.filter(client => client.status === statusFilter);
+      filtered = filtered.filter((client) => client.status === statusFilter);
     }
 
     // Apply type filter
     if (typeFilter !== "all") {
-      filtered = filtered.filter(client => client.userType === typeFilter);
+      filtered = filtered.filter((client) => client.userType === typeFilter);
     }
 
     // Apply sorting
@@ -313,7 +346,10 @@ export default function Clients() {
         case "name":
           return a.name.localeCompare(b.name);
         case "lastContact":
-          return new Date(b.lastContact).getTime() - new Date(a.lastContact).getTime();
+          return (
+            new Date(b.lastContact).getTime() -
+            new Date(a.lastContact).getTime()
+          );
         case "rating":
           return b.rating - a.rating;
         case "deals":
@@ -396,14 +432,19 @@ export default function Clients() {
               <Users className="h-6 w-6" />
               <span>Client Management</span>
             </h1>
-            <p className="text-gray-600">Manage your client relationships and track interactions</p>
+            <p className="text-gray-600">
+              Manage your client relationships and track interactions
+            </p>
           </div>
           <div className="flex items-center space-x-2">
             <Button onClick={fetchClients} variant="outline">
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
             </Button>
-            <Button onClick={() => setShowAddClientDialog(true)} className="bg-[#C70000] hover:bg-[#A60000]">
+            <Button
+              onClick={() => setShowAddClientDialog(true)}
+              className="bg-[#C70000] hover:bg-[#A60000]"
+            >
               <UserPlus className="h-4 w-4 mr-2" />
               Add Client
             </Button>
@@ -414,49 +455,63 @@ export default function Clients() {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-6">
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-[#C70000]">{stats.total}</div>
+              <div className="text-2xl font-bold text-[#C70000]">
+                {stats.total}
+              </div>
               <div className="text-sm text-gray-600">Total Clients</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-green-600">{stats.active}</div>
+              <div className="text-2xl font-bold text-green-600">
+                {stats.active}
+              </div>
               <div className="text-sm text-gray-600">Active</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-blue-600">{stats.potential}</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {stats.potential}
+              </div>
               <div className="text-sm text-gray-600">Potential</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-gray-600">{stats.closed}</div>
+              <div className="text-2xl font-bold text-gray-600">
+                {stats.closed}
+              </div>
               <div className="text-sm text-gray-600">Closed</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-purple-600">{stats.buyers}</div>
+              <div className="text-2xl font-bold text-purple-600">
+                {stats.buyers}
+              </div>
               <div className="text-sm text-gray-600">Buyers</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-orange-600">{stats.sellers}</div>
+              <div className="text-2xl font-bold text-orange-600">
+                {stats.sellers}
+              </div>
               <div className="text-sm text-gray-600">Sellers</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-indigo-600">{stats.totalDeals}</div>
+              <div className="text-2xl font-bold text-indigo-600">
+                {stats.totalDeals}
+              </div>
               <div className="text-sm text-gray-600">Total Deals</div>
             </CardContent>
           </Card>
@@ -531,16 +586,20 @@ export default function Clients() {
               <div className="text-center py-12">
                 <Users className="mx-auto h-16 w-16 text-gray-400 mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  {clients.length === 0 ? "No clients yet" : "No clients match your filters"}
+                  {clients.length === 0
+                    ? "No clients yet"
+                    : "No clients match your filters"}
                 </h3>
                 <p className="text-gray-500 mb-6">
-                  {clients.length === 0 
+                  {clients.length === 0
                     ? "Start building your client base by adding your first client"
-                    : "Try adjusting your search criteria"
-                  }
+                    : "Try adjusting your search criteria"}
                 </p>
                 {clients.length === 0 && (
-                  <Button onClick={() => setShowAddClientDialog(true)} className="bg-[#C70000] hover:bg-[#A60000]">
+                  <Button
+                    onClick={() => setShowAddClientDialog(true)}
+                    className="bg-[#C70000] hover:bg-[#A60000]"
+                  >
                     <UserPlus className="h-4 w-4 mr-2" />
                     Add Your First Client
                   </Button>
@@ -573,20 +632,25 @@ export default function Clients() {
                               </span>
                             </div>
                             <div>
-                              <div className="font-medium text-gray-900">{client.name}</div>
-                              <div className="text-sm text-gray-500">{client.email}</div>
+                              <div className="font-medium text-gray-900">
+                                {client.name}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                {client.email}
+                              </div>
                             </div>
                           </div>
                         </TableCell>
-                        
+
                         <TableCell>
                           <Badge variant="outline">
-                            {client.userType.charAt(0).toUpperCase() + client.userType.slice(1)}
+                            {client.userType.charAt(0).toUpperCase() +
+                              client.userType.slice(1)}
                           </Badge>
                         </TableCell>
-                        
+
                         <TableCell>{getStatusBadge(client.status)}</TableCell>
-                        
+
                         <TableCell>
                           <div className="space-y-1">
                             <div className="flex items-center space-x-1 text-sm">
@@ -595,38 +659,40 @@ export default function Clients() {
                             </div>
                             <div className="flex items-center space-x-1 text-sm">
                               <Mail className="h-3 w-3" />
-                              <span className="truncate max-w-[120px]">{client.email}</span>
+                              <span className="truncate max-w-[120px]">
+                                {client.email}
+                              </span>
                             </div>
                           </div>
                         </TableCell>
-                        
+
                         <TableCell>
                           <div className="text-sm">
-                            ₹{client.budget.min.toLocaleString()} - 
-                            ₹{client.budget.max.toLocaleString()}
+                            ₹{client.budget.min.toLocaleString()} - ₹
+                            {client.budget.max.toLocaleString()}
                           </div>
                         </TableCell>
-                        
+
                         <TableCell>
                           <div className="flex items-center space-x-1">
                             <Target className="h-3 w-3" />
                             <span>{client.deals.length}</span>
                           </div>
                         </TableCell>
-                        
+
                         <TableCell>
                           <div className="text-sm text-gray-500">
                             {new Date(client.lastContact).toLocaleDateString()}
                           </div>
                         </TableCell>
-                        
+
                         <TableCell>
                           <div className="flex items-center space-x-1">
                             <Star className="h-3 w-3 text-yellow-500 fill-current" />
                             <span>{client.rating.toFixed(1)}</span>
                           </div>
                         </TableCell>
-                        
+
                         <TableCell>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -644,7 +710,7 @@ export default function Clients() {
                                 <Eye className="h-4 w-4 mr-2" />
                                 View Details
                               </DropdownMenuItem>
-                              
+
                               <DropdownMenuItem
                                 onClick={() => {
                                   setSelectedClient(client);
@@ -654,18 +720,21 @@ export default function Clients() {
                                 <MessageSquare className="h-4 w-4 mr-2" />
                                 Add Interaction
                               </DropdownMenuItem>
-                              
+
                               <DropdownMenuItem>
                                 <Phone className="h-4 w-4 mr-2" />
                                 Call Client
                               </DropdownMenuItem>
-                              
+
                               <DropdownMenuItem>
                                 <Mail className="h-4 w-4 mr-2" />
                                 Send Email
                               </DropdownMenuItem>
-                              
-                              <DropdownMenuItem onClick={() => deleteClient(client._id)} className="text-red-600">
+
+                              <DropdownMenuItem
+                                onClick={() => deleteClient(client._id)}
+                                className="text-red-600"
+                              >
                                 <Trash2 className="h-4 w-4 mr-2" />
                                 Delete Client
                               </DropdownMenuItem>
@@ -682,47 +751,67 @@ export default function Clients() {
         </Card>
 
         {/* Add Client Dialog */}
-        <Dialog open={showAddClientDialog} onOpenChange={setShowAddClientDialog}>
+        <Dialog
+          open={showAddClientDialog}
+          onOpenChange={setShowAddClientDialog}
+        >
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Add New Client</DialogTitle>
             </DialogHeader>
-            
+
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium">Full Name</label>
                   <Input
                     value={newClient.name}
-                    onChange={(e) => setNewClient(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) =>
+                      setNewClient((prev) => ({
+                        ...prev,
+                        name: e.target.value,
+                      }))
+                    }
                     placeholder="Enter full name"
                   />
                 </div>
-                
+
                 <div>
                   <label className="text-sm font-medium">Email</label>
                   <Input
                     type="email"
                     value={newClient.email}
-                    onChange={(e) => setNewClient(prev => ({ ...prev, email: e.target.value }))}
+                    onChange={(e) =>
+                      setNewClient((prev) => ({
+                        ...prev,
+                        email: e.target.value,
+                      }))
+                    }
                     placeholder="Enter email address"
                   />
                 </div>
-                
+
                 <div>
                   <label className="text-sm font-medium">Phone</label>
                   <Input
                     value={newClient.phone}
-                    onChange={(e) => setNewClient(prev => ({ ...prev, phone: e.target.value }))}
+                    onChange={(e) =>
+                      setNewClient((prev) => ({
+                        ...prev,
+                        phone: e.target.value,
+                      }))
+                    }
                     placeholder="Enter phone number"
                   />
                 </div>
-                
+
                 <div>
                   <label className="text-sm font-medium">Client Type</label>
                   <Select
                     value={newClient.userType}
-                    onValueChange={(value: any) => setNewClient(prev => ({ ...prev, userType: value }))}
+                    onValueChange={(value: any) =>
+                      setNewClient((prev) => ({ ...prev, userType: value }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -733,39 +822,51 @@ export default function Clients() {
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div>
                   <label className="text-sm font-medium">Min Budget</label>
                   <Input
                     type="number"
                     value={newClient.budget.min}
-                    onChange={(e) => setNewClient(prev => ({ 
-                      ...prev, 
-                      budget: { ...prev.budget, min: parseInt(e.target.value) || 0 }
-                    }))}
+                    onChange={(e) =>
+                      setNewClient((prev) => ({
+                        ...prev,
+                        budget: {
+                          ...prev.budget,
+                          min: parseInt(e.target.value) || 0,
+                        },
+                      }))
+                    }
                     placeholder="Minimum budget"
                   />
                 </div>
-                
+
                 <div>
                   <label className="text-sm font-medium">Max Budget</label>
                   <Input
                     type="number"
                     value={newClient.budget.max}
-                    onChange={(e) => setNewClient(prev => ({ 
-                      ...prev, 
-                      budget: { ...prev.budget, max: parseInt(e.target.value) || 0 }
-                    }))}
+                    onChange={(e) =>
+                      setNewClient((prev) => ({
+                        ...prev,
+                        budget: {
+                          ...prev.budget,
+                          max: parseInt(e.target.value) || 0,
+                        },
+                      }))
+                    }
                     placeholder="Maximum budget"
                   />
                 </div>
               </div>
-              
+
               <div>
                 <label className="text-sm font-medium">Source</label>
                 <Select
                   value={newClient.source}
-                  onValueChange={(value: any) => setNewClient(prev => ({ ...prev, source: value }))}
+                  onValueChange={(value: any) =>
+                    setNewClient((prev) => ({ ...prev, source: value }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -779,22 +880,31 @@ export default function Clients() {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div>
                 <label className="text-sm font-medium">Notes</label>
                 <Textarea
                   value={newClient.notes}
-                  onChange={(e) => setNewClient(prev => ({ ...prev, notes: e.target.value }))}
+                  onChange={(e) =>
+                    setNewClient((prev) => ({ ...prev, notes: e.target.value }))
+                  }
                   placeholder="Add any notes about the client..."
                   rows={3}
                 />
               </div>
-              
+
               <div className="flex space-x-2">
-                <Button onClick={addClient} className="flex-1 bg-[#C70000] hover:bg-[#A60000]">
+                <Button
+                  onClick={addClient}
+                  className="flex-1 bg-[#C70000] hover:bg-[#A60000]"
+                >
                   Add Client
                 </Button>
-                <Button onClick={() => setShowAddClientDialog(false)} variant="outline" className="flex-1">
+                <Button
+                  onClick={() => setShowAddClientDialog(false)}
+                  variant="outline"
+                  className="flex-1"
+                >
                   Cancel
                 </Button>
               </div>
@@ -808,7 +918,7 @@ export default function Clients() {
             <DialogHeader>
               <DialogTitle>Client Details</DialogTitle>
             </DialogHeader>
-            
+
             {selectedClient && (
               <Tabs defaultValue="overview" className="w-full">
                 <TabsList className="grid w-full grid-cols-4">
@@ -817,12 +927,14 @@ export default function Clients() {
                   <TabsTrigger value="deals">Deals</TabsTrigger>
                   <TabsTrigger value="preferences">Preferences</TabsTrigger>
                 </TabsList>
-                
+
                 <TabsContent value="overview" className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Card>
                       <CardHeader>
-                        <CardTitle className="text-sm">Contact Information</CardTitle>
+                        <CardTitle className="text-sm">
+                          Contact Information
+                        </CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-2">
                         <div className="flex items-center space-x-2">
@@ -839,15 +951,19 @@ export default function Clients() {
                         </div>
                       </CardContent>
                     </Card>
-                    
+
                     <Card>
                       <CardHeader>
-                        <CardTitle className="text-sm">Client Details</CardTitle>
+                        <CardTitle className="text-sm">
+                          Client Details
+                        </CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-2">
                         <div className="flex justify-between">
                           <span>Type:</span>
-                          <Badge variant="outline">{selectedClient.userType}</Badge>
+                          <Badge variant="outline">
+                            {selectedClient.userType}
+                          </Badge>
                         </div>
                         <div className="flex justify-between">
                           <span>Status:</span>
@@ -863,19 +979,21 @@ export default function Clients() {
                       </CardContent>
                     </Card>
                   </div>
-                  
+
                   {selectedClient.notes && (
                     <Card>
                       <CardHeader>
                         <CardTitle className="text-sm">Notes</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-sm text-gray-600">{selectedClient.notes}</p>
+                        <p className="text-sm text-gray-600">
+                          {selectedClient.notes}
+                        </p>
                       </CardContent>
                     </Card>
                   )}
                 </TabsContent>
-                
+
                 <TabsContent value="interactions" className="space-y-4">
                   <div className="flex justify-between items-center">
                     <h3 className="font-medium">Recent Interactions</h3>
@@ -888,7 +1006,7 @@ export default function Clients() {
                       Add Interaction
                     </Button>
                   </div>
-                  
+
                   <div className="space-y-3">
                     {selectedClient.interactions?.map((interaction) => (
                       <Card key={interaction._id}>
@@ -898,10 +1016,14 @@ export default function Clients() {
                               {getInteractionIcon(interaction.type)}
                               <div>
                                 <div className="flex items-center space-x-2">
-                                  <span className="font-medium capitalize">{interaction.type}</span>
+                                  <span className="font-medium capitalize">
+                                    {interaction.type}
+                                  </span>
                                   {getOutcomeBadge(interaction.outcome)}
                                 </div>
-                                <p className="text-sm text-gray-600 mt-1">{interaction.description}</p>
+                                <p className="text-sm text-gray-600 mt-1">
+                                  {interaction.description}
+                                </p>
                                 {interaction.nextAction && (
                                   <p className="text-sm text-blue-600 mt-1">
                                     Next: {interaction.nextAction}
@@ -918,11 +1040,13 @@ export default function Clients() {
                     ))}
                   </div>
                 </TabsContent>
-                
+
                 <TabsContent value="deals" className="space-y-4">
                   <h3 className="font-medium">Active Deals</h3>
                   {selectedClient.deals?.length === 0 ? (
-                    <p className="text-gray-500 text-center py-8">No deals yet</p>
+                    <p className="text-gray-500 text-center py-8">
+                      No deals yet
+                    </p>
                   ) : (
                     <div className="space-y-3">
                       {selectedClient.deals?.map((deal) => (
@@ -930,8 +1054,12 @@ export default function Clients() {
                           <CardContent className="p-4">
                             <div className="flex justify-between items-start">
                               <div>
-                                <h4 className="font-medium">{deal.propertyTitle}</h4>
-                                <p className="text-sm text-gray-500">{deal.type}</p>
+                                <h4 className="font-medium">
+                                  {deal.propertyTitle}
+                                </h4>
+                                <p className="text-sm text-gray-500">
+                                  {deal.type}
+                                </p>
                                 <p className="text-lg font-bold text-[#C70000]">
                                   ₹{deal.amount.toLocaleString()}
                                 </p>
@@ -944,7 +1072,7 @@ export default function Clients() {
                     </div>
                   )}
                 </TabsContent>
-                
+
                 <TabsContent value="preferences" className="space-y-4">
                   <Card>
                     <CardHeader>
@@ -952,20 +1080,27 @@ export default function Clients() {
                     </CardHeader>
                     <CardContent>
                       <p className="text-lg font-bold text-[#C70000]">
-                        ₹{selectedClient.budget.min.toLocaleString()} - ₹{selectedClient.budget.max.toLocaleString()}
+                        ₹{selectedClient.budget.min.toLocaleString()} - ₹
+                        {selectedClient.budget.max.toLocaleString()}
                       </p>
                     </CardContent>
                   </Card>
-                  
+
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-sm">Preferred Locations</CardTitle>
+                      <CardTitle className="text-sm">
+                        Preferred Locations
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="flex flex-wrap gap-2">
-                        {selectedClient.preferences?.locations?.map((location, index) => (
-                          <Badge key={index} variant="outline">{location}</Badge>
-                        ))}
+                        {selectedClient.preferences?.locations?.map(
+                          (location, index) => (
+                            <Badge key={index} variant="outline">
+                              {location}
+                            </Badge>
+                          ),
+                        )}
                       </div>
                     </CardContent>
                   </Card>
@@ -976,18 +1111,23 @@ export default function Clients() {
         </Dialog>
 
         {/* Add Interaction Dialog */}
-        <Dialog open={showAddInteractionDialog} onOpenChange={setShowAddInteractionDialog}>
+        <Dialog
+          open={showAddInteractionDialog}
+          onOpenChange={setShowAddInteractionDialog}
+        >
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Add Interaction</DialogTitle>
             </DialogHeader>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="text-sm font-medium">Interaction Type</label>
                 <Select
                   value={newInteraction.type}
-                  onValueChange={(value: any) => setNewInteraction(prev => ({ ...prev, type: value }))}
+                  onValueChange={(value: any) =>
+                    setNewInteraction((prev) => ({ ...prev, type: value }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -1001,22 +1141,29 @@ export default function Clients() {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div>
                 <label className="text-sm font-medium">Description</label>
                 <Textarea
                   value={newInteraction.description}
-                  onChange={(e) => setNewInteraction(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) =>
+                    setNewInteraction((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
                   placeholder="Describe the interaction..."
                   rows={3}
                 />
               </div>
-              
+
               <div>
                 <label className="text-sm font-medium">Outcome</label>
                 <Select
                   value={newInteraction.outcome}
-                  onValueChange={(value: any) => setNewInteraction(prev => ({ ...prev, outcome: value }))}
+                  onValueChange={(value: any) =>
+                    setNewInteraction((prev) => ({ ...prev, outcome: value }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -1028,21 +1175,33 @@ export default function Clients() {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div>
                 <label className="text-sm font-medium">Next Action</label>
                 <Input
                   value={newInteraction.nextAction}
-                  onChange={(e) => setNewInteraction(prev => ({ ...prev, nextAction: e.target.value }))}
+                  onChange={(e) =>
+                    setNewInteraction((prev) => ({
+                      ...prev,
+                      nextAction: e.target.value,
+                    }))
+                  }
                   placeholder="What's the next step?"
                 />
               </div>
-              
+
               <div className="flex space-x-2">
-                <Button onClick={addInteraction} className="flex-1 bg-[#C70000] hover:bg-[#A60000]">
+                <Button
+                  onClick={addInteraction}
+                  className="flex-1 bg-[#C70000] hover:bg-[#A60000]"
+                >
                   Add Interaction
                 </Button>
-                <Button onClick={() => setShowAddInteractionDialog(false)} variant="outline" className="flex-1">
+                <Button
+                  onClick={() => setShowAddInteractionDialog(false)}
+                  variant="outline"
+                  className="flex-1"
+                >
                   Cancel
                 </Button>
               </div>

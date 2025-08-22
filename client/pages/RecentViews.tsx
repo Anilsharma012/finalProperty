@@ -4,10 +4,20 @@ import { useNavigate, Link } from "react-router-dom";
 import { Property } from "@shared/types";
 import { api } from "../lib/api";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Badge } from "../components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -79,8 +89,12 @@ export default function RecentViews() {
   const [recentViews, setRecentViews] = useState<ViewedProperty[]>([]);
   const [viewingSessions, setViewingSessions] = useState<ViewingSession[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [timeFilter, setTimeFilter] = useState<"today" | "week" | "month" | "all">("all");
-  const [sortBy, setSortBy] = useState<"recent" | "timeSpent" | "viewCount" | "price">("recent");
+  const [timeFilter, setTimeFilter] = useState<
+    "today" | "week" | "month" | "all"
+  >("all");
+  const [sortBy, setSortBy] = useState<
+    "recent" | "timeSpent" | "viewCount" | "price"
+  >("recent");
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const [selectedTab, setSelectedTab] = useState("properties");
 
@@ -140,18 +154,18 @@ export default function RecentViews() {
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-    const todayViews = views.filter(view => 
-      new Date(view.viewedAt) >= today
+    const todayViews = views.filter(
+      (view) => new Date(view.viewedAt) >= today,
     ).length;
 
-    const weekViews = views.filter(view => 
-      new Date(view.viewedAt) >= weekAgo
+    const weekViews = views.filter(
+      (view) => new Date(view.viewedAt) >= weekAgo,
     ).length;
 
     const totalTimeSpent = views.reduce((sum, view) => sum + view.timeSpent, 0);
     const avgTimeSpent = views.length > 0 ? totalTimeSpent / views.length : 0;
 
-    const favoritesFromViews = views.filter(view => view.isFavorited).length;
+    const favoritesFromViews = views.filter((view) => view.isFavorited).length;
 
     setStats({
       totalViews: views.reduce((sum, view) => sum + view.viewCount, 0),
@@ -218,10 +232,13 @@ export default function RecentViews() {
 
     // Apply search filter
     if (searchTerm) {
-      filtered = filtered.filter(property =>
-        property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.location.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.description.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (property) =>
+          property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          property.location.address
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          property.description.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
@@ -229,16 +246,24 @@ export default function RecentViews() {
     const now = new Date();
     switch (timeFilter) {
       case "today":
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        filtered = filtered.filter(view => new Date(view.viewedAt) >= today);
+        const today = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate(),
+        );
+        filtered = filtered.filter((view) => new Date(view.viewedAt) >= today);
         break;
       case "week":
         const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        filtered = filtered.filter(view => new Date(view.viewedAt) >= weekAgo);
+        filtered = filtered.filter(
+          (view) => new Date(view.viewedAt) >= weekAgo,
+        );
         break;
       case "month":
         const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-        filtered = filtered.filter(view => new Date(view.viewedAt) >= monthAgo);
+        filtered = filtered.filter(
+          (view) => new Date(view.viewedAt) >= monthAgo,
+        );
         break;
     }
 
@@ -246,7 +271,9 @@ export default function RecentViews() {
     filtered.sort((a, b) => {
       switch (sortBy) {
         case "recent":
-          return new Date(b.viewedAt).getTime() - new Date(a.viewedAt).getTime();
+          return (
+            new Date(b.viewedAt).getTime() - new Date(a.viewedAt).getTime()
+          );
         case "timeSpent":
           return b.timeSpent - a.timeSpent;
         case "viewCount":
@@ -275,7 +302,7 @@ export default function RecentViews() {
     const now = new Date();
     const viewDate = new Date(date);
     const diffMs = now.getTime() - viewDate.getTime();
-    
+
     const diffMins = Math.floor(diffMs / (1000 * 60));
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
@@ -316,7 +343,9 @@ export default function RecentViews() {
               <Eye className="h-6 w-6 text-blue-500" />
               <span>Recent Views</span>
             </h1>
-            <p className="text-gray-600">Your property viewing history and browsing patterns</p>
+            <p className="text-gray-600">
+              Your property viewing history and browsing patterns
+            </p>
           </div>
           <div className="flex items-center space-x-2">
             <Button onClick={fetchRecentViews} variant="outline">
@@ -335,7 +364,8 @@ export default function RecentViews() {
                   <AlertDialogHeader>
                     <AlertDialogTitle>Clear All Recent Views</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Are you sure you want to clear your entire viewing history? This action cannot be undone.
+                      Are you sure you want to clear your entire viewing
+                      history? This action cannot be undone.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -357,42 +387,54 @@ export default function RecentViews() {
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-[#C70000]">{stats.totalViews}</div>
+              <div className="text-2xl font-bold text-[#C70000]">
+                {stats.totalViews}
+              </div>
               <div className="text-sm text-gray-600">Total Views</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-blue-600">{stats.uniqueProperties}</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {stats.uniqueProperties}
+              </div>
               <div className="text-sm text-gray-600">Properties</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-green-600">{formatTimeSpent(stats.avgTimeSpent)}</div>
+              <div className="text-2xl font-bold text-green-600">
+                {formatTimeSpent(stats.avgTimeSpent)}
+              </div>
               <div className="text-sm text-gray-600">Avg Time</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-purple-600">{stats.favoritesFromViews}</div>
+              <div className="text-2xl font-bold text-purple-600">
+                {stats.favoritesFromViews}
+              </div>
               <div className="text-sm text-gray-600">Favorited</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-orange-600">{stats.todayViews}</div>
+              <div className="text-2xl font-bold text-orange-600">
+                {stats.todayViews}
+              </div>
               <div className="text-sm text-gray-600">Today</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-indigo-600">{stats.weekViews}</div>
+              <div className="text-2xl font-bold text-indigo-600">
+                {stats.weekViews}
+              </div>
               <div className="text-sm text-gray-600">This Week</div>
             </CardContent>
           </Card>
@@ -468,13 +510,14 @@ export default function RecentViews() {
                 <CardContent className="text-center py-12">
                   <Eye className="mx-auto h-16 w-16 text-gray-400 mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    {recentViews.length === 0 ? "No viewing history" : "No properties match your filters"}
+                    {recentViews.length === 0
+                      ? "No viewing history"
+                      : "No properties match your filters"}
                   </h3>
                   <p className="text-gray-500 mb-6">
-                    {recentViews.length === 0 
+                    {recentViews.length === 0
                       ? "Start browsing properties to build your viewing history"
-                      : "Try adjusting your search criteria"
-                    }
+                      : "Try adjusting your search criteria"}
                   </p>
                   {recentViews.length === 0 && (
                     <Link to="/properties">
@@ -489,7 +532,10 @@ export default function RecentViews() {
             ) : viewMode === "grid" ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {getFilteredViews().map((property) => (
-                  <Card key={property._id} className="hover:shadow-lg transition-shadow">
+                  <Card
+                    key={property._id}
+                    className="hover:shadow-lg transition-shadow"
+                  >
                     <div className="relative">
                       <div className="aspect-video w-full bg-gray-200 rounded-t-lg overflow-hidden">
                         {property.images && property.images.length > 0 ? (
@@ -519,7 +565,9 @@ export default function RecentViews() {
 
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between mb-2">
-                        <h3 className="font-semibold text-lg truncate">{property.title}</h3>
+                        <h3 className="font-semibold text-lg truncate">
+                          {property.title}
+                        </h3>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="sm">
@@ -534,16 +582,24 @@ export default function RecentViews() {
                               </Link>
                             </DropdownMenuItem>
                             {!property.isFavorited && (
-                              <DropdownMenuItem onClick={() => addToFavorites(property._id)}>
+                              <DropdownMenuItem
+                                onClick={() => addToFavorites(property._id)}
+                              >
                                 <Heart className="h-4 w-4 mr-2" />
                                 Add to Favorites
                               </DropdownMenuItem>
                             )}
-                            <DropdownMenuItem onClick={() => shareProperty(property)}>
+                            <DropdownMenuItem
+                              onClick={() => shareProperty(property)}
+                            >
                               <Share className="h-4 w-4 mr-2" />
                               Share
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => removeFromRecentViews(property._id)}>
+                            <DropdownMenuItem
+                              onClick={() =>
+                                removeFromRecentViews(property._id)
+                              }
+                            >
                               <Trash2 className="h-4 w-4 mr-2" />
                               Remove from History
                             </DropdownMenuItem>
@@ -557,7 +613,9 @@ export default function RecentViews() {
 
                       <div className="flex items-center space-x-1 text-gray-500 text-sm mb-3">
                         <MapPin className="h-3 w-3" />
-                        <span className="truncate">{property.location.address}</span>
+                        <span className="truncate">
+                          {property.location.address}
+                        </span>
                       </div>
 
                       <div className="text-2xl font-bold text-[#C70000] mb-3">
@@ -594,7 +652,9 @@ export default function RecentViews() {
                           <span>{getTimeAgo(property.viewedAt)}</span>
                         </div>
                         <div className="flex items-center space-x-1">
-                          <span>Spent {formatTimeSpent(property.timeSpent)}</span>
+                          <span>
+                            Spent {formatTimeSpent(property.timeSpent)}
+                          </span>
                         </div>
                       </div>
 
@@ -634,12 +694,16 @@ export default function RecentViews() {
                           <div className="flex items-start justify-between">
                             <div>
                               <div className="flex items-center space-x-2 mb-1">
-                                <h3 className="font-semibold text-lg">{property.title}</h3>
+                                <h3 className="font-semibold text-lg">
+                                  {property.title}
+                                </h3>
                                 {property.isFavorited && (
                                   <Heart className="h-4 w-4 text-red-500 fill-current" />
                                 )}
                               </div>
-                              <p className="text-gray-600 text-sm mb-2">{property.description}</p>
+                              <p className="text-gray-600 text-sm mb-2">
+                                {property.description}
+                              </p>
                               <div className="flex items-center space-x-1 text-gray-500 text-sm mb-2">
                                 <MapPin className="h-3 w-3" />
                                 <span>{property.location.address}</span>
@@ -677,9 +741,13 @@ export default function RecentViews() {
                                 </div>
                                 <div className="flex items-center space-x-1">
                                   <Clock className="h-3 w-3" />
-                                  <span>{formatTimeSpent(property.timeSpent)}</span>
+                                  <span>
+                                    {formatTimeSpent(property.timeSpent)}
+                                  </span>
                                 </div>
-                                <div className="text-xs">{getTimeAgo(property.viewedAt)}</div>
+                                <div className="text-xs">
+                                  {getTimeAgo(property.viewedAt)}
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -702,13 +770,19 @@ export default function RecentViews() {
                                   Add to Favorites
                                 </Button>
                               )}
-                              <Button onClick={() => shareProperty(property)} variant="outline" size="sm">
+                              <Button
+                                onClick={() => shareProperty(property)}
+                                variant="outline"
+                                size="sm"
+                              >
                                 <Share className="h-3 w-3 mr-1" />
                                 Share
                               </Button>
                             </div>
                             <Button
-                              onClick={() => removeFromRecentViews(property._id)}
+                              onClick={() =>
+                                removeFromRecentViews(property._id)
+                              }
                               variant="outline"
                               size="sm"
                             >
@@ -735,7 +809,9 @@ export default function RecentViews() {
                   <div className="text-center py-8">
                     <CalendarDays className="mx-auto h-12 w-12 text-gray-400 mb-4" />
                     <p className="text-gray-500">No viewing sessions yet</p>
-                    <p className="text-sm text-gray-400">Your browsing sessions will appear here</p>
+                    <p className="text-sm text-gray-400">
+                      Your browsing sessions will appear here
+                    </p>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -745,16 +821,24 @@ export default function RecentViews() {
                           <div className="flex items-center justify-between mb-3">
                             <div>
                               <h3 className="font-medium">
-                                {new Date(session.date).toLocaleDateString("en-US", {
-                                  weekday: "long",
-                                  year: "numeric",
-                                  month: "long",
-                                  day: "numeric"
-                                })}
+                                {new Date(session.date).toLocaleDateString(
+                                  "en-US",
+                                  {
+                                    weekday: "long",
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                  },
+                                )}
                               </h3>
                               <div className="flex items-center space-x-4 text-sm text-gray-500">
-                                <span>{session.properties.length} properties viewed</span>
-                                <span>{formatTimeSpent(session.totalTimeSpent)} total time</span>
+                                <span>
+                                  {session.properties.length} properties viewed
+                                </span>
+                                <span>
+                                  {formatTimeSpent(session.totalTimeSpent)}{" "}
+                                  total time
+                                </span>
                               </div>
                               {session.searchQuery && (
                                 <p className="text-sm text-blue-600 mt-1">
@@ -764,9 +848,12 @@ export default function RecentViews() {
                             </div>
                             <ArrowRight className="h-5 w-5 text-gray-400" />
                           </div>
-                          
+
                           <div className="flex items-center space-x-2 text-sm text-gray-600">
-                            <span>Session from {new Date(session.date).toLocaleTimeString()}</span>
+                            <span>
+                              Session from{" "}
+                              {new Date(session.date).toLocaleTimeString()}
+                            </span>
                           </div>
                         </CardContent>
                       </Card>

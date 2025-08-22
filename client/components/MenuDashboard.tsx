@@ -63,15 +63,25 @@ export default function MenuDashboard({ onClose }: MenuDashboardProps) {
         if (response.data.success) {
           const userProperties = response.data.data as Property[];
           setProperties(userProperties);
-          
-          const totalViews = userProperties.reduce((sum, prop) => sum + prop.views, 0);
-          const totalInquiries = userProperties.reduce((sum, prop) => sum + prop.inquiries, 0);
-          
-          setStats(prev => ({
+
+          const totalViews = userProperties.reduce(
+            (sum, prop) => sum + prop.views,
+            0,
+          );
+          const totalInquiries = userProperties.reduce(
+            (sum, prop) => sum + prop.inquiries,
+            0,
+          );
+
+          setStats((prev) => ({
             ...prev,
             totalProperties: userProperties.length,
-            pendingApproval: userProperties.filter(p => p.approvalStatus === "pending").length,
-            approved: userProperties.filter(p => p.approvalStatus === "approved").length,
+            pendingApproval: userProperties.filter(
+              (p) => p.approvalStatus === "pending",
+            ).length,
+            approved: userProperties.filter(
+              (p) => p.approvalStatus === "approved",
+            ).length,
             totalViews,
             totalInquiries,
           }));
@@ -80,14 +90,14 @@ export default function MenuDashboard({ onClose }: MenuDashboardProps) {
 
       // Mock additional stats based on user type
       if (user?.userType === "agent") {
-        setStats(prev => ({
+        setStats((prev) => ({
           ...prev,
           totalClients: 25,
           closedDeals: 12,
           commission: 450000,
         }));
       } else if (user?.userType === "buyer") {
-        setStats(prev => ({
+        setStats((prev) => ({
           ...prev,
           favorites: user?.favorites?.length || 0,
           recentViews: 5,
@@ -117,19 +127,27 @@ export default function MenuDashboard({ onClose }: MenuDashboardProps) {
         return (
           <div className="grid grid-cols-2 gap-3 mb-4">
             <div className="bg-blue-50 p-3 rounded-lg text-center">
-              <div className="text-lg font-bold text-blue-600">{stats.totalProperties}</div>
+              <div className="text-lg font-bold text-blue-600">
+                {stats.totalProperties}
+              </div>
               <div className="text-xs text-blue-700">Total Listings</div>
             </div>
             <div className="bg-green-50 p-3 rounded-lg text-center">
-              <div className="text-lg font-bold text-green-600">{stats.approved}</div>
+              <div className="text-lg font-bold text-green-600">
+                {stats.approved}
+              </div>
               <div className="text-xs text-green-700">Approved</div>
             </div>
             <div className="bg-yellow-50 p-3 rounded-lg text-center">
-              <div className="text-lg font-bold text-yellow-600">{stats.pendingApproval}</div>
+              <div className="text-lg font-bold text-yellow-600">
+                {stats.pendingApproval}
+              </div>
               <div className="text-xs text-yellow-700">Pending</div>
             </div>
             <div className="bg-purple-50 p-3 rounded-lg text-center">
-              <div className="text-lg font-bold text-purple-600">{stats.totalViews}</div>
+              <div className="text-lg font-bold text-purple-600">
+                {stats.totalViews}
+              </div>
               <div className="text-xs text-purple-700">Total Views</div>
             </div>
           </div>
@@ -139,15 +157,21 @@ export default function MenuDashboard({ onClose }: MenuDashboardProps) {
         return (
           <div className="grid grid-cols-2 gap-3 mb-4">
             <div className="bg-blue-50 p-3 rounded-lg text-center">
-              <div className="text-lg font-bold text-blue-600">{stats.totalProperties}</div>
+              <div className="text-lg font-bold text-blue-600">
+                {stats.totalProperties}
+              </div>
               <div className="text-xs text-blue-700">Active Listings</div>
             </div>
             <div className="bg-green-50 p-3 rounded-lg text-center">
-              <div className="text-lg font-bold text-green-600">{stats.totalClients}</div>
+              <div className="text-lg font-bold text-green-600">
+                {stats.totalClients}
+              </div>
               <div className="text-xs text-green-700">Total Clients</div>
             </div>
             <div className="bg-purple-50 p-3 rounded-lg text-center">
-              <div className="text-lg font-bold text-purple-600">{stats.closedDeals}</div>
+              <div className="text-lg font-bold text-purple-600">
+                {stats.closedDeals}
+              </div>
               <div className="text-xs text-purple-700">Closed Deals</div>
             </div>
             <div className="bg-orange-50 p-3 rounded-lg text-center">
@@ -163,11 +187,15 @@ export default function MenuDashboard({ onClose }: MenuDashboardProps) {
         return (
           <div className="grid grid-cols-2 gap-3 mb-4">
             <div className="bg-red-50 p-3 rounded-lg text-center">
-              <div className="text-lg font-bold text-red-600">{stats.favorites}</div>
+              <div className="text-lg font-bold text-red-600">
+                {stats.favorites}
+              </div>
               <div className="text-xs text-red-700">Favorites</div>
             </div>
             <div className="bg-blue-50 p-3 rounded-lg text-center">
-              <div className="text-lg font-bold text-blue-600">{stats.recentViews}</div>
+              <div className="text-lg font-bold text-blue-600">
+                {stats.recentViews}
+              </div>
               <div className="text-xs text-blue-700">Recent Views</div>
             </div>
             <div className="bg-green-50 p-3 rounded-lg text-center">
@@ -185,15 +213,21 @@ export default function MenuDashboard({ onClose }: MenuDashboardProps) {
         return (
           <div className="grid grid-cols-2 gap-3 mb-4">
             <div className="bg-blue-50 p-3 rounded-lg text-center">
-              <div className="text-lg font-bold text-blue-600">{stats.totalProperties}</div>
+              <div className="text-lg font-bold text-blue-600">
+                {stats.totalProperties}
+              </div>
               <div className="text-xs text-blue-700">My Properties</div>
             </div>
             <div className="bg-green-50 p-3 rounded-lg text-center">
-              <div className="text-lg font-bold text-green-600">{stats.approved}</div>
+              <div className="text-lg font-bold text-green-600">
+                {stats.approved}
+              </div>
               <div className="text-xs text-green-700">Approved</div>
             </div>
             <div className="bg-purple-50 p-3 rounded-lg text-center">
-              <div className="text-lg font-bold text-purple-600">{stats.totalViews}</div>
+              <div className="text-lg font-bold text-purple-600">
+                {stats.totalViews}
+              </div>
               <div className="text-xs text-purple-700">Total Views</div>
             </div>
             <div className="bg-orange-50 p-3 rounded-lg text-center">
@@ -259,13 +293,16 @@ export default function MenuDashboard({ onClose }: MenuDashboardProps) {
     };
 
     const actions = [
-      ...(userTypeActions[user?.userType as keyof typeof userTypeActions] || []),
+      ...(userTypeActions[user?.userType as keyof typeof userTypeActions] ||
+        []),
       ...commonActions,
     ];
 
     return (
       <div className="space-y-2 mb-4">
-        <h4 className="text-sm font-medium text-gray-700 mb-2">Quick Actions</h4>
+        <h4 className="text-sm font-medium text-gray-700 mb-2">
+          Quick Actions
+        </h4>
         {actions.map((action, index) => (
           <button
             key={index}
@@ -324,10 +361,13 @@ export default function MenuDashboard({ onClose }: MenuDashboardProps) {
           <h3 className="font-semibold text-gray-900">{user?.name}</h3>
           <div className="flex items-center space-x-2">
             <Badge variant="outline" className="text-xs">
-              {user?.userType === "agent" && <Briefcase className="h-3 w-3 mr-1" />}
+              {user?.userType === "agent" && (
+                <Briefcase className="h-3 w-3 mr-1" />
+              )}
               {user?.userType === "seller" && <Home className="h-3 w-3 mr-1" />}
               {user?.userType === "buyer" && <User className="h-3 w-3 mr-1" />}
-              {user?.userType?.charAt(0).toUpperCase() + user?.userType?.slice(1)}
+              {user?.userType?.charAt(0).toUpperCase() +
+                user?.userType?.slice(1)}
             </Badge>
           </div>
         </div>
@@ -340,39 +380,46 @@ export default function MenuDashboard({ onClose }: MenuDashboardProps) {
       {renderQuickActions()}
 
       {/* Recent Properties (for sellers/agents) */}
-      {(user?.userType === "seller" || user?.userType === "agent") && properties.length > 0 && (
-        <div className="mb-4">
-          <h4 className="text-sm font-medium text-gray-700 mb-2">Recent Listings</h4>
-          <div className="space-y-2">
-            {properties.slice(0, 3).map((property) => (
-              <div
-                key={property._id}
-                className="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg"
-              >
-                <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center flex-shrink-0">
-                  <Home className="h-4 w-4 text-gray-400" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">
-                    {property.title}
-                  </p>
-                  <div className="flex items-center space-x-2 text-xs text-gray-500">
-                    <span>₹{property.price.toLocaleString()}</span>
-                    <span>•</span>
-                    <span>{property.views} views</span>
-                  </div>
-                </div>
-                <Badge
-                  variant={property.approvalStatus === "approved" ? "default" : "outline"}
-                  className="text-xs"
+      {(user?.userType === "seller" || user?.userType === "agent") &&
+        properties.length > 0 && (
+          <div className="mb-4">
+            <h4 className="text-sm font-medium text-gray-700 mb-2">
+              Recent Listings
+            </h4>
+            <div className="space-y-2">
+              {properties.slice(0, 3).map((property) => (
+                <div
+                  key={property._id}
+                  className="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg"
                 >
-                  {property.approvalStatus}
-                </Badge>
-              </div>
-            ))}
+                  <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center flex-shrink-0">
+                    <Home className="h-4 w-4 text-gray-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {property.title}
+                    </p>
+                    <div className="flex items-center space-x-2 text-xs text-gray-500">
+                      <span>₹{property.price.toLocaleString()}</span>
+                      <span>•</span>
+                      <span>{property.views} views</span>
+                    </div>
+                  </div>
+                  <Badge
+                    variant={
+                      property.approvalStatus === "approved"
+                        ? "default"
+                        : "outline"
+                    }
+                    className="text-xs"
+                  >
+                    {property.approvalStatus}
+                  </Badge>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* Full Dashboard Button */}
       <div className="mb-4">
