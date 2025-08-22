@@ -430,7 +430,7 @@ export default function EnhancedSellerDashboard() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-6">
-          <Card>
+          <Card key="stats-properties">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Properties</CardTitle>
               <Home className="h-4 w-4 text-muted-foreground" />
