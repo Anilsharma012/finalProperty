@@ -63,6 +63,11 @@ import OtherServicesListings from "./pages/OtherServicesListings";
 import TestChat from "./pages/TestChat";
 import Step3Test from "./pages/Step3Test";
 import NetworkStatus from "./components/NetworkStatus";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import HelpCenter from "./pages/HelpCenter";
 
 const queryClient = new QueryClient();
 
