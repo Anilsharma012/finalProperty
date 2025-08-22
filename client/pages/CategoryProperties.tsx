@@ -15,6 +15,7 @@ import Header from "../components/Header";
 import BottomNavigation from "../components/BottomNavigation";
 import { Button } from "../components/ui/button";
 import { Property } from "@shared/types";
+import { ReviewSectionCompact } from "../components/ReviewSection";
 
 interface FilterState {
   priceType: string;
