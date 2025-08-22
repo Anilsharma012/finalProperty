@@ -390,6 +390,14 @@ import {
 } from "./routes/footer";
 import { testFooterData } from "./routes/footerTest";
 
+// Contact form routes
+import {
+  submitContactForm,
+  getContactSubmissions,
+  updateContactStatus,
+  getContactStats,
+} from "./routes/contact";
+
 // Custom fields routes
 import {
   getAllCustomFields,
@@ -467,10 +475,12 @@ export function createServer() {
 
         // In development, allow any localhost, fly.dev, or builder.codes origin
         if (process.env.NODE_ENV !== "production") {
-          if (origin?.includes("localhost") ||
-              origin?.includes(".fly.dev") ||
-              origin?.includes(".builder.codes") ||
-              origin?.includes("projects.builder.codes")) {
+          if (
+            origin?.includes("localhost") ||
+            origin?.includes(".fly.dev") ||
+            origin?.includes(".builder.codes") ||
+            origin?.includes("projects.builder.codes")
+          ) {
             console.log("✅ CORS allowed for development origin:", origin);
             return callback(null, true);
           }
@@ -1715,6 +1725,27 @@ export function createServer() {
     authenticateToken,
     requireAdmin,
     updateEnquiryStatus,
+  );
+
+  // Contact form routes
+  app.post("/api/contact", submitContactForm); // Public endpoint for contact form submissions
+  app.get(
+    "/api/admin/contact",
+    authenticateToken,
+    requireAdmin,
+    getContactSubmissions,
+  );
+  app.put(
+    "/api/admin/contact/:id/status",
+    authenticateToken,
+    requireAdmin,
+    updateContactStatus,
+  );
+  app.get(
+    "/api/admin/contact/stats",
+    authenticateToken,
+    requireAdmin,
+    getContactStats,
   );
 
   // Tickets (support) routes

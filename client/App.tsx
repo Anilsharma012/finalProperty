@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./hooks/useAuth";
+import { FirebaseAuthProvider } from "./hooks/useFirebaseAuth";
 import ErrorBoundary from "./components/ErrorBoundary";
 import PageUpdateNotification from "./components/PageUpdateNotification";
 import "./lib/global-api"; // Make API helper globally available
@@ -63,6 +64,11 @@ import OtherServicesListings from "./pages/OtherServicesListings";
 import TestChat from "./pages/TestChat";
 import Step3Test from "./pages/Step3Test";
 import NetworkStatus from "./components/NetworkStatus";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import HelpCenter from "./pages/HelpCenter";
 
 const queryClient = new QueryClient();
 
@@ -158,7 +164,7 @@ function App() {
                 <Route path="/recent-views" element={<RecentViews />} />
                 <Route path="/leads" element={<Leads />} />
                 {/* Content Pages */}
-                <Route path="/about-us" element={<ContentPage />} />
+                <Route path="/about-uss" element={<ContentPage />} />
                 <Route path="/privacy-policy" element={<ContentPage />} />
                 <Route path="/terms-conditions" element={<ContentPage />} />
                 <Route path="/refund-policy" element={<ContentPage />} />
@@ -166,9 +172,18 @@ function App() {
                 {/* Footer Test Page */}
                 <Route path="/footer-test" element={<FooterTest />} />
                 <Route path="/footer-debug" element={<FooterDebugPage />} />
+
+                {/* Footer Pages - Static Routes (must be before catch-all routes) */}
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms-of-service" element={<TermsOfService />} />
+                <Route path="/help-center" element={<HelpCenter />} />
+
                 {/* Dynamic Pages from Admin */}
                 <Route path="/page/:slug" element={<DynamicPage />} />
                 <Route path="/:slug" element={<ContentPage />} />
+
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
