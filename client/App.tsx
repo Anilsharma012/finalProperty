@@ -135,6 +135,7 @@ function App() {
                 <Route path="/user-login" element={<EnhancedUserLogin />} />
                 <Route path="/auth" element={<ComprehensiveAuth />} />
                 <Route path="/firebase-auth" element={<FirebaseAuth />} />
+                <Route path="/firebase-auth-test" element={<FirebaseAuthTest />} />
                 <Route path="/user" element={<User />} />
                 <Route path="/user-dashboard" element={<UserDashboard />} />
                 <Route path="/post-property" element={<PostProperty />} />
