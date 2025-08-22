@@ -1725,6 +1725,27 @@ export function createServer() {
     updateEnquiryStatus,
   );
 
+  // Contact form routes
+  app.post("/api/contact", submitContactForm); // Public endpoint for contact form submissions
+  app.get(
+    "/api/admin/contact",
+    authenticateToken,
+    requireAdmin,
+    getContactSubmissions,
+  );
+  app.put(
+    "/api/admin/contact/:id/status",
+    authenticateToken,
+    requireAdmin,
+    updateContactStatus,
+  );
+  app.get(
+    "/api/admin/contact/stats",
+    authenticateToken,
+    requireAdmin,
+    getContactStats,
+  );
+
   // Tickets (support) routes
   app.post("/api/tickets", authenticateToken, createTicket);
   app.get("/api/tickets/my", authenticateToken, getUserTickets);
