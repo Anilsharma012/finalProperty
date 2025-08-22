@@ -67,6 +67,7 @@ import SellerVerificationFields from "../components/admin/SellerVerificationFiel
 import PendingPropertiesApproval from "../components/admin/PendingPropertiesApproval";
 import OtherServicesManagement from "../components/admin/OtherServicesManagement";
 import SupportInbox from "../components/admin/SupportInbox";
+import AdminReviewManagement from "../components/admin/AdminReviewManagement";
 import {
   Table,
   TableBody,
