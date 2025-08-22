@@ -29,6 +29,7 @@ import { toast } from "../components/ui/use-toast";
 import ChatBot from "../components/ChatBot";
 import ApiDiagnostic from "../components/ApiDiagnostic";
 import EnquiryModal from "../components/EnquiryModal";
+import { ReviewSection } from "../components/ReviewSection";
 
 interface Property {
   _id: string;
@@ -655,6 +656,11 @@ export default function PropertyDetail() {
               </CardContent>
             </Card>
           </div>
+        </div>
+
+        {/* Review Section */}
+        <div className="mt-8">
+          <ReviewSection propertyId={property._id} />
         </div>
       </div>
 

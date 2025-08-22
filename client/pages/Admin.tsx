@@ -67,6 +67,7 @@ import SellerVerificationFields from "../components/admin/SellerVerificationFiel
 import PendingPropertiesApproval from "../components/admin/PendingPropertiesApproval";
 import OtherServicesManagement from "../components/admin/OtherServicesManagement";
 import SupportInbox from "../components/admin/SupportInbox";
+import AdminReviewManagement from "../components/admin/AdminReviewManagement";
 import {
   Table,
   TableBody,
@@ -1061,6 +1062,10 @@ export default function Admin() {
           return <TestimonialManagement />;
         case "seller-review-report":
           return <TestimonialManagement />;
+        case "review-management":
+          return <AdminReviewManagement />;
+        case "reviews":
+          return <AdminReviewManagement />;
         case "slider":
           return <HomepageSliderManagement />;
         case "feature-section":

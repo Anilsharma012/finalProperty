@@ -432,6 +432,22 @@ import {
   updateEnquiryStatus,
 } from "./routes/enquiries";
 
+// Review routes
+import {
+  getPropertyReviews,
+  createReview,
+  updateReview,
+  deleteReview,
+  markReviewHelpful,
+  getAllReviews,
+  updateReviewStatus,
+  replyToReview,
+  deleteAdminReply,
+  getPropertyReviewStats,
+  getUserReviews,
+  uploadReviewImages,
+} from "./routes/reviews";
+
 // Other Services routes
 import {
   getAllOtherServices,
@@ -467,10 +483,12 @@ export function createServer() {
 
         // In development, allow any localhost, fly.dev, or builder.codes origin
         if (process.env.NODE_ENV !== "production") {
-          if (origin?.includes("localhost") ||
-              origin?.includes(".fly.dev") ||
-              origin?.includes(".builder.codes") ||
-              origin?.includes("projects.builder.codes")) {
+          if (
+            origin?.includes("localhost") ||
+            origin?.includes(".fly.dev") ||
+            origin?.includes(".builder.codes") ||
+            origin?.includes("projects.builder.codes")
+          ) {
             console.log("✅ CORS allowed for development origin:", origin);
             return callback(null, true);
           }
@@ -1196,6 +1214,53 @@ export function createServer() {
     authenticateToken,
     requireAdmin,
     updateConversationStatus,
+  );
+
+  // Review routes
+  // Public review routes
+  app.get("/api/properties/:propertyId/reviews", getPropertyReviews);
+  app.get("/api/properties/:propertyId/reviews/stats", getPropertyReviewStats);
+
+  // Authenticated review routes
+  app.post(
+    "/api/reviews",
+    authenticateToken,
+    uploadReviewImages.array("images", 5),
+    createReview,
+  );
+  app.put(
+    "/api/reviews/:reviewId",
+    authenticateToken,
+    uploadReviewImages.array("images", 5),
+    updateReview,
+  );
+  app.delete("/api/reviews/:reviewId", authenticateToken, deleteReview);
+  app.post(
+    "/api/reviews/:reviewId/helpful",
+    authenticateToken,
+    markReviewHelpful,
+  );
+  app.get("/api/user/reviews", authenticateToken, getUserReviews);
+
+  // Admin review routes
+  app.get("/api/admin/reviews", authenticateToken, requireAdmin, getAllReviews);
+  app.put(
+    "/api/admin/reviews/:reviewId/status",
+    authenticateToken,
+    requireAdmin,
+    updateReviewStatus,
+  );
+  app.post(
+    "/api/admin/reviews/:reviewId/reply",
+    authenticateToken,
+    requireAdmin,
+    replyToReview,
+  );
+  app.delete(
+    "/api/admin/reviews/:reviewId/reply",
+    authenticateToken,
+    requireAdmin,
+    deleteAdminReply,
   );
 
   // Testimonials routes
