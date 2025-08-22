@@ -12,6 +12,7 @@ import PageUpdateNotification from "./components/PageUpdateNotification";
 import "./lib/global-api"; // Make API helper globally available
 import Index from "./pages/Index";
 import FirebaseAuth from "./pages/FirebaseAuth";
+import FirebaseAuthTest from "./pages/FirebaseAuthTest";
 import Categories from "./pages/Categories";
 import Properties from "./pages/Properties";
 import Buy from "./pages/Buy";
