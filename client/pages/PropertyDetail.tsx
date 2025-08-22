@@ -657,6 +657,11 @@ export default function PropertyDetail() {
             </Card>
           </div>
         </div>
+
+        {/* Review Section */}
+        <div className="mt-8">
+          <ReviewSection propertyId={property._id} />
+        </div>
       </div>
 
       {/* ChatBot Integration */}
