@@ -16,6 +16,21 @@ import CategoryDrawer from "./CategoryDrawer";
 
 export default function StaticFooter() {
   const [isCategoryDrawerOpen, setIsCategoryDrawerOpen] = useState(false);
+  const location = useLocation();
+
+  // Helper function to determine if a link is active
+  const isActiveLink = (path: string) => {
+    return location.pathname === path;
+  };
+
+  // Helper function to get link classes with active state
+  const getLinkClasses = (path: string) => {
+    const baseClasses = "transition-colors duration-200 text-sm flex items-center";
+    const activeClasses = "text-white font-medium";
+    const inactiveClasses = "text-red-200 hover:text-white";
+
+    return `${baseClasses} ${isActiveLink(path) ? activeClasses : inactiveClasses}`;
+  };
 
   return (
     <footer className="bg-gradient-to-r from-[#C70000] to-red-700 text-white relative overflow-hidden">
