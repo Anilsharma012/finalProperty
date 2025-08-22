@@ -1,4 +1,4 @@
-l9 `import { MongoClient, Db } from "mongodb";
+import { MongoClient, Db } from "mongodb";
 
 // URL encode the password to handle special characters
 const username = "Aashishpropeorty";
