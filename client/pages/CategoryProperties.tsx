@@ -698,6 +698,14 @@ export default function CategoryProperties() {
                         <span>{property.specifications?.area || 0} sq ft</span>
                       </div>
 
+                      {/* Review Display */}
+                      <div className="mb-3">
+                        <ReviewSectionCompact
+                          propertyId={property._id!}
+                          onClick={() => window.location.href = `/property/${property._id}`}
+                        />
+                      </div>
+
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-gray-400">
                           {property.contactInfo?.name || "Owner"}
@@ -705,6 +713,7 @@ export default function CategoryProperties() {
                         <Button
                           size="sm"
                           className="bg-[#C70000] hover:bg-[#A60000] text-white"
+                          onClick={() => window.location.href = `/property/${property._id}`}
                         >
                           <Phone className="h-3 w-3 mr-1" />
                           Call
