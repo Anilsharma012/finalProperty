@@ -702,7 +702,9 @@ export default function CategoryProperties() {
                       <div className="mb-3">
                         <ReviewSectionCompact
                           propertyId={property._id!}
-                          onClick={() => window.location.href = `/property/${property._id}`}
+                          onClick={() =>
+                            (window.location.href = `/property/${property._id}`)
+                          }
                         />
                       </div>
 
@@ -713,7 +715,9 @@ export default function CategoryProperties() {
                         <Button
                           size="sm"
                           className="bg-[#C70000] hover:bg-[#A60000] text-white"
-                          onClick={() => window.location.href = `/property/${property._id}`}
+                          onClick={() =>
+                            (window.location.href = `/property/${property._id}`)
+                          }
                         >
                           <Phone className="h-3 w-3 mr-1" />
                           Call

@@ -460,7 +460,12 @@ export interface ReviewStats {
 
 export interface ReviewFilters {
   rating?: number;
-  sortBy?: "newest" | "oldest" | "highest_rating" | "lowest_rating" | "most_helpful";
+  sortBy?:
+    | "newest"
+    | "oldest"
+    | "highest_rating"
+    | "lowest_rating"
+    | "most_helpful";
   status?: "pending" | "approved" | "rejected";
   flagged?: boolean;
 }

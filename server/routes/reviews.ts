@@ -53,9 +53,9 @@ export const getPropertyReviews: RequestHandler = async (req, res) => {
     }
 
     // Build filter object - only show approved reviews for public
-    const filter: any = { 
+    const filter: any = {
       propertyId: propertyId,
-      status: "approved"
+      status: "approved",
     };
 
     if (rating) {
@@ -367,7 +367,11 @@ export const deleteReview: RequestHandler = async (req, res) => {
     }
 
     // Check permissions - either owner or admin
-    if (review.userId !== userId && userType !== "admin" && userType !== "staff") {
+    if (
+      review.userId !== userId &&
+      userType !== "admin" &&
+      userType !== "staff"
+    ) {
       return res.status(403).json({
         success: false,
         error: "You can only delete your own reviews",
@@ -434,16 +438,14 @@ export const markReviewHelpful: RequestHandler = async (req, res) => {
     }
 
     // Add user to helpful votes and increment count
-    await db
-      .collection("reviews")
-      .updateOne(
-        { _id: new ObjectId(reviewId) },
-        {
-          $push: { helpfulVotes: userId },
-          $inc: { helpful: 1 },
-          $set: { updatedAt: new Date() },
-        }
-      );
+    await db.collection("reviews").updateOne(
+      { _id: new ObjectId(reviewId) },
+      {
+        $push: { helpfulVotes: userId },
+        $inc: { helpful: 1 },
+        $set: { updatedAt: new Date() },
+      },
+    );
 
     const response: ApiResponse<{ message: string }> = {
       success: true,
@@ -529,9 +531,11 @@ export const getAllReviews: RequestHandler = async (req, res) => {
           .findOne({ _id: new ObjectId(review.propertyId) });
         return {
           ...review,
-          property: property ? { _id: property._id, title: property.title } : null,
+          property: property
+            ? { _id: property._id, title: property.title }
+            : null,
         };
-      })
+      }),
     );
 
     const response: ApiResponse<{
@@ -677,17 +681,15 @@ export const replyToReview: RequestHandler = async (req, res) => {
       repliedAt: new Date(),
     };
 
-    await db
-      .collection("reviews")
-      .updateOne(
-        { _id: new ObjectId(reviewId) },
-        {
-          $set: {
-            adminReply: adminReply,
-            updatedAt: new Date(),
-          },
-        }
-      );
+    await db.collection("reviews").updateOne(
+      { _id: new ObjectId(reviewId) },
+      {
+        $set: {
+          adminReply: adminReply,
+          updatedAt: new Date(),
+        },
+      },
+    );
 
     const response: ApiResponse<{ message: string }> = {
       success: true,
@@ -717,15 +719,13 @@ export const deleteAdminReply: RequestHandler = async (req, res) => {
       });
     }
 
-    await db
-      .collection("reviews")
-      .updateOne(
-        { _id: new ObjectId(reviewId) },
-        {
-          $unset: { adminReply: 1 },
-          $set: { updatedAt: new Date() },
-        }
-      );
+    await db.collection("reviews").updateOne(
+      { _id: new ObjectId(reviewId) },
+      {
+        $unset: { adminReply: 1 },
+        $set: { updatedAt: new Date() },
+      },
+    );
 
     const response: ApiResponse<{ message: string }> = {
       success: true,
@@ -746,14 +746,14 @@ export const deleteAdminReply: RequestHandler = async (req, res) => {
 async function getReviewStatistics(propertyId: string): Promise<ReviewStats> {
   try {
     const db = getDatabase();
-    
+
     const reviews = await db
       .collection("reviews")
       .find({ propertyId: propertyId, status: "approved" })
       .toArray();
 
     const totalReviews = reviews.length;
-    
+
     if (totalReviews === 0) {
       return {
         totalReviews: 0,
@@ -840,7 +840,9 @@ export const getUserReviews: RequestHandler = async (req, res) => {
       .limit(limitNum)
       .toArray();
 
-    const total = await db.collection("reviews").countDocuments({ userId: userId });
+    const total = await db
+      .collection("reviews")
+      .countDocuments({ userId: userId });
 
     // Get property details for each review
     const reviewsWithProperty = await Promise.all(
@@ -850,13 +852,15 @@ export const getUserReviews: RequestHandler = async (req, res) => {
           .findOne({ _id: new ObjectId(review.propertyId) });
         return {
           ...review,
-          property: property ? { 
-            _id: property._id, 
-            title: property.title,
-            images: property.images
-          } : null,
+          property: property
+            ? {
+                _id: property._id,
+                title: property.title,
+                images: property.images,
+              }
+            : null,
         };
-      })
+      }),
     );
 
     const response: ApiResponse<{

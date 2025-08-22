@@ -1,23 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { Review, ReviewStats as ReviewStatsType, ReviewFilters } from '@shared/types';
-import { ReviewCard } from './ReviewCard';
-import { ReviewStats } from './ReviewStats';
-import { Button } from './ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Input } from './ui/input';
-import { Card, CardContent } from './ui/card';
-import { Alert, AlertDescription } from './ui/alert';
-import { 
-  Star, 
-  Filter, 
-  Search, 
-  SortAsc, 
-  SortDesc, 
+import React, { useState, useEffect } from "react";
+import {
+  Review,
+  ReviewStats as ReviewStatsType,
+  ReviewFilters,
+} from "@shared/types";
+import { ReviewCard } from "./ReviewCard";
+import { ReviewStats } from "./ReviewStats";
+import { Button } from "./ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { Input } from "./ui/input";
+import { Card, CardContent } from "./ui/card";
+import { Alert, AlertDescription } from "./ui/alert";
+import {
+  Star,
+  Filter,
+  Search,
+  SortAsc,
+  SortDesc,
   Loader2,
   MessageSquare,
-  AlertCircle
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+  AlertCircle,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ReviewListProps {
   propertyId: string;
@@ -54,9 +64,9 @@ export const ReviewList: React.FC<ReviewListProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState<ReviewFilters>({
-    sortBy: 'newest',
+    sortBy: "newest",
   });
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
   const fetchReviews = async (page = 1, currentFilters = filters) => {
     try {
@@ -65,31 +75,33 @@ export const ReviewList: React.FC<ReviewListProps> = ({
 
       const params = new URLSearchParams({
         page: page.toString(),
-        limit: '10',
-        sortBy: currentFilters.sortBy || 'newest',
+        limit: "10",
+        sortBy: currentFilters.sortBy || "newest",
       });
 
       if (currentFilters.rating) {
-        params.append('rating', currentFilters.rating.toString());
+        params.append("rating", currentFilters.rating.toString());
       }
 
-      const response = await fetch(`/api/properties/${propertyId}/reviews?${params}`);
-      
+      const response = await fetch(
+        `/api/properties/${propertyId}/reviews?${params}`,
+      );
+
       if (!response.ok) {
-        throw new Error('Failed to fetch reviews');
+        throw new Error("Failed to fetch reviews");
       }
 
       const result = await response.json();
-      
+
       if (result.success) {
         setReviewData(result.data);
         setCurrentPage(page);
       } else {
-        throw new Error(result.error || 'Failed to fetch reviews');
+        throw new Error(result.error || "Failed to fetch reviews");
       }
     } catch (err) {
-      console.error('Error fetching reviews:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch reviews');
+      console.error("Error fetching reviews:", err);
+      setError(err instanceof Error ? err.message : "Failed to fetch reviews");
     } finally {
       setLoading(false);
     }
@@ -100,12 +112,15 @@ export const ReviewList: React.FC<ReviewListProps> = ({
   }, [propertyId, filters]);
 
   const handleSortChange = (sortBy: string) => {
-    const newFilters = { ...filters, sortBy: sortBy as ReviewFilters['sortBy'] };
+    const newFilters = {
+      ...filters,
+      sortBy: sortBy as ReviewFilters["sortBy"],
+    };
     setFilters(newFilters);
   };
 
   const handleRatingFilter = (rating: string) => {
-    const ratingNumber = rating === 'all' ? undefined : parseInt(rating);
+    const ratingNumber = rating === "all" ? undefined : parseInt(rating);
     const newFilters = { ...filters, rating: ratingNumber };
     setFilters(newFilters);
   };
@@ -113,9 +128,9 @@ export const ReviewList: React.FC<ReviewListProps> = ({
   const handleMarkHelpful = async (reviewId: string) => {
     try {
       const response = await fetch(`/api/reviews/${reviewId}/helpful`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
@@ -124,20 +139,20 @@ export const ReviewList: React.FC<ReviewListProps> = ({
         fetchReviews(currentPage, filters);
       }
     } catch (error) {
-      console.error('Error marking review as helpful:', error);
+      console.error("Error marking review as helpful:", error);
     }
   };
 
   const handleDeleteReview = async (reviewId: string) => {
-    if (!confirm('Are you sure you want to delete this review?')) {
+    if (!confirm("Are you sure you want to delete this review?")) {
       return;
     }
 
     try {
       const response = await fetch(`/api/reviews/${reviewId}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
@@ -149,28 +164,29 @@ export const ReviewList: React.FC<ReviewListProps> = ({
         }
       }
     } catch (error) {
-      console.error('Error deleting review:', error);
+      console.error("Error deleting review:", error);
     }
   };
 
   const handleFlagReview = async (reviewId: string) => {
     // This would open a flag/report dialog
-    console.log('Flag review:', reviewId);
+    console.log("Flag review:", reviewId);
   };
 
-  const filteredReviews = reviewData?.reviews.filter(review => {
-    if (!searchTerm) return true;
-    const searchLower = searchTerm.toLowerCase();
-    return (
-      review.title.toLowerCase().includes(searchLower) ||
-      review.comment.toLowerCase().includes(searchLower) ||
-      review.userName.toLowerCase().includes(searchLower)
-    );
-  }) || [];
+  const filteredReviews =
+    reviewData?.reviews.filter((review) => {
+      if (!searchTerm) return true;
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        review.title.toLowerCase().includes(searchLower) ||
+        review.comment.toLowerCase().includes(searchLower) ||
+        review.userName.toLowerCase().includes(searchLower)
+      );
+    }) || [];
 
   if (loading && !reviewData) {
     return (
-      <div className={cn('w-full', className)}>
+      <div className={cn("w-full", className)}>
         <Card>
           <CardContent className="py-8">
             <div className="flex items-center justify-center space-x-2">
@@ -185,7 +201,7 @@ export const ReviewList: React.FC<ReviewListProps> = ({
 
   if (error) {
     return (
-      <div className={cn('w-full', className)}>
+      <div className={cn("w-full", className)}>
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
@@ -195,11 +211,9 @@ export const ReviewList: React.FC<ReviewListProps> = ({
   }
 
   return (
-    <div className={cn('w-full space-y-6', className)}>
+    <div className={cn("w-full space-y-6", className)}>
       {/* Review Statistics */}
-      {reviewData && (
-        <ReviewStats stats={reviewData.stats} />
-      )}
+      {reviewData && <ReviewStats stats={reviewData.stats} />}
 
       {/* Filters and Search */}
       <Card>
@@ -272,13 +286,12 @@ export const ReviewList: React.FC<ReviewListProps> = ({
                 <MessageSquare className="h-12 w-12 text-gray-400" />
                 <div>
                   <h3 className="font-medium text-gray-900">
-                    {searchTerm ? 'No reviews found' : 'No reviews yet'}
+                    {searchTerm ? "No reviews found" : "No reviews yet"}
                   </h3>
                   <p className="text-sm text-gray-500 mt-1">
-                    {searchTerm 
-                      ? 'Try adjusting your search terms or filters'
-                      : 'Be the first to review this property'
-                    }
+                    {searchTerm
+                      ? "Try adjusting your search terms or filters"
+                      : "Be the first to review this property"}
                   </p>
                 </div>
               </div>
@@ -312,22 +325,25 @@ export const ReviewList: React.FC<ReviewListProps> = ({
           >
             Previous
           </Button>
-          
+
           <div className="flex items-center space-x-1">
-            {Array.from({ length: Math.min(5, reviewData.pagination.pages) }, (_, i) => {
-              const page = i + 1;
-              return (
-                <Button
-                  key={page}
-                  variant={page === currentPage ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => fetchReviews(page, filters)}
-                  disabled={loading}
-                >
-                  {page}
-                </Button>
-              );
-            })}
+            {Array.from(
+              { length: Math.min(5, reviewData.pagination.pages) },
+              (_, i) => {
+                const page = i + 1;
+                return (
+                  <Button
+                    key={page}
+                    variant={page === currentPage ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => fetchReviews(page, filters)}
+                    disabled={loading}
+                  >
+                    {page}
+                  </Button>
+                );
+              },
+            )}
           </div>
 
           <Button

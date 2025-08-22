@@ -1,21 +1,14 @@
-import React, { useState, useRef } from 'react';
-import { Review, ReviewSubmission } from '@shared/types';
-import { ReviewRating } from './ReviewRating';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Textarea } from './ui/textarea';
-import { Label } from './ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Alert, AlertDescription } from './ui/alert';
-import { 
-  Camera, 
-  X, 
-  Star, 
-  AlertCircle, 
-  Loader2,
-  Upload
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+import React, { useState, useRef } from "react";
+import { Review, ReviewSubmission } from "@shared/types";
+import { ReviewRating } from "./ReviewRating";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import { Label } from "./ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Alert, AlertDescription } from "./ui/alert";
+import { Camera, X, Star, AlertCircle, Loader2, Upload } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ReviewFormProps {
   propertyId?: string;
@@ -37,8 +30,8 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
   className,
 }) => {
   const [rating, setRating] = useState(existingReview?.rating || 0);
-  const [title, setTitle] = useState(existingReview?.title || '');
-  const [comment, setComment] = useState(existingReview?.comment || '');
+  const [title, setTitle] = useState(existingReview?.title || "");
+  const [comment, setComment] = useState(existingReview?.comment || "");
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -48,23 +41,23 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
     const newErrors: Record<string, string> = {};
 
     if (rating === 0) {
-      newErrors.rating = 'Please select a rating';
+      newErrors.rating = "Please select a rating";
     }
 
     if (!title.trim()) {
-      newErrors.title = 'Please enter a review title';
+      newErrors.title = "Please enter a review title";
     } else if (title.trim().length < 5) {
-      newErrors.title = 'Title must be at least 5 characters long';
+      newErrors.title = "Title must be at least 5 characters long";
     }
 
     if (!comment.trim()) {
-      newErrors.comment = 'Please enter your review comment';
+      newErrors.comment = "Please enter your review comment";
     } else if (comment.trim().length < 10) {
-      newErrors.comment = 'Comment must be at least 10 characters long';
+      newErrors.comment = "Comment must be at least 10 characters long";
     }
 
     if (images.length > 5) {
-      newErrors.images = 'Maximum 5 images allowed';
+      newErrors.images = "Maximum 5 images allowed";
     }
 
     setErrors(newErrors);
@@ -73,7 +66,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -88,56 +81,62 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
     try {
       await onSubmit(reviewData, images);
     } catch (error) {
-      console.error('Error submitting review:', error);
+      console.error("Error submitting review:", error);
     }
   };
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    
+
     if (files.length + images.length > 5) {
-      setErrors({ ...errors, images: 'Maximum 5 images allowed' });
+      setErrors({ ...errors, images: "Maximum 5 images allowed" });
       return;
     }
 
-    setErrors({ ...errors, images: '' });
+    setErrors({ ...errors, images: "" });
 
     const newImages = [...images, ...files];
     setImages(newImages);
 
     // Create preview URLs
-    const newPreviews = files.map(file => URL.createObjectURL(file));
-    setPreviews(prev => [...prev, ...newPreviews]);
+    const newPreviews = files.map((file) => URL.createObjectURL(file));
+    setPreviews((prev) => [...prev, ...newPreviews]);
   };
 
   const removeImage = (index: number) => {
     const newImages = images.filter((_, i) => i !== index);
     const newPreviews = previews.filter((_, i) => i !== index);
-    
+
     // Revoke the URL to prevent memory leaks
     URL.revokeObjectURL(previews[index]);
-    
+
     setImages(newImages);
     setPreviews(newPreviews);
   };
 
   const getRatingText = (rating: number) => {
     switch (rating) {
-      case 1: return 'Poor';
-      case 2: return 'Fair';
-      case 3: return 'Good';
-      case 4: return 'Very Good';
-      case 5: return 'Excellent';
-      default: return 'Select Rating';
+      case 1:
+        return "Poor";
+      case 2:
+        return "Fair";
+      case 3:
+        return "Good";
+      case 4:
+        return "Very Good";
+      case 5:
+        return "Excellent";
+      default:
+        return "Select Rating";
     }
   };
 
   return (
-    <Card className={cn('w-full', className)}>
+    <Card className={cn("w-full", className)}>
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <Star className="h-5 w-5 text-yellow-400" />
-          <span>{isEditing ? 'Edit Your Review' : 'Write a Review'}</span>
+          <span>{isEditing ? "Edit Your Review" : "Write a Review"}</span>
         </CardTitle>
       </CardHeader>
 
@@ -180,7 +179,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Summarize your experience..."
               maxLength={100}
-              className={errors.title ? 'border-red-500' : ''}
+              className={errors.title ? "border-red-500" : ""}
             />
             <div className="flex justify-between items-center">
               <span className="text-xs text-gray-500">
@@ -204,7 +203,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
               placeholder="Share your detailed experience with this property..."
               rows={5}
               maxLength={1000}
-              className={errors.comment ? 'border-red-500' : ''}
+              className={errors.comment ? "border-red-500" : ""}
             />
             <div className="flex justify-between items-center">
               <span className="text-xs text-gray-500">
@@ -218,9 +217,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
 
           {/* Image Upload Section */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium">
-              Photos (Optional)
-            </Label>
+            <Label className="text-sm font-medium">Photos (Optional)</Label>
             <div className="space-y-3">
               {/* Upload Button */}
               <div className="flex items-center space-x-2">
@@ -304,10 +301,10 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
               {isLoading ? (
                 <div className="flex items-center space-x-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>{isEditing ? 'Updating...' : 'Publishing...'}</span>
+                  <span>{isEditing ? "Updating..." : "Publishing..."}</span>
                 </div>
               ) : (
-                <span>{isEditing ? 'Update Review' : 'Publish Review'}</span>
+                <span>{isEditing ? "Update Review" : "Publish Review"}</span>
               )}
             </Button>
           </div>

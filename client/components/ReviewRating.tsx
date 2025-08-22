@@ -1,10 +1,10 @@
-import React from 'react';
-import { Star } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import React from "react";
+import { Star } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ReviewRatingProps {
   rating: number;
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   interactive?: boolean;
   onRatingChange?: (rating: number) => void;
   className?: string;
@@ -12,15 +12,15 @@ interface ReviewRatingProps {
 
 export const ReviewRating: React.FC<ReviewRatingProps> = ({
   rating,
-  size = 'md',
+  size = "md",
   interactive = false,
   onRatingChange,
   className,
 }) => {
   const sizeClasses = {
-    sm: 'h-4 w-4',
-    md: 'h-5 w-5',
-    lg: 'h-6 w-6',
+    sm: "h-4 w-4",
+    md: "h-5 w-5",
+    lg: "h-6 w-6",
   };
 
   const handleStarClick = (starRating: number) => {
@@ -30,7 +30,7 @@ export const ReviewRating: React.FC<ReviewRatingProps> = ({
   };
 
   return (
-    <div className={cn('flex items-center space-x-1', className)}>
+    <div className={cn("flex items-center space-x-1", className)}>
       {[1, 2, 3, 4, 5].map((star) => {
         const filled = star <= rating;
         const halfFilled = star - 0.5 <= rating && star > rating;
@@ -42,22 +42,20 @@ export const ReviewRating: React.FC<ReviewRatingProps> = ({
             disabled={!interactive}
             onClick={() => handleStarClick(star)}
             className={cn(
-              'transition-colors duration-200',
-              interactive
-                ? 'hover:scale-110 cursor-pointer'
-                : 'cursor-default',
-              !interactive && 'pointer-events-none'
+              "transition-colors duration-200",
+              interactive ? "hover:scale-110 cursor-pointer" : "cursor-default",
+              !interactive && "pointer-events-none",
             )}
           >
             <Star
               className={cn(
                 sizeClasses[size],
                 filled
-                  ? 'text-yellow-400 fill-yellow-400'
+                  ? "text-yellow-400 fill-yellow-400"
                   : halfFilled
-                  ? 'text-yellow-400 fill-yellow-200'
-                  : 'text-gray-300',
-                interactive && 'hover:text-yellow-400'
+                    ? "text-yellow-400 fill-yellow-200"
+                    : "text-gray-300",
+                interactive && "hover:text-yellow-400",
               )}
             />
           </button>
@@ -70,7 +68,7 @@ export const ReviewRating: React.FC<ReviewRatingProps> = ({
 interface ReviewRatingDisplayProps {
   rating: number;
   totalReviews?: number;
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   showText?: boolean;
   className?: string;
 }
@@ -78,18 +76,20 @@ interface ReviewRatingDisplayProps {
 export const ReviewRatingDisplay: React.FC<ReviewRatingDisplayProps> = ({
   rating,
   totalReviews,
-  size = 'md',
+  size = "md",
   showText = true,
   className,
 }) => {
   return (
-    <div className={cn('flex items-center space-x-2', className)}>
+    <div className={cn("flex items-center space-x-2", className)}>
       <ReviewRating rating={rating} size={size} />
       {showText && (
         <div className="flex items-center space-x-1 text-sm text-gray-600">
           <span className="font-medium">{rating.toFixed(1)}</span>
           {totalReviews !== undefined && (
-            <span>({totalReviews} review{totalReviews !== 1 ? 's' : ''})</span>
+            <span>
+              ({totalReviews} review{totalReviews !== 1 ? "s" : ""})
+            </span>
           )}
         </div>
       )}

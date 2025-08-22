@@ -1,20 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { Review } from '@shared/types';
-import { ReviewCard } from '../ReviewCard';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Alert, AlertDescription } from '../ui/alert';
-import { Badge } from '../ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
-import { Textarea } from '../ui/textarea';
-import { Label } from '../ui/label';
-import { 
-  Star, 
-  Filter, 
-  Search, 
-  MessageSquare, 
+import React, { useState, useEffect } from "react";
+import { Review } from "@shared/types";
+import { ReviewCard } from "../ReviewCard";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Alert, AlertDescription } from "../ui/alert";
+import { Badge } from "../ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import { Textarea } from "../ui/textarea";
+import { Label } from "../ui/label";
+import {
+  Star,
+  Filter,
+  Search,
+  MessageSquare,
   Flag,
   CheckCircle,
   XCircle,
@@ -23,9 +29,9 @@ import {
   Send,
   AlertTriangle,
   Eye,
-  Trash2
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+  Trash2,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface AdminReviewManagementProps {
   className?: string;
@@ -46,12 +52,12 @@ export const AdminReviewManagement: React.FC<AdminReviewManagementProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [ratingFilter, setRatingFilter] = useState('all');
-  const [flaggedFilter, setFlaggedFilter] = useState('all');
-  const [sortBy, setSortBy] = useState('newest');
-  
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [ratingFilter, setRatingFilter] = useState("all");
+  const [flaggedFilter, setFlaggedFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
+
   // Reply dialog state
   const [replyDialog, setReplyDialog] = useState<{
     isOpen: boolean;
@@ -61,7 +67,7 @@ export const AdminReviewManagement: React.FC<AdminReviewManagementProps> = ({
   }>({
     isOpen: false,
     review: null,
-    message: '',
+    message: "",
     loading: false,
   });
 
@@ -85,57 +91,60 @@ export const AdminReviewManagement: React.FC<AdminReviewManagementProps> = ({
 
       const params = new URLSearchParams({
         page: currentPage.toString(),
-        limit: '20',
+        limit: "20",
         sortBy,
       });
 
-      if (statusFilter !== 'all') {
-        params.append('status', statusFilter);
+      if (statusFilter !== "all") {
+        params.append("status", statusFilter);
       }
 
-      if (ratingFilter !== 'all') {
-        params.append('rating', ratingFilter);
+      if (ratingFilter !== "all") {
+        params.append("rating", ratingFilter);
       }
 
-      if (flaggedFilter !== 'all') {
-        params.append('flagged', flaggedFilter);
+      if (flaggedFilter !== "all") {
+        params.append("flagged", flaggedFilter);
       }
 
       const response = await fetch(`/api/admin/reviews?${params}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch reviews');
+        throw new Error("Failed to fetch reviews");
       }
 
       const result = await response.json();
-      
+
       if (result.success) {
         setReviews(result.data.reviews);
         setTotalPages(result.data.pagination.pages);
       } else {
-        throw new Error(result.error || 'Failed to fetch reviews');
+        throw new Error(result.error || "Failed to fetch reviews");
       }
     } catch (err) {
-      console.error('Error fetching reviews:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch reviews');
+      console.error("Error fetching reviews:", err);
+      setError(err instanceof Error ? err.message : "Failed to fetch reviews");
     } finally {
       setLoading(false);
     }
   };
 
-  const updateReviewStatus = async (reviewId: string, status: 'approved' | 'rejected' | 'pending') => {
+  const updateReviewStatus = async (
+    reviewId: string,
+    status: "approved" | "rejected" | "pending",
+  ) => {
     setStatusUpdate({ reviewId, loading: true });
 
     try {
       const response = await fetch(`/api/admin/reviews/${reviewId}/status`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({ status }),
       });
@@ -143,23 +152,27 @@ export const AdminReviewManagement: React.FC<AdminReviewManagementProps> = ({
       if (response.ok) {
         fetchReviews(); // Refresh the list
       } else {
-        throw new Error('Failed to update review status');
+        throw new Error("Failed to update review status");
       }
     } catch (error) {
-      console.error('Error updating review status:', error);
-      alert('Failed to update review status');
+      console.error("Error updating review status:", error);
+      alert("Failed to update review status");
     } finally {
       setStatusUpdate({ reviewId: null, loading: false });
     }
   };
 
-  const flagReview = async (reviewId: string, flagged: boolean, flagReasons?: string[]) => {
+  const flagReview = async (
+    reviewId: string,
+    flagged: boolean,
+    flagReasons?: string[],
+  ) => {
     try {
       const response = await fetch(`/api/admin/reviews/${reviewId}/status`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({ flagged, flagReasons }),
       });
@@ -167,35 +180,39 @@ export const AdminReviewManagement: React.FC<AdminReviewManagementProps> = ({
       if (response.ok) {
         fetchReviews(); // Refresh the list
       } else {
-        throw new Error('Failed to flag review');
+        throw new Error("Failed to flag review");
       }
     } catch (error) {
-      console.error('Error flagging review:', error);
-      alert('Failed to flag review');
+      console.error("Error flagging review:", error);
+      alert("Failed to flag review");
     }
   };
 
   const deleteReview = async (reviewId: string) => {
-    if (!confirm('Are you sure you want to delete this review? This action cannot be undone.')) {
+    if (
+      !confirm(
+        "Are you sure you want to delete this review? This action cannot be undone.",
+      )
+    ) {
       return;
     }
 
     try {
       const response = await fetch(`/api/reviews/${reviewId}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
       if (response.ok) {
         fetchReviews(); // Refresh the list
       } else {
-        throw new Error('Failed to delete review');
+        throw new Error("Failed to delete review");
       }
     } catch (error) {
-      console.error('Error deleting review:', error);
-      alert('Failed to delete review');
+      console.error("Error deleting review:", error);
+      alert("Failed to delete review");
     }
   };
 
@@ -204,34 +221,37 @@ export const AdminReviewManagement: React.FC<AdminReviewManagementProps> = ({
       return;
     }
 
-    setReplyDialog(prev => ({ ...prev, loading: true }));
+    setReplyDialog((prev) => ({ ...prev, loading: true }));
 
     try {
-      const response = await fetch(`/api/admin/reviews/${replyDialog.review._id}/reply`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      const response = await fetch(
+        `/api/admin/reviews/${replyDialog.review._id}/reply`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ message: replyDialog.message.trim() }),
         },
-        body: JSON.stringify({ message: replyDialog.message.trim() }),
-      });
+      );
 
       if (response.ok) {
         setReplyDialog({
           isOpen: false,
           review: null,
-          message: '',
+          message: "",
           loading: false,
         });
         fetchReviews(); // Refresh the list
       } else {
-        throw new Error('Failed to submit reply');
+        throw new Error("Failed to submit reply");
       }
     } catch (error) {
-      console.error('Error submitting reply:', error);
-      alert('Failed to submit reply');
+      console.error("Error submitting reply:", error);
+      alert("Failed to submit reply");
     } finally {
-      setReplyDialog(prev => ({ ...prev, loading: false }));
+      setReplyDialog((prev) => ({ ...prev, loading: false }));
     }
   };
 
@@ -239,7 +259,7 @@ export const AdminReviewManagement: React.FC<AdminReviewManagementProps> = ({
     setReplyDialog({
       isOpen: true,
       review,
-      message: review.adminReply?.message || '',
+      message: review.adminReply?.message || "",
       loading: false,
     });
   };
@@ -248,12 +268,12 @@ export const AdminReviewManagement: React.FC<AdminReviewManagementProps> = ({
     setReplyDialog({
       isOpen: false,
       review: null,
-      message: '',
+      message: "",
       loading: false,
     });
   };
 
-  const filteredReviews = reviews.filter(review => {
+  const filteredReviews = reviews.filter((review) => {
     if (!searchTerm) return true;
     const searchLower = searchTerm.toLowerCase();
     return (
@@ -266,11 +286,11 @@ export const AdminReviewManagement: React.FC<AdminReviewManagementProps> = ({
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'approved':
+      case "approved":
         return <Badge className="bg-green-100 text-green-800">Approved</Badge>;
-      case 'pending':
+      case "pending":
         return <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>;
-      case 'rejected':
+      case "rejected":
         return <Badge className="bg-red-100 text-red-800">Rejected</Badge>;
       default:
         return null;
@@ -279,7 +299,7 @@ export const AdminReviewManagement: React.FC<AdminReviewManagementProps> = ({
 
   if (loading && reviews.length === 0) {
     return (
-      <div className={cn('w-full', className)}>
+      <div className={cn("w-full", className)}>
         <Card>
           <CardContent className="py-8">
             <div className="flex items-center justify-center space-x-2">
@@ -294,7 +314,7 @@ export const AdminReviewManagement: React.FC<AdminReviewManagementProps> = ({
 
   if (error) {
     return (
-      <div className={cn('w-full', className)}>
+      <div className={cn("w-full", className)}>
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
@@ -304,7 +324,7 @@ export const AdminReviewManagement: React.FC<AdminReviewManagementProps> = ({
   }
 
   return (
-    <div className={cn('w-full space-y-6', className)}>
+    <div className={cn("w-full space-y-6", className)}>
       {/* Header */}
       <Card>
         <CardHeader>
@@ -418,19 +438,27 @@ export const AdminReviewManagement: React.FC<AdminReviewManagementProps> = ({
                       )}
                       {review.property && (
                         <span className="text-sm text-gray-600">
-                          Property: <span className="font-medium">{review.property.title}</span>
+                          Property:{" "}
+                          <span className="font-medium">
+                            {review.property.title}
+                          </span>
                         </span>
                       )}
                     </div>
 
                     <div className="flex items-center space-x-2">
                       {/* Status Actions */}
-                      {review.status === 'pending' && (
+                      {review.status === "pending" && (
                         <>
                           <Button
                             size="sm"
-                            onClick={() => updateReviewStatus(review._id!, 'approved')}
-                            disabled={statusUpdate.reviewId === review._id && statusUpdate.loading}
+                            onClick={() =>
+                              updateReviewStatus(review._id!, "approved")
+                            }
+                            disabled={
+                              statusUpdate.reviewId === review._id &&
+                              statusUpdate.loading
+                            }
                             className="bg-green-600 hover:bg-green-700"
                           >
                             <CheckCircle className="h-4 w-4 mr-1" />
@@ -439,8 +467,13 @@ export const AdminReviewManagement: React.FC<AdminReviewManagementProps> = ({
                           <Button
                             size="sm"
                             variant="destructive"
-                            onClick={() => updateReviewStatus(review._id!, 'rejected')}
-                            disabled={statusUpdate.reviewId === review._id && statusUpdate.loading}
+                            onClick={() =>
+                              updateReviewStatus(review._id!, "rejected")
+                            }
+                            disabled={
+                              statusUpdate.reviewId === review._id &&
+                              statusUpdate.loading
+                            }
                           >
                             <XCircle className="h-4 w-4 mr-1" />
                             Reject
@@ -448,24 +481,34 @@ export const AdminReviewManagement: React.FC<AdminReviewManagementProps> = ({
                         </>
                       )}
 
-                      {review.status === 'approved' && (
+                      {review.status === "approved" && (
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => updateReviewStatus(review._id!, 'pending')}
-                          disabled={statusUpdate.reviewId === review._id && statusUpdate.loading}
+                          onClick={() =>
+                            updateReviewStatus(review._id!, "pending")
+                          }
+                          disabled={
+                            statusUpdate.reviewId === review._id &&
+                            statusUpdate.loading
+                          }
                         >
                           <Clock className="h-4 w-4 mr-1" />
                           Pending
                         </Button>
                       )}
 
-                      {review.status === 'rejected' && (
+                      {review.status === "rejected" && (
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => updateReviewStatus(review._id!, 'approved')}
-                          disabled={statusUpdate.reviewId === review._id && statusUpdate.loading}
+                          onClick={() =>
+                            updateReviewStatus(review._id!, "approved")
+                          }
+                          disabled={
+                            statusUpdate.reviewId === review._id &&
+                            statusUpdate.loading
+                          }
                         >
                           <CheckCircle className="h-4 w-4 mr-1" />
                           Approve
@@ -479,7 +522,7 @@ export const AdminReviewManagement: React.FC<AdminReviewManagementProps> = ({
                         onClick={() => openReplyDialog(review)}
                       >
                         <MessageSquare className="h-4 w-4 mr-1" />
-                        {review.adminReply ? 'Edit Reply' : 'Reply'}
+                        {review.adminReply ? "Edit Reply" : "Reply"}
                       </Button>
 
                       {/* Flag/Unflag Button */}
@@ -489,7 +532,7 @@ export const AdminReviewManagement: React.FC<AdminReviewManagementProps> = ({
                         onClick={() => flagReview(review._id!, !review.flagged)}
                       >
                         <Flag className="h-4 w-4 mr-1" />
-                        {review.flagged ? 'Unflag' : 'Flag'}
+                        {review.flagged ? "Unflag" : "Flag"}
                       </Button>
 
                       {/* Delete Button */}
@@ -523,12 +566,12 @@ export const AdminReviewManagement: React.FC<AdminReviewManagementProps> = ({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+            onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
             disabled={currentPage === 1 || loading}
           >
             Previous
           </Button>
-          
+
           <span className="text-sm text-gray-600">
             Page {currentPage} of {totalPages}
           </span>
@@ -536,7 +579,9 @@ export const AdminReviewManagement: React.FC<AdminReviewManagementProps> = ({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+            }
             disabled={currentPage === totalPages || loading}
           >
             Next
@@ -551,7 +596,9 @@ export const AdminReviewManagement: React.FC<AdminReviewManagementProps> = ({
             <DialogTitle className="flex items-center space-x-2">
               <MessageSquare className="h-5 w-5" />
               <span>
-                {replyDialog.review?.adminReply ? 'Edit Admin Reply' : 'Add Admin Reply'}
+                {replyDialog.review?.adminReply
+                  ? "Edit Admin Reply"
+                  : "Add Admin Reply"}
               </span>
             </DialogTitle>
           </DialogHeader>
@@ -561,23 +608,27 @@ export const AdminReviewManagement: React.FC<AdminReviewManagementProps> = ({
               {/* Review Summary */}
               <div className="bg-gray-50 p-4 rounded-lg">
                 <div className="flex items-center space-x-2 mb-2">
-                  <span className="font-medium">{replyDialog.review.userName}</span>
+                  <span className="font-medium">
+                    {replyDialog.review.userName}
+                  </span>
                   <div className="flex items-center">
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
                         className={cn(
-                          'h-4 w-4',
+                          "h-4 w-4",
                           i < replyDialog.review!.rating
-                            ? 'text-yellow-400 fill-yellow-400'
-                            : 'text-gray-300'
+                            ? "text-yellow-400 fill-yellow-400"
+                            : "text-gray-300",
                         )}
                       />
                     ))}
                   </div>
                 </div>
                 <h4 className="font-medium mb-1">{replyDialog.review.title}</h4>
-                <p className="text-sm text-gray-700">{replyDialog.review.comment}</p>
+                <p className="text-sm text-gray-700">
+                  {replyDialog.review.comment}
+                </p>
               </div>
 
               {/* Reply Form */}
@@ -586,7 +637,12 @@ export const AdminReviewManagement: React.FC<AdminReviewManagementProps> = ({
                 <Textarea
                   id="reply"
                   value={replyDialog.message}
-                  onChange={(e) => setReplyDialog(prev => ({ ...prev, message: e.target.value }))}
+                  onChange={(e) =>
+                    setReplyDialog((prev) => ({
+                      ...prev,
+                      message: e.target.value,
+                    }))
+                  }
                   placeholder="Write your reply..."
                   rows={4}
                 />

@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { Review, ReviewSubmission } from '@shared/types';
-import { ReviewList } from './ReviewList';
-import { ReviewForm } from './ReviewForm';
-import { Button } from './ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Alert, AlertDescription } from './ui/alert';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
-import { 
-  Star, 
-  Plus, 
-  MessageSquare, 
+import React, { useState, useEffect } from "react";
+import { Review, ReviewSubmission } from "@shared/types";
+import { ReviewList } from "./ReviewList";
+import { ReviewForm } from "./ReviewForm";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Alert, AlertDescription } from "./ui/alert";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import {
+  Star,
+  Plus,
+  MessageSquare,
   AlertCircle,
   CheckCircle,
-  Edit
-} from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
-import { cn } from '@/lib/utils';
+  Edit,
+} from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { cn } from "@/lib/utils";
 
 interface ReviewSectionProps {
   propertyId: string;
@@ -31,7 +31,10 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
   const [editingReview, setEditingReview] = useState<Review | null>(null);
   const [userHasReviewed, setUserHasReviewed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
@@ -42,9 +45,9 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
 
   const checkUserReview = async () => {
     try {
-      const response = await fetch('/api/user/reviews', {
+      const response = await fetch("/api/user/reviews", {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
@@ -52,43 +55,46 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
         const result = await response.json();
         if (result.success) {
           const hasReviewed = result.data.reviews.some(
-            (review: Review) => review.propertyId === propertyId
+            (review: Review) => review.propertyId === propertyId,
           );
           setUserHasReviewed(hasReviewed);
         }
       }
     } catch (error) {
-      console.error('Error checking user review:', error);
+      console.error("Error checking user review:", error);
     }
   };
 
-  const handleSubmitReview = async (reviewData: ReviewSubmission, images?: File[]) => {
+  const handleSubmitReview = async (
+    reviewData: ReviewSubmission,
+    images?: File[],
+  ) => {
     setSubmitting(true);
     setMessage(null);
 
     try {
       const formData = new FormData();
-      formData.append('propertyId', reviewData.propertyId);
-      formData.append('rating', reviewData.rating.toString());
-      formData.append('title', reviewData.title);
-      formData.append('comment', reviewData.comment);
+      formData.append("propertyId", reviewData.propertyId);
+      formData.append("rating", reviewData.rating.toString());
+      formData.append("title", reviewData.title);
+      formData.append("comment", reviewData.comment);
 
       if (images && images.length > 0) {
         images.forEach((image) => {
-          formData.append('images', image);
+          formData.append("images", image);
         });
       }
 
-      const url = editingReview 
+      const url = editingReview
         ? `/api/reviews/${editingReview._id}`
-        : '/api/reviews';
-      
-      const method = editingReview ? 'PUT' : 'POST';
+        : "/api/reviews";
+
+      const method = editingReview ? "PUT" : "POST";
 
       const response = await fetch(url, {
         method,
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: formData,
       });
@@ -97,22 +103,23 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
 
       if (response.ok && result.success) {
         setMessage({
-          type: 'success',
-          text: editingReview 
-            ? 'Review updated successfully!' 
-            : 'Review submitted successfully!',
+          type: "success",
+          text: editingReview
+            ? "Review updated successfully!"
+            : "Review submitted successfully!",
         });
         setShowReviewForm(false);
         setEditingReview(null);
         setUserHasReviewed(true);
-        setRefreshKey(prev => prev + 1);
+        setRefreshKey((prev) => prev + 1);
       } else {
-        throw new Error(result.error || 'Failed to submit review');
+        throw new Error(result.error || "Failed to submit review");
       }
     } catch (error) {
       setMessage({
-        type: 'error',
-        text: error instanceof Error ? error.message : 'Failed to submit review',
+        type: "error",
+        text:
+          error instanceof Error ? error.message : "Failed to submit review",
       });
     } finally {
       setSubmitting(false);
@@ -126,10 +133,10 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
 
   const handleDeleteReview = () => {
     setUserHasReviewed(false);
-    setRefreshKey(prev => prev + 1);
+    setRefreshKey((prev) => prev + 1);
     setMessage({
-      type: 'success',
-      text: 'Review deleted successfully',
+      type: "success",
+      text: "Review deleted successfully",
     });
   };
 
@@ -143,7 +150,7 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
   };
 
   return (
-    <div className={cn('w-full space-y-6', className)}>
+    <div className={cn("w-full space-y-6", className)}>
       {/* Section Header */}
       <Card>
         <CardHeader>
@@ -152,7 +159,7 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
               <Star className="h-5 w-5 text-yellow-400" />
               <span>Reviews & Ratings</span>
             </div>
-            
+
             {isAuthenticated && !userHasReviewed && (
               <Button
                 onClick={() => setShowReviewForm(true)}
@@ -168,11 +175,11 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
         <CardContent>
           {/* Messages */}
           {message && (
-            <Alert 
-              variant={message.type === 'error' ? 'destructive' : 'default'}
+            <Alert
+              variant={message.type === "error" ? "destructive" : "default"}
               className="mb-4"
             >
-              {message.type === 'success' ? (
+              {message.type === "success" ? (
                 <CheckCircle className="h-4 w-4" />
               ) : (
                 <AlertCircle className="h-4 w-4" />
@@ -196,13 +203,13 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
             <Alert className="mb-4">
               <MessageSquare className="h-4 w-4" />
               <AlertDescription>
-                <a 
-                  href="/login" 
+                <a
+                  href="/login"
                   className="text-primary hover:underline font-medium"
                 >
                   Sign in
-                </a>
-                {' '}to write a review and see all reviews for this property.
+                </a>{" "}
+                to write a review and see all reviews for this property.
               </AlertDescription>
             </Alert>
           )}
@@ -212,7 +219,8 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
             <Alert className="mb-4">
               <CheckCircle className="h-4 w-4" />
               <AlertDescription>
-                You have already reviewed this property. You can edit your review from the review list below.
+                You have already reviewed this property. You can edit your
+                review from the review list below.
               </AlertDescription>
             </Alert>
           )}
@@ -237,7 +245,7 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
               )}
             </DialogTitle>
           </DialogHeader>
-          
+
           <ReviewForm
             propertyId={propertyId}
             existingReview={editingReview || undefined}
@@ -254,7 +262,7 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
         key={refreshKey}
         propertyId={propertyId}
         currentUserId={user?._id}
-        isAdmin={user?.userType === 'admin' || user?.userType === 'staff'}
+        isAdmin={user?.userType === "admin" || user?.userType === "staff"}
         onEditReview={handleEditReview}
         onDeleteReview={handleDeleteReview}
       />
@@ -283,7 +291,9 @@ export const ReviewSectionCompact: React.FC<ReviewSectionCompactProps> = ({
 
   const fetchStats = async () => {
     try {
-      const response = await fetch(`/api/properties/${propertyId}/reviews/stats`);
+      const response = await fetch(
+        `/api/properties/${propertyId}/reviews/stats`,
+      );
       if (response.ok) {
         const result = await response.json();
         if (result.success) {
@@ -291,7 +301,7 @@ export const ReviewSectionCompact: React.FC<ReviewSectionCompactProps> = ({
         }
       }
     } catch (error) {
-      console.error('Error fetching review stats:', error);
+      console.error("Error fetching review stats:", error);
     } finally {
       setLoading(false);
     }
@@ -299,7 +309,7 @@ export const ReviewSectionCompact: React.FC<ReviewSectionCompactProps> = ({
 
   if (loading) {
     return (
-      <div className={cn('animate-pulse', className)}>
+      <div className={cn("animate-pulse", className)}>
         <div className="h-4 bg-gray-200 rounded w-24"></div>
       </div>
     );
@@ -307,7 +317,12 @@ export const ReviewSectionCompact: React.FC<ReviewSectionCompactProps> = ({
 
   if (!stats || stats.totalReviews === 0) {
     return (
-      <div className={cn('flex items-center space-x-1 text-gray-500 text-sm', className)}>
+      <div
+        className={cn(
+          "flex items-center space-x-1 text-gray-500 text-sm",
+          className,
+        )}
+      >
         <Star className="h-4 w-4" />
         <span>No reviews</span>
       </div>
@@ -315,10 +330,10 @@ export const ReviewSectionCompact: React.FC<ReviewSectionCompactProps> = ({
   }
 
   return (
-    <div 
+    <div
       className={cn(
-        'flex items-center space-x-2 cursor-pointer hover:text-primary transition-colors',
-        className
+        "flex items-center space-x-2 cursor-pointer hover:text-primary transition-colors",
+        className,
       )}
       onClick={onClick}
     >
@@ -327,15 +342,17 @@ export const ReviewSectionCompact: React.FC<ReviewSectionCompactProps> = ({
           <Star
             key={i}
             className={cn(
-              'h-4 w-4',
+              "h-4 w-4",
               i < Math.floor(stats.averageRating)
-                ? 'text-yellow-400 fill-yellow-400'
-                : 'text-gray-300'
+                ? "text-yellow-400 fill-yellow-400"
+                : "text-gray-300",
             )}
           />
         ))}
       </div>
-      <span className="text-sm font-medium">{stats.averageRating.toFixed(1)}</span>
+      <span className="text-sm font-medium">
+        {stats.averageRating.toFixed(1)}
+      </span>
       <span className="text-sm text-gray-500">({stats.totalReviews})</span>
     </div>
   );

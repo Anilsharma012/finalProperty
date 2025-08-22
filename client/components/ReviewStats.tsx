@@ -1,10 +1,10 @@
-import React from 'react';
-import { ReviewStats as ReviewStatsType } from '@shared/types';
-import { ReviewRatingDisplay } from './ReviewRating';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Progress } from './ui/progress';
-import { Star, Users } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import React from "react";
+import { ReviewStats as ReviewStatsType } from "@shared/types";
+import { ReviewRatingDisplay } from "./ReviewRating";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Progress } from "./ui/progress";
+import { Star, Users } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ReviewStatsProps {
   stats: ReviewStatsType;
@@ -21,7 +21,7 @@ export const ReviewStats: React.FC<ReviewStatsProps> = ({
 
   if (totalReviews === 0) {
     return (
-      <Card className={cn('w-full', className)}>
+      <Card className={cn("w-full", className)}>
         <CardContent className="py-8 text-center">
           <div className="flex flex-col items-center space-y-3">
             <div className="bg-gray-100 rounded-full p-4">
@@ -41,7 +41,12 @@ export const ReviewStats: React.FC<ReviewStatsProps> = ({
 
   if (compact) {
     return (
-      <div className={cn('flex items-center space-x-4 p-4 bg-gray-50 rounded-lg', className)}>
+      <div
+        className={cn(
+          "flex items-center space-x-4 p-4 bg-gray-50 rounded-lg",
+          className,
+        )}
+      >
         <div className="text-center">
           <div className="text-2xl font-bold text-gray-900">
             {averageRating.toFixed(1)}
@@ -67,7 +72,7 @@ export const ReviewStats: React.FC<ReviewStatsProps> = ({
   };
 
   return (
-    <Card className={cn('w-full', className)}>
+    <Card className={cn("w-full", className)}>
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center space-x-2">
           <Star className="h-5 w-5 text-yellow-400" />
@@ -90,12 +95,12 @@ export const ReviewStats: React.FC<ReviewStatsProps> = ({
               />
             </div>
           </div>
-          
+
           <div className="flex-1">
             <div className="flex items-center space-x-2 text-gray-600">
               <Users className="h-4 w-4" />
               <span className="text-sm">
-                Based on {totalReviews} review{totalReviews !== 1 ? 's' : ''}
+                Based on {totalReviews} review{totalReviews !== 1 ? "s" : ""}
               </span>
             </div>
           </div>
@@ -104,10 +109,11 @@ export const ReviewStats: React.FC<ReviewStatsProps> = ({
         {/* Rating Distribution */}
         <div className="space-y-3">
           <h4 className="font-medium text-gray-900">Rating Breakdown</h4>
-          
+
           <div className="space-y-2">
             {[5, 4, 3, 2, 1].map((rating) => {
-              const count = ratingDistribution[rating as keyof typeof ratingDistribution];
+              const count =
+                ratingDistribution[rating as keyof typeof ratingDistribution];
               const percentage = getPercentage(count);
 
               return (
@@ -116,14 +122,11 @@ export const ReviewStats: React.FC<ReviewStatsProps> = ({
                     <span className="text-sm font-medium">{rating}</span>
                     <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />
                   </div>
-                  
+
                   <div className="flex-1">
-                    <Progress 
-                      value={percentage} 
-                      className="h-2"
-                    />
+                    <Progress value={percentage} className="h-2" />
                   </div>
-                  
+
                   <div className="w-16 text-right">
                     <span className="text-sm text-gray-600">
                       {count} ({percentage.toFixed(0)}%)
@@ -140,13 +143,18 @@ export const ReviewStats: React.FC<ReviewStatsProps> = ({
           <div className="grid grid-cols-2 gap-4 text-center">
             <div>
               <div className="text-lg font-semibold text-green-600">
-                {((ratingDistribution[5] + ratingDistribution[4]) / totalReviews * 100).toFixed(0)}%
+                {(
+                  ((ratingDistribution[5] + ratingDistribution[4]) /
+                    totalReviews) *
+                  100
+                ).toFixed(0)}
+                %
               </div>
               <div className="text-xs text-gray-600">Positive</div>
             </div>
             <div>
               <div className="text-lg font-semibold text-yellow-600">
-                {(ratingDistribution[3] / totalReviews * 100).toFixed(0)}%
+                {((ratingDistribution[3] / totalReviews) * 100).toFixed(0)}%
               </div>
               <div className="text-xs text-gray-600">Neutral</div>
             </div>
@@ -169,7 +177,9 @@ export const InlineReviewStats: React.FC<InlineReviewStatsProps> = ({
 }) => {
   if (stats.totalReviews === 0) {
     return (
-      <div className={cn('flex items-center space-x-1 text-gray-500', className)}>
+      <div
+        className={cn("flex items-center space-x-1 text-gray-500", className)}
+      >
         <Star className="h-4 w-4" />
         <span className="text-sm">No reviews</span>
       </div>
@@ -177,7 +187,7 @@ export const InlineReviewStats: React.FC<InlineReviewStatsProps> = ({
   }
 
   return (
-    <div className={cn('flex items-center space-x-2', className)}>
+    <div className={cn("flex items-center space-x-2", className)}>
       <ReviewRatingDisplay
         rating={stats.averageRating}
         totalReviews={stats.totalReviews}
