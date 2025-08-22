@@ -627,5 +627,3 @@ export const AdminReviewManagement: React.FC<AdminReviewManagementProps> = ({
 };
 
 export default AdminReviewManagement;
-
-export default AdminReviewManagement;
