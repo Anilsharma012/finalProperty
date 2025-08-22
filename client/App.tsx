@@ -171,16 +171,17 @@ function App() {
                 {/* Footer Test Page */}
                 <Route path="/footer-test" element={<FooterTest />} />
                 <Route path="/footer-debug" element={<FooterDebugPage />} />
-                {/* Dynamic Pages from Admin */}
-                <Route path="/page/:slug" element={<DynamicPage />} />
-                <Route path="/:slug" element={<ContentPage />} />
 
-                {/* Footer Pages - Static Routes */}
+                {/* Footer Pages - Static Routes (must be before catch-all routes) */}
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/terms-of-service" element={<TermsOfService />} />
                 <Route path="/help-center" element={<HelpCenter />} />
+
+                {/* Dynamic Pages from Admin */}
+                <Route path="/page/:slug" element={<DynamicPage />} />
+                <Route path="/:slug" element={<ContentPage />} />
 
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
